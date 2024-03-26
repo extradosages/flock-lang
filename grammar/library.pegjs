@@ -327,7 +327,7 @@ functionTermConstructor
 // ##### Eliminator
 // (foo 0)
 functionTermEliminator
-    = "(" _? func:(termReference / functionTermConstructor / productTermEliminator / sumTermConstructor) args:(_ @term|1..,_|)? _? ")"
+    = "(" _? func:(termReference / functionTermConstructor) args:(_ @term|1..,_|)? _? ")"
     {
         args = args ?? [];
         const data = {
