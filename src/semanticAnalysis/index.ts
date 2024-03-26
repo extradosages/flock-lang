@@ -1,0 +1,1 @@
+export { validateLibrary } from "./typeChecking";

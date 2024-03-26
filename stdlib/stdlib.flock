@@ -1,0 +1,163 @@
+deftype Number:Type
+    [+ Integer Float +]
+
+deftype Unit:Type
+    [**]
+
+defterm unit:Unit
+    [**]
+
+deftype terminal:[^ T => [^ T -> Unit ^] ^]
+    [^ value ->
+        unit ^]
+
+deftype element:[^ T => [^ T -> [^ Unit -> T ^] ^] ^]
+    [^ value ->
+        [^ unused ->
+            value ^] ^]
+
+deftype Empty:Type
+    [++]
+
+deftype initial:[^ T => [^ Empty -> T ^] ^]
+    [++]
+
+
+deftype Maybe:Type
+    [^ T => [+ T unit +] ^]
+
+defterm some:[^ T =>[^ T -> (Maybe T) ^] ^]
+    [^ value -> 
+        (<0 value) ^]
+
+defterm none:[^ T => (Maybe T) ^]
+    (<1 value)
+
+
+deftype TypicalBoolean:Type
+    [+ Unit Unit +]
+
+defterm typical-true:TypicalBoolean
+    (<0 unit)
+
+defterm typical-false:TypicalBoolean
+    (<1 unit)
+
+defterm typical-if-then-else:[^ T => [^ TypicalBoolean T T -> T ^] ^]
+    [^ boolean left-value right-value ->
+        [+  [^ unused -> left-value ^]
+            [^ unused -> right-value ^] +] ^]
+
+
+defterm not:[^ Boolean -> Boolean ^]
+    client
+
+defterm and:[^ Boolean Boolean -> Boolean ^]
+    client
+
+defterm or:[^ Boolean Boolean -> Boolean ^]
+    [^ left-prop right-prop ->
+        (not (and 
+            (not left-prop) 
+            (not right-prop))) ^]
+
+
+defterm if-then-else:[^ Then Else => 
+        [^ Boolean Then Else -> 
+            [+ Then Else +] ^] ^]
+    client 
+
+
+defterm as-float:[^ Integer -> Float ^]
+
+defterm as-number:[^ Integer -> Number ^]
+    [^ integer ->
+        (<0 integer) ^]
+
+defterm as-number:[^ Float -> Number ^]
+    [^ float ->
+        (<1 float) ^]
+
+defterm add:[^ Integer Integer -> Integer ^]
+    client
+
+defterm add:[^ Number Number -> Float ^]
+    client
+
+defterm subtract:[^ Integer Integer -> Integer ^]
+    client
+
+defterm subtract:[^ Number Number -> Float ^]
+    client
+
+defterm multiply:[^ Integer Integer -> Integer ^]
+    client
+
+defterm multiply:[^ Number Number -> Float ^]
+    client
+
+defterm divide:[^ Number Number -> Float ^]
+    client
+
+defterm floor:[^ Number -> Integer ^]
+    client
+
+defterm ceiling:[^ Number -> Integer ^]
+    [^ number ->
+        (if-then-else
+            (is-equal number (floor number))
+            number
+            (add number 1)) ^]
+
+defterm round-up:[^ Number -> Integer ^]
+    client
+
+
+defterm is-equal:[^ T => [^ T T -> Boolean ^] ^]
+    client
+
+defterm is-less-than:[^ Number Number -> Boolean ^]
+    client
+
+defterm is-less-than-or-equal:[^ Number Number -> Boolean ^]
+    [^ x y ->
+        (or
+            (is-less-than x y)
+            (is-equal x y)) ^]
+
+defterm is-greater-than:[^ Number Number -> Boolean ^]
+    [^ x y -> 
+        (not
+            (is-less-than-or-equal x y)) ^]
+
+defterm is-greater-than-or-equal:[^ Number Number -> Boolean ^]
+    [^ x y ->
+        (not
+            (is-less-than x y)) ^]
+
+
+defterm length:[^ String -> Integer ^]
+    client
+
+defterm trim-left:[^ String -> String ^]
+    client
+
+defterm trim-right:[^ String -> String ^]
+    client
+
+defterm trim:[^ String -> String ^]
+    [^ string ->
+        (trim-left (trim-right string)) ^]
+
+defterm slice-from-start:[^ String Integer -> String ^]
+    client
+
+defterm slice-to-end:[^ String Integer -> String ^]
+    client
+
+defterm slice:[^ String Integer Integer -> String ^]
+    [^ string start end ->
+        (slice-from-start (slice-to-end string end) start) ^]
+
+defterm replace:[^ String String -> String ^]
+    client
