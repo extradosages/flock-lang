@@ -1,6 +1,5 @@
 // # Flock Language Grammar Specification
 {{
-    const uuid = require('uuid');
     const ast = require('@flock/ast');
 
     const nodes = [];
