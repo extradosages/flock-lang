@@ -1,34 +1,39 @@
-import * as peggy from "peggy";
+import { anonymize, unsafeTermBinding } from "@flock/ast";
 
-import { source } from "../parser";
-import { unsafeTermBinding } from "@flock/ast";
+import { Parser } from "../parser";
 
 describe("termBinding", () => {
-    const parser = peggy.generate(source, {
-        allowedStartRules: ["termBinding"],
-    });
+    const parser = new Parser("termBinding");
 
     it("parses a camelCase identifier", () => {
-        const actual = parser.parse("fooBar");
-        const expected = unsafeTermBinding("fooBar");
+        const ast = parser.parse("fooBar");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(unsafeTermBinding("fooBar"));
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses an all lower-case identifier", () => {
-        const actual = parser.parse("foo");
-        const expected = unsafeTermBinding("foo");
+        const ast = parser.parse("foo");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(unsafeTermBinding("foo"));
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses an identifier with a hyphen in a tail position", () => {
-        const actual = parser.parse("foo-Bar");
-        const expected = unsafeTermBinding("foo-Bar");
+        const ast = parser.parse("foo-Bar");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(unsafeTermBinding("foo-Bar"));
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses an identifier with numerals in tail positions", () => {
-        const actual = parser.parse("foo-123");
-        const expected = unsafeTermBinding("foo-123");
+        const ast = parser.parse("foo-123");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(unsafeTermBinding("foo-123"));
         expect(actual).toStrictEqual(expected);
     });
 

@@ -1,34 +1,39 @@
-import * as peggy from "peggy";
+import { anonymize, unsafeTermReference } from "@flock/ast";
 
-import { unsafeTermReference } from "@flock/ast";
-import { source } from "../parser";
+import { Parser } from "../parser";
 
 describe("termReference", () => {
-    const parser = peggy.generate(source, {
-        allowedStartRules: ["termReference"],
-    });
+    const parser = new Parser("termReference");
 
     it("parses a camelCase identifier", () => {
-        const actual = parser.parse("fooBar");
-        const expected = unsafeTermReference("fooBar");
+        const ast = parser.parse("fooBar");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(unsafeTermReference("fooBar"));
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses an all lower-case identifier", () => {
-        const actual = parser.parse("foo");
-        const expected = unsafeTermReference("foo");
+        const ast = parser.parse("foo");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(unsafeTermReference("foo"));
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses an identifier with a hyphen in a tail position", () => {
-        const actual = parser.parse("foo-Bar");
-        const expected = unsafeTermReference("foo-Bar");
+        const ast = parser.parse("foo-Bar");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(unsafeTermReference("foo-Bar"));
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses an identifier with numerals in tail positions", () => {
-        const actual = parser.parse("foo-123");
-        const expected = unsafeTermReference("foo-123");
+        const ast = parser.parse("foo-123");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(unsafeTermReference("foo-123"));
         expect(actual).toStrictEqual(expected);
     });
 

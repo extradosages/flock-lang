@@ -1,5 +1,3 @@
-import * as peggy from "peggy";
-
 import {
     sumTermEliminator,
     stringTermLiteral,
@@ -7,78 +5,96 @@ import {
     unsafeTermReference,
     lambdaConstructor,
     unsafeSumTermConstructor,
+    anonymize,
 } from "@flock/ast";
-import { source } from "../parser";
+
+import { Parser } from "../parser";
 
 describe("sumTermEliminator", () => {
-    const parser = peggy.generate(source, {
-        allowedStartRules: ["sumTermEliminator"],
-    });
+    const parser = new Parser("sumTermEliminator");
 
     it("parses an empty sum", () => {
-        const actual = parser.parse("[++]");
-        const expected = sumTermEliminator([]);
+        const ast = parser.parse("[++]");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(sumTermEliminator([]));
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a sum with a single term reference", () => {
-        const actual = parser.parse("[+ foo +]");
-        const expected = sumTermEliminator([unsafeTermReference("foo")]);
+        const ast = parser.parse("[+ foo +]");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(
+            sumTermEliminator([unsafeTermReference("foo")]),
+        );
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a sum with a single sum term eliminator", () => {
-        const actual = parser.parse("[+ [+ foo bar +] +]");
-        const expected = sumTermEliminator([
+        const ast = parser.parse("[+ [+ foo bar +] +]");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(
             sumTermEliminator([
-                unsafeTermReference("foo"),
-                unsafeTermReference("bar"),
+                sumTermEliminator([
+                    unsafeTermReference("foo"),
+                    unsafeTermReference("bar"),
+                ]),
             ]),
-        ]);
+        );
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a sum with a single function term constructor", () => {
-        const actual = parser.parse("[+ [^ foo -> bar ^] +]");
-        const expected = sumTermEliminator([
-            lambdaConstructor({
-                codomainTerm: unsafeTermReference("bar"),
-                domainBindings: [unsafeTermBinding("foo")],
-            }),
-        ]);
+        const ast = parser.parse("[+ [^ foo -> bar ^] +]");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(
+            sumTermEliminator([
+                lambdaConstructor({
+                    codomainTerm: unsafeTermReference("bar"),
+                    domainBindings: [unsafeTermBinding("foo")],
+                }),
+            ]),
+        );
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a sum with several components", () => {
-        const actual = parser.parse(
-            '[+  foo [+ bar +] [^ baz -> "hello" ^] +]',
+        const ast = parser.parse('[+  foo [+ bar +] [^ baz -> "hello" ^] +]');
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(
+            sumTermEliminator([
+                unsafeTermReference("foo"),
+                sumTermEliminator([unsafeTermReference("bar")]),
+                lambdaConstructor({
+                    codomainTerm: stringTermLiteral("hello"),
+                    domainBindings: [unsafeTermBinding("baz")],
+                }),
+            ]),
         );
-        const expected = sumTermEliminator([
-            unsafeTermReference("foo"),
-            sumTermEliminator([unsafeTermReference("bar")]),
-            lambdaConstructor({
-                codomainTerm: stringTermLiteral("hello"),
-                domainBindings: [unsafeTermBinding("baz")],
-            }),
-        ]);
         expect(actual).toStrictEqual(expected);
     });
 });
 
 describe("sumTermConstructor", () => {
-    const parser = peggy.generate(source, {
-        allowedStartRules: ["sumTermConstructor"],
-    });
+    const parser = new Parser("sumTermConstructor");
 
     it("parses a sum term constructor with an index of <0`", () => {
-        const actual = parser.parse("<0");
-        const expected = unsafeSumTermConstructor(0);
+        const ast = parser.parse("<0");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(unsafeSumTermConstructor(0));
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a sum term constructor with an index of <1`", () => {
-        const actual = parser.parse("<1");
-        const expected = unsafeSumTermConstructor(1);
+        const ast = parser.parse("<1");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(unsafeSumTermConstructor(1));
         expect(actual).toStrictEqual(expected);
     });
 

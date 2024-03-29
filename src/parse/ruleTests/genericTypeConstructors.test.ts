@@ -1,7 +1,5 @@
-import * as peggy from "peggy";
-
-import { source } from "../parser";
 import {
+    anonymize,
     booleanTypeLiteral,
     genericTypeConstructor,
     productType,
@@ -11,45 +9,57 @@ import {
     unsafeTypeReference,
 } from "@flock/ast";
 
+import { Parser } from "../parser";
+
 describe("genericTypeConstructor", () => {
-    const parser = peggy.generate(source, {
-        allowedStartRules: ["genericTypeConstructor"],
-    });
+    const parser = new Parser("genericTypeConstructor");
 
     it("parses a generic type constructor with only a codomain type", () => {
-        const actual = parser.parse("[^ => [* Boolean String *] ^]");
-        const expected = genericTypeConstructor({
-            codomainType: productType([
-                booleanTypeLiteral(undefined),
-                stringTypeLiteral(undefined),
-            ]),
-            domainBindings: [],
-        });
+        const ast = parser.parse("[^ => [* Boolean String *] ^]");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(
+            genericTypeConstructor({
+                codomainType: productType([
+                    booleanTypeLiteral(undefined),
+                    stringTypeLiteral(undefined),
+                ]),
+                domainBindings: [],
+            }),
+        );
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a generic type constructor with a single domain binding", () => {
-        const actual = parser.parse("[^ Foo => [+ Foo String +] ^]");
-        const expected = genericTypeConstructor({
-            codomainType: sumType([
-                unsafeTypeReference("Foo"),
-                stringTypeLiteral(undefined),
-            ]),
-            domainBindings: [unsafeTypeBinding("Foo")],
-        });
+        const ast = parser.parse("[^ Foo => [+ Foo String +] ^]");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(
+            genericTypeConstructor({
+                codomainType: sumType([
+                    unsafeTypeReference("Foo"),
+                    stringTypeLiteral(undefined),
+                ]),
+                domainBindings: [unsafeTypeBinding("Foo")],
+            }),
+        );
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a generic type constructor with several domain bindings", () => {
-        const actual = parser.parse("[^ Foo Bar Baz => Baz ^]");
-        const expected = genericTypeConstructor({
-            codomainType: unsafeTypeReference("Baz"),
-            domainBindings: [
-                unsafeTypeBinding("Foo"),
-                unsafeTypeBinding("Bar"),
-                unsafeTypeBinding("Baz"),
-            ],
-        });
+        const ast = parser.parse("[^ Foo Bar Baz => Baz ^]");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(
+            genericTypeConstructor({
+                codomainType: unsafeTypeReference("Baz"),
+                domainBindings: [
+                    unsafeTypeBinding("Foo"),
+                    unsafeTypeBinding("Bar"),
+                    unsafeTypeBinding("Baz"),
+                ],
+            }),
+        );
         expect(actual).toStrictEqual(expected);
     });
 

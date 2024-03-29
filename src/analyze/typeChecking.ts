@@ -1,10 +1,6 @@
-import * as ast from "@flock/ast";
+import * as ast from "@flock/ast/dist/nodes";
 
-const nodesWithTypeSemantics = [] as const satisfies ast.NodeUnknown[];
-
-type NodeWithTypeSemantics = (typeof nodesWithTypeSemantics)[number];
-
-type TypeSemanticsMixin = {
-    knownType?: ast.SmallType;
-    expectedType?: ast.SmallType;
-};
+const dereference = (
+    scope: string[],
+    identifier: string,
+): ast.TermBinding => {};

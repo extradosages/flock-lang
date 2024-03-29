@@ -1,27 +1,29 @@
-import * as peggy from "peggy";
-
-import { source } from "../parser";
 import {
+    anonymize,
     booleanTermLiteral,
     floatTermLiteral,
     stringTermLiteral,
     unsafeIntegerTermLiteral,
 } from "@flock/ast";
 
+import { Parser } from "../parser";
+
 describe("booleanTermLiteral", () => {
-    const parser = peggy.generate(source, {
-        allowedStartRules: ["booleanTermLiteral"],
-    });
+    const parser = new Parser("booleanTermLiteral");
 
     it("parses `true`", () => {
-        const actual = parser.parse("true");
-        const expected = booleanTermLiteral(true);
+        const ast = parser.parse("true");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(booleanTermLiteral(true));
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses `false`", () => {
-        const actual = parser.parse("false");
-        const expected = booleanTermLiteral(false);
+        const ast = parser.parse("false");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(booleanTermLiteral(false));
         expect(actual).toStrictEqual(expected);
     });
 
@@ -39,19 +41,21 @@ describe("booleanTermLiteral", () => {
 });
 
 describe("floatTermLiteral", () => {
-    const parser = peggy.generate(source, {
-        allowedStartRules: ["floatTermLiteral"],
-    });
+    const parser = new Parser("floatTermLiteral");
 
     it("parses <1.0`", () => {
-        const actual = parser.parse("1.0");
-        const expected = floatTermLiteral(1.0);
+        const ast = parser.parse("1.0");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(floatTermLiteral(1.0));
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses <1.`", () => {
-        const actual = parser.parse("1.");
-        const expected = floatTermLiteral(1.0);
+        const ast = parser.parse("1.");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(floatTermLiteral(1.0));
         expect(actual).toStrictEqual(expected);
     });
 
@@ -65,13 +69,13 @@ describe("floatTermLiteral", () => {
 });
 
 describe("integerTermLiteral", () => {
-    const parser = peggy.generate(source, {
-        allowedStartRules: ["integerTermLiteral"],
-    });
+    const parser = new Parser("integerTermLiteral");
 
     it("parses <1`", () => {
-        const actual = parser.parse("1");
-        const expected = unsafeIntegerTermLiteral(1);
+        const ast = parser.parse("1");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(unsafeIntegerTermLiteral(1));
         expect(actual).toStrictEqual(expected);
     });
 
@@ -81,25 +85,29 @@ describe("integerTermLiteral", () => {
 });
 
 describe("stringTermLiteral", () => {
-    const parser = peggy.generate(source, {
-        allowedStartRules: ["stringTermLiteral"],
-    });
+    const parser = new Parser("stringTermLiteral");
 
     it('parses `"foo"`', () => {
-        const actual = parser.parse('"foo"');
-        const expected = stringTermLiteral("foo");
+        const ast = parser.parse('"foo"');
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(stringTermLiteral("foo"));
         expect(actual).toStrictEqual(expected);
     });
 
     it('parses `"foo bar"`', () => {
-        const actual = parser.parse('"foo bar"');
-        const expected = stringTermLiteral("foo bar");
+        const ast = parser.parse('"foo bar"');
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(stringTermLiteral("foo bar"));
         expect(actual).toStrictEqual(expected);
     });
 
     it('parses `"foo 1234 quod LIBER"`', () => {
-        const actual = parser.parse('"foo 1234 quod LIBER"');
-        const expected = stringTermLiteral("foo 1234 quod LIBER");
+        const ast = parser.parse('"foo 1234 quod LIBER"');
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(stringTermLiteral("foo 1234 quod LIBER"));
         expect(actual).toStrictEqual(expected);
     });
 

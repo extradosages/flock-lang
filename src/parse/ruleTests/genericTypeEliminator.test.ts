@@ -1,6 +1,5 @@
-import * as peggy from "peggy";
-
 import {
+    anonymize,
     booleanTypeLiteral,
     floatTypeLiteral,
     genericTypeConstructor,
@@ -11,71 +10,85 @@ import {
     unsafeTypeReference,
 } from "@flock/ast";
 
-import { source } from "../parser";
+import { Parser } from "../parser";
 
 describe("genericTypeEliminator", () => {
-    const parser = peggy.generate(source, {
-        allowedStartRules: ["genericTypeEliminator"],
-    });
+    const parser = new Parser("genericTypeEliminator");
 
     it("parses the generic type eliminator on a reference with no arguments", () => {
-        const actual = parser.parse("(Foo)");
-        const expected = genericTypeEliminator({
-            function: unsafeTypeReference("Foo"),
-            arguments: [],
-        });
+        const ast = parser.parse("(Foo)");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(
+            genericTypeEliminator({
+                function: unsafeTypeReference("Foo"),
+                arguments: [],
+            }),
+        );
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses the generic type eliminator on a reference with several arguments", () => {
-        const actual = parser.parse("(Foo Boolean [* Bar String *])");
-        const expected = genericTypeEliminator({
-            function: unsafeTypeReference("Foo"),
-            arguments: [
-                booleanTypeLiteral(undefined),
-                productType([
-                    unsafeTypeReference("Bar"),
-                    stringTypeLiteral(undefined),
-                ]),
-            ],
-        });
+        const ast = parser.parse("(Foo Boolean [* Bar String *])");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(
+            genericTypeEliminator({
+                function: unsafeTypeReference("Foo"),
+                arguments: [
+                    booleanTypeLiteral(undefined),
+                    productType([
+                        unsafeTypeReference("Bar"),
+                        stringTypeLiteral(undefined),
+                    ]),
+                ],
+            }),
+        );
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses the generic type eliminator on a generic type constructor with no arguments", () => {
-        const actual = parser.parse("([^ => Boolean ^])");
-        const expected = genericTypeEliminator({
-            function: genericTypeConstructor({
-                codomainType: booleanTypeLiteral(undefined),
-                domainBindings: [],
+        const ast = parser.parse("([^ => Boolean ^])");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(
+            genericTypeEliminator({
+                function: genericTypeConstructor({
+                    codomainType: booleanTypeLiteral(undefined),
+                    domainBindings: [],
+                }),
+                arguments: [],
             }),
-            arguments: [],
-        });
+        );
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses the generic type eliminator on a generic type constructor with several arguments", () => {
-        const actual = parser.parse(
+        const ast = parser.parse(
             "([^ Foo Bar Baz => Foo ^] [* Boolean String *] Qux Float)",
         );
-        const expected = genericTypeEliminator({
-            function: genericTypeConstructor({
-                codomainType: unsafeTypeReference("Foo"),
-                domainBindings: [
-                    unsafeTypeBinding("Foo"),
-                    unsafeTypeBinding("Bar"),
-                    unsafeTypeBinding("Baz"),
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(
+            genericTypeEliminator({
+                function: genericTypeConstructor({
+                    codomainType: unsafeTypeReference("Foo"),
+                    domainBindings: [
+                        unsafeTypeBinding("Foo"),
+                        unsafeTypeBinding("Bar"),
+                        unsafeTypeBinding("Baz"),
+                    ],
+                }),
+                arguments: [
+                    productType([
+                        booleanTypeLiteral(undefined),
+                        stringTypeLiteral(undefined),
+                    ]),
+                    unsafeTypeReference("Qux"),
+                    floatTypeLiteral(undefined),
                 ],
             }),
-            arguments: [
-                productType([
-                    booleanTypeLiteral(undefined),
-                    stringTypeLiteral(undefined),
-                ]),
-                unsafeTypeReference("Qux"),
-                floatTypeLiteral(undefined),
-            ],
-        });
+        );
         expect(actual).toStrictEqual(expected);
     });
 });

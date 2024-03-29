@@ -1,31 +1,31 @@
 // # Flock Language Grammar Specification
 {{
-    const ast = require('@flock/ast');
+    const flockAst = require('@flock/ast');
 
-    const nodes = [];
+    const { ast } = options;
 }}
 
 // ## Source
 source
     = library
     {
-        return nodes;
+        return ast;
     }
 
 // ## Library
 library
     = value:(typeDefinition / termDefinition)|..,_*| _*
     {
-        const termDefinitions = value.filter(ast.isSpecificNode('termDefinition'));
-        const typeDefinitions = value.filter(ast.isSpecificNode('typeDefinition'));
+        const termDefinitions = value.filter(ref => ref.type === 'termDefinition');
+        const typeDefinitions = value.filter(ref => ref.type === 'typeDefinition');
         const data = {
             termDefinitions,
             typeDefinitions,
         };
 
-        const node = ast.library(data);
-        nodes.push(node);
-        return node;
+        const node = flockAst.library(data);
+        options.ast.addNode(node);;
+        return flockAst.ref(node);
     }
 
 // ## Structural Elements
@@ -46,9 +46,9 @@ booleanTypeLiteralKeyword
 booleanTypeLiteral
     = booleanTypeLiteralKeyword
     {
-        const node = ast.booleanTypeLiteral(undefined);
-        nodes.push(node)
-        return node;
+        const node = flockAst.booleanTypeLiteral(undefined);
+        options.ast.addNode(node);
+        return flockAst.ref(node);
     }
 
 floatTypeLiteralKeyword
@@ -57,9 +57,9 @@ floatTypeLiteralKeyword
 floatTypeLiteral
     = floatTypeLiteralKeyword
     {
-        const node = ast.floatTypeLiteral(undefined);
-        nodes.push(node)
-        return node;
+        const node = flockAst.floatTypeLiteral(undefined);
+        options.ast.addNode(node);
+        return flockAst.ref(node);
     }
 
 integerTypeLiteralKeyword
@@ -68,9 +68,9 @@ integerTypeLiteralKeyword
 integerTypeLiteral
     = integerTypeLiteralKeyword
     {
-        const node = ast.integerTypeLiteral(undefined);
-        nodes.push(node)
-        return node;
+        const node = flockAst.integerTypeLiteral(undefined);
+        options.ast.addNode(node);
+        return flockAst.ref(node);
     }
 
 stringTypeLiteralKeyword
@@ -79,9 +79,9 @@ stringTypeLiteralKeyword
 stringTypeLiteral
     = stringTypeLiteralKeyword
     {
-        const node = ast.stringTypeLiteral(undefined);
-        nodes.push(node)
-        return node;
+        const node = flockAst.stringTypeLiteral(undefined);
+        options.ast.addNode(node);
+        return flockAst.ref(node);
     }
 
 smallTypeLiteral
@@ -96,9 +96,9 @@ largeTypeTypeLiteralKeyword
 largeTypeTypeLiteral
     = largeTypeTypeLiteralKeyword
     {
-        const node = ast.largeTypeTypeLiteral(undefined);
-        nodes.push(node)
-        return node;
+        const node = flockAst.largeTypeTypeLiteral(undefined);
+        options.ast.addNode(node);
+        return flockAst.ref(node);
     }
 
 // ### Type Definition Identifiers and References
@@ -115,17 +115,17 @@ typeNameFormat
 typeBinding
     = data:$(!reservedTypeKeywords typeNameFormat)
     {
-        const node = ast.unsafeTypeBinding(data);
-        nodes.push(node)
-        return node;
+        const node = flockAst.unsafeTypeBinding(data);
+        options.ast.addNode(node);
+        return flockAst.ref(node);
     }
 
 typeReference
     = data:$typeNameFormat
     {
-        const node = ast.unsafeTypeReference(data);
-        nodes.push(node)
-        return node;
+        const node = flockAst.unsafeTypeReference(data);
+        options.ast.addNode(node);
+        return flockAst.ref(node);
     }
 
 // #### Term Literals
@@ -142,35 +142,35 @@ booleanTermLiteral
     )
     {
         const data = value === 'true';
-        const node = ast.booleanTermLiteral(data);
-        nodes.push(node)
-        return node;
+        const node = flockAst.booleanTermLiteral(data);
+        options.ast.addNode(node);
+        return flockAst.ref(node);
     }
 
 floatTermLiteral
     = value:$([0-9]+ "." [0-9]*)
     {
         const data = parseFloat(value);
-        const node = ast.floatTermLiteral(data);
-        nodes.push(node)
-        return node;
+        const node = flockAst.floatTermLiteral(data);
+        options.ast.addNode(node);
+        return flockAst.ref(node);
     }
 
 integerTermLiteral
     = value:[0-9]+
     {
         const data = parseInt(value, 10);
-        const node = ast.unsafeIntegerTermLiteral(data);
-        nodes.push(node)
-        return node;
+        const node = flockAst.unsafeIntegerTermLiteral(data);
+        options.ast.addNode(node);
+        return flockAst.ref(node);
     }
 
 stringTermLiteral
     = '"' data:$[^"]* '"'
     {
-        const node = ast.stringTermLiteral(data);
-        nodes.push(node)
-        return node;
+        const node = flockAst.stringTermLiteral(data);
+        options.ast.addNode(node);
+        return flockAst.ref(node);
     }
 
 termLiteral
@@ -186,9 +186,9 @@ clientKeyword
 clientImplementation
     = clientKeyword
     {
-        const node = ast.clientImplementation(undefined);
-        nodes.push(node)
-        return node;
+        const node = flockAst.clientImplementation(undefined);
+        options.ast.addNode(node);
+        return flockAst.ref(node);
     }
 
 // ### Term Definition Identifiers and References
@@ -203,17 +203,17 @@ termNameFormat
 termBinding
     = data:$(!reservedTermKeywords termNameFormat)
     {
-        const node = ast.unsafeTermBinding(data);
-        nodes.push(node)
-        return node;
+        const node = flockAst.unsafeTermBinding(data);
+        options.ast.addNode(node);
+        return flockAst.ref(node);
     }
 
 termReference
     = data:$termNameFormat
     {
-        const node = ast.unsafeTermReference(data);
-        nodes.push(node)
-        return node;
+        const node = flockAst.unsafeTermReference(data);
+        options.ast.addNode(node);
+        return flockAst.ref(node);
     }
 
 // ### Products (Associative)
@@ -222,9 +222,9 @@ termReference
 productType
     = "[*" _? data:smallType|..,_| _? "*]"
     {
-        const node = ast.productType(data);
-        nodes.push(node)
-        return node;
+        const node = flockAst.productType(data);
+        options.ast.addNode(node);
+        return flockAst.ref(node);
     }
 
 // #### Product Term
@@ -233,9 +233,9 @@ productType
 productTermConstructor
     = "[*" _? data:term|..,_| _? "*]"
     {
-        const node = ast.productTermConstructor(data);
-        nodes.push(node)
-        return node;
+        const node = flockAst.productTermConstructor(data);
+        options.ast.addNode(node);
+        return flockAst.ref(node);
     }
 
 // ##### Eliminator
@@ -244,9 +244,9 @@ productTermEliminator
     = ">" value:[0-9]+
     {
         const data = parseInt(value, 10);
-        const node = ast.unsafeProductTermEliminator(data);
-        nodes.push(node)
-        return node;
+        const node = flockAst.unsafeProductTermEliminator(data);
+        options.ast.addNode(node);
+        return flockAst.ref(node);
     }
 
 // ### Sums (Associative)
@@ -255,9 +255,9 @@ productTermEliminator
 sumType
     = "[+" _? data:smallType|..,_| _? "+]"
     {
-        const node = ast.sumType(data);
-        nodes.push(node)
-        return node;
+        const node = flockAst.sumType(data);
+        options.ast.addNode(node);
+        return flockAst.ref(node);
     }
 
 // #### Sum terms
@@ -267,9 +267,9 @@ sumTermConstructor
     = "<" value:[0-9]+
     {
         const data = parseInt(value, 10);
-        const node = ast.unsafeSumTermConstructor(data);
-        nodes.push(node)
-        return node;
+        const node = flockAst.unsafeSumTermConstructor(data);
+        options.ast.addNode(node);
+        return flockAst.ref(node);
     }
 
 // ##### Eliminator
@@ -277,9 +277,9 @@ sumTermConstructor
 sumTermEliminator
     = "[+" _? data:(termReference / functionTermConstructor)|..,_| _? "+]"
     {
-        const node = ast.sumTermEliminator(data);
-        nodes.push(node)
-        return node;
+        const node = flockAst.sumTermEliminator(data);
+        options.ast.addNode(node);
+        return flockAst.ref(node);
     }
 
 // ### Functions (Associative)
@@ -294,9 +294,9 @@ functionType
             domains,
         };
 
-        const node = ast.functionType(data);
-        nodes.push(node)
-        return node;
+        const node = flockAst.functionType(data);
+        options.ast.addNode(node);
+        return flockAst.ref(node);
     }
 
 // #### Function Term
@@ -311,9 +311,9 @@ lambdaConstructor
             domainBindings,
         };
 
-        const node = ast.lambdaConstructor(data);
-        nodes.push(node)
-        return node;
+        const node = flockAst.lambdaConstructor(data);
+        options.ast.addNode(node);
+        return flockAst.ref(node);
     }
 
 // Note that the product term constructor is a term instead
@@ -335,9 +335,9 @@ functionTermEliminator
             function: func,
         };
 
-        const node = ast.functionTermEliminator(data);
-        nodes.push(node)
-        return node;
+        const node = flockAst.functionTermEliminator(data);
+        options.ast.addNode(node);
+        return flockAst.ref(node);
     }
 
 // ### Small Types
@@ -361,9 +361,9 @@ genericTypeConstructor
             domainBindings,
         };
 
-        const node = ast.genericTypeConstructor(data);
-        nodes.push(node)
-        return node;
+        const node = flockAst.genericTypeConstructor(data);
+        options.ast.addNode(node);
+        return flockAst.ref(node);
     }
 
 // #### Eliminator
@@ -377,9 +377,9 @@ genericTypeEliminator
             function: func,
         };
 
-        const node = ast.genericTypeEliminator(data);
-        nodes.push(node)
-        return node;
+        const node = flockAst.genericTypeEliminator(data);
+        options.ast.addNode(node);
+        return flockAst.ref(node);
     }
 
 // ### Types
@@ -408,9 +408,9 @@ typeDefinition
             type,
         };
 
-        const node = ast.typeDefinition(data);
-        nodes.push(node)
-        return node;
+        const node = flockAst.typeDefinition(data);
+        options.ast.addNode(node);
+        return flockAst.ref(node);
     }
 
 // ### Term Definitions
@@ -426,8 +426,8 @@ termDefinition
             type,
         };
 
-        const node = ast.termDefinition(data);
-        nodes.push(node)
-        return node;
+        const node = flockAst.termDefinition(data);
+        options.ast.addNode(node);
+        return flockAst.ref(node);
     }
 

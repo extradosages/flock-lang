@@ -1,29 +1,31 @@
-import * as peggy from "peggy";
+import { anonymize, unsafeTypeReference } from "@flock/ast";
 
-import { unsafeTypeReference } from "@flock/ast";
-
-import { source } from "../parser";
+import { Parser } from "../parser";
 
 describe("typeReference", () => {
-    const parser = peggy.generate(source, {
-        allowedStartRules: ["typeReference"],
-    });
+    const parser = new Parser("typeReference");
 
     it("parses PascalCase identifiers", () => {
-        const actual = parser.parse("FooBar");
-        const expected = unsafeTypeReference("FooBar");
+        const ast = parser.parse("FooBar");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(unsafeTypeReference("FooBar"));
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses identifiers with hyphens in tail positions", () => {
-        const actual = parser.parse("Foo-Bar");
-        const expected = unsafeTypeReference("Foo-Bar");
+        const ast = parser.parse("Foo-Bar");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(unsafeTypeReference("Foo-Bar"));
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses identifiers with numerals in tail positions", () => {
-        const actual = parser.parse("Foo1Bar");
-        const expected = unsafeTypeReference("Foo1Bar");
+        const ast = parser.parse("Foo1Bar");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(unsafeTypeReference("Foo1Bar"));
         expect(actual).toStrictEqual(expected);
     });
 

@@ -1,29 +1,31 @@
-import * as peggy from "peggy";
+import { anonymize, unsafeTypeBinding } from "@flock/ast";
 
-import { unsafeTypeBinding } from "@flock/ast";
-
-import { source } from "../parser";
+import { Parser } from "../parser";
 
 describe("typeBinding", () => {
-    const parser = peggy.generate(source, {
-        allowedStartRules: ["typeBinding"],
-    });
+    const parser = new Parser("typeBinding");
 
     it("parses PascalCase identifiers", () => {
-        const actual = parser.parse("FooBar");
-        const expected = unsafeTypeBinding("FooBar");
+        const ast = parser.parse("FooBar");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(unsafeTypeBinding("FooBar"));
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses identifiers with hyphens in tail positions", () => {
-        const actual = parser.parse("Foo-Bar");
-        const expected = unsafeTypeBinding("Foo-Bar");
+        const ast = parser.parse("Foo-Bar");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(unsafeTypeBinding("Foo-Bar"));
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses identifiers with numerals in tail positions", () => {
-        const actual = parser.parse("Foo1Bar");
-        const expected = unsafeTypeBinding("Foo1Bar");
+        const ast = parser.parse("Foo1Bar");
+
+        const actual = anonymize(ast.denormalizedRoot());
+        const expected = anonymize(unsafeTypeBinding("Foo1Bar"));
         expect(actual).toStrictEqual(expected);
     });
 
