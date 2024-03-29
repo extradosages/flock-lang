@@ -1,4 +1,5 @@
 import {
+    DenormalizedAst,
     booleanTermLiteral,
     lambdaConstructor,
     functionTermEliminator,
@@ -8,7 +9,6 @@ import {
     sumTermEliminator,
     unsafeTermBinding,
     unsafeTermReference,
-    anonymize,
 } from "@flock/ast";
 import { Parser } from "../parser";
 
@@ -16,97 +16,117 @@ describe("productTermConstructor", () => {
     const parser = new Parser("productTermConstructor");
 
     it("parses an empty product", () => {
-        const ast = parser.parse("[**]");
+        const actual = parser.parse("[**]").root().denormalize().anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(productTermConstructor([]));
+        const expected = new DenormalizedAst(
+            productTermConstructor([]),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a product with a single term literal", () => {
-        const ast = parser.parse("[* true *]");
+        const actual = parser
+            .parse("[* true *]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             productTermConstructor([booleanTermLiteral(true)]),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a product with a single term reference", () => {
-        const ast = parser.parse("[* foo *]");
+        const actual = parser
+            .parse("[* foo *]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             productTermConstructor([unsafeTermReference("foo")]),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a product with a single product term constructor", () => {
-        const ast = parser.parse("[* [* true *] *]");
+        const actual = parser
+            .parse("[* [* true *] *]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             productTermConstructor([
                 productTermConstructor([booleanTermLiteral(true)]),
             ]),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a product with a single sum term eliminator", () => {
-        const ast = parser.parse("[* [+ foo bar +] *]");
+        const actual = parser
+            .parse("[* [+ foo bar +] *]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             productTermConstructor([
                 sumTermEliminator([
                     unsafeTermReference("foo"),
                     unsafeTermReference("bar"),
                 ]),
             ]),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a product with a single function term constructor", () => {
-        const ast = parser.parse("[* [^ foo -> bar ^] *]");
+        const actual = parser
+            .parse("[* [^ foo -> bar ^] *]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             productTermConstructor([
                 lambdaConstructor({
                     codomainTerm: unsafeTermReference("bar"),
                     domainBindings: [unsafeTermBinding("foo")],
                 }),
             ]),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a product with a single function term eliminator", () => {
-        const ast = parser.parse("[* (foo true) *]");
+        const actual = parser
+            .parse("[* (foo true) *]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             productTermConstructor([
                 functionTermEliminator({
                     function: unsafeTermReference("foo"),
                     arguments: [booleanTermLiteral(true)],
                 }),
             ]),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a product with several components", () => {
-        const ast = parser.parse(
-            '[* true foo [* true *] [^ bar -> "hello" ^] *]',
-        );
+        const actual = parser
+            .parse('[* true foo [* true *] [^ bar -> "hello" ^] *]')
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             productTermConstructor([
                 booleanTermLiteral(true),
                 unsafeTermReference("foo"),
@@ -116,7 +136,7 @@ describe("productTermConstructor", () => {
                     domainBindings: [unsafeTermBinding("bar")],
                 }),
             ]),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 });
@@ -125,18 +145,20 @@ describe("productTermEliminator", () => {
     const parser = new Parser("productTermEliminator");
 
     it("parses a product term eliminator with an index of <0`", () => {
-        const ast = parser.parse(">0");
+        const actual = parser.parse(">0").root().denormalize().anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(unsafeProductTermEliminator(0));
+        const expected = new DenormalizedAst(
+            unsafeProductTermEliminator(0),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a product term eliminator with an index of <1`", () => {
-        const ast = parser.parse(">1");
+        const actual = parser.parse(">1").root().denormalize().anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(unsafeProductTermEliminator(1));
+        const expected = new DenormalizedAst(
+            unsafeProductTermEliminator(1),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 

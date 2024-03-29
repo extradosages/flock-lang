@@ -1,5 +1,5 @@
 import {
-    anonymize,
+    DenormalizedAst,
     booleanTypeLiteral,
     floatTypeLiteral,
     genericTypeConstructor,
@@ -16,23 +16,25 @@ describe("genericTypeEliminator", () => {
     const parser = new Parser("genericTypeEliminator");
 
     it("parses the generic type eliminator on a reference with no arguments", () => {
-        const ast = parser.parse("(Foo)");
+        const actual = parser.parse("(Foo)").root().denormalize().anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             genericTypeEliminator({
                 function: unsafeTypeReference("Foo"),
                 arguments: [],
             }),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses the generic type eliminator on a reference with several arguments", () => {
-        const ast = parser.parse("(Foo Boolean [* Bar String *])");
+        const actual = parser
+            .parse("(Foo Boolean [* Bar String *])")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             genericTypeEliminator({
                 function: unsafeTypeReference("Foo"),
                 arguments: [
@@ -43,15 +45,18 @@ describe("genericTypeEliminator", () => {
                     ]),
                 ],
             }),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses the generic type eliminator on a generic type constructor with no arguments", () => {
-        const ast = parser.parse("([^ => Boolean ^])");
+        const actual = parser
+            .parse("([^ => Boolean ^])")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             genericTypeEliminator({
                 function: genericTypeConstructor({
                     codomainType: booleanTypeLiteral(undefined),
@@ -59,17 +64,18 @@ describe("genericTypeEliminator", () => {
                 }),
                 arguments: [],
             }),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses the generic type eliminator on a generic type constructor with several arguments", () => {
-        const ast = parser.parse(
-            "([^ Foo Bar Baz => Foo ^] [* Boolean String *] Qux Float)",
-        );
+        const actual = parser
+            .parse("([^ Foo Bar Baz => Foo ^] [* Boolean String *] Qux Float)")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             genericTypeEliminator({
                 function: genericTypeConstructor({
                     codomainType: unsafeTypeReference("Foo"),
@@ -88,7 +94,7 @@ describe("genericTypeEliminator", () => {
                     floatTypeLiteral(undefined),
                 ],
             }),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 });

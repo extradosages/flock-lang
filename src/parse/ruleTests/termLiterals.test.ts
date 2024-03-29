@@ -1,5 +1,5 @@
 import {
-    anonymize,
+    DenormalizedAst,
     booleanTermLiteral,
     floatTermLiteral,
     stringTermLiteral,
@@ -12,18 +12,20 @@ describe("booleanTermLiteral", () => {
     const parser = new Parser("booleanTermLiteral");
 
     it("parses `true`", () => {
-        const ast = parser.parse("true");
+        const actual = parser.parse("true").root().denormalize().anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(booleanTermLiteral(true));
+        const expected = new DenormalizedAst(
+            booleanTermLiteral(true),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses `false`", () => {
-        const ast = parser.parse("false");
+        const actual = parser.parse("false").root().denormalize().anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(booleanTermLiteral(false));
+        const expected = new DenormalizedAst(
+            booleanTermLiteral(false),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
@@ -44,18 +46,16 @@ describe("floatTermLiteral", () => {
     const parser = new Parser("floatTermLiteral");
 
     it("parses <1.0`", () => {
-        const ast = parser.parse("1.0");
+        const actual = parser.parse("1.0").root().denormalize().anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(floatTermLiteral(1.0));
+        const expected = new DenormalizedAst(floatTermLiteral(1.0)).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses <1.`", () => {
-        const ast = parser.parse("1.");
+        const actual = parser.parse("1.").root().denormalize().anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(floatTermLiteral(1.0));
+        const expected = new DenormalizedAst(floatTermLiteral(1.0)).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
@@ -72,10 +72,11 @@ describe("integerTermLiteral", () => {
     const parser = new Parser("integerTermLiteral");
 
     it("parses <1`", () => {
-        const ast = parser.parse("1");
+        const actual = parser.parse("1").root().denormalize().anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(unsafeIntegerTermLiteral(1));
+        const expected = new DenormalizedAst(
+            unsafeIntegerTermLiteral(1),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
@@ -88,26 +89,37 @@ describe("stringTermLiteral", () => {
     const parser = new Parser("stringTermLiteral");
 
     it('parses `"foo"`', () => {
-        const ast = parser.parse('"foo"');
+        const actual = parser.parse('"foo"').root().denormalize().anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(stringTermLiteral("foo"));
+        const expected = new DenormalizedAst(
+            stringTermLiteral("foo"),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it('parses `"foo bar"`', () => {
-        const ast = parser.parse('"foo bar"');
+        const actual = parser
+            .parse('"foo bar"')
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(stringTermLiteral("foo bar"));
+        const expected = new DenormalizedAst(
+            stringTermLiteral("foo bar"),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it('parses `"foo 1234 quod LIBER"`', () => {
-        const ast = parser.parse('"foo 1234 quod LIBER"');
+        const actual = parser
+            .parse('"foo 1234 quod LIBER"')
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(stringTermLiteral("foo 1234 quod LIBER"));
+        const expected = new DenormalizedAst(
+            stringTermLiteral("foo 1234 quod LIBER"),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 

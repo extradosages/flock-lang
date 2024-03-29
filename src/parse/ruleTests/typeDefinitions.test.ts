@@ -1,5 +1,5 @@
 import {
-    anonymize,
+    DenormalizedAst,
     booleanTypeLiteral,
     functionType,
     genericTypeConstructor,
@@ -17,23 +17,29 @@ describe("typeDefinition", () => {
     const parser = new Parser("typeDefinition");
 
     it("parses a type definition with a type literal body", () => {
-        const ast = parser.parse("deftype Foo:Type Boolean");
+        const actual = parser
+            .parse("deftype Foo:Type Boolean")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             typeDefinition({
                 binding: unsafeTypeBinding("Foo"),
                 type: booleanTypeLiteral(undefined),
             }),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a type definition with a type composite body", () => {
-        const ast = parser.parse("deftype Foo:Type [* Boolean String *]");
+        const actual = parser
+            .parse("deftype Foo:Type [* Boolean String *]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             typeDefinition({
                 binding: unsafeTypeBinding("Foo"),
                 type: productType([
@@ -41,15 +47,18 @@ describe("typeDefinition", () => {
                     stringTypeLiteral(undefined),
                 ]),
             }),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a type definition with a function type body", () => {
-        const ast = parser.parse("deftype Foo:Type [^ Boolean -> String ^]");
+        const actual = parser
+            .parse("deftype Foo:Type [^ Boolean -> String ^]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             typeDefinition({
                 binding: unsafeTypeBinding("Foo"),
                 type: functionType({
@@ -57,17 +66,18 @@ describe("typeDefinition", () => {
                     domains: [booleanTypeLiteral(undefined)],
                 }),
             }),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a type definition with a generic type constructor body", () => {
-        const ast = parser.parse(
-            "deftype Foo:Type [^ Bar => [^ Bar -> Boolean ^] ^]",
-        );
+        const actual = parser
+            .parse("deftype Foo:Type [^ Bar => [^ Bar -> Boolean ^] ^]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             typeDefinition({
                 binding: unsafeTypeBinding("Foo"),
                 type: genericTypeConstructor({
@@ -78,15 +88,18 @@ describe("typeDefinition", () => {
                     domainBindings: [unsafeTypeBinding("Bar")],
                 }),
             }),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a type definition with a generic type eliminator body", () => {
-        const ast = parser.parse("deftype Foo:Type (Bar Boolean)");
+        const actual = parser
+            .parse("deftype Foo:Type (Bar Boolean)")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             typeDefinition({
                 binding: unsafeTypeBinding("Foo"),
                 type: genericTypeEliminator({
@@ -94,7 +107,7 @@ describe("typeDefinition", () => {
                     function: unsafeTypeReference("Bar"),
                 }),
             }),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 });

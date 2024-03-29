@@ -1,5 +1,5 @@
 import {
-    anonymize,
+    DenormalizedAst,
     booleanTypeLiteral,
     floatTypeLiteral,
     integerTypeLiteral,
@@ -13,10 +13,11 @@ describe("booleanTypeLiteral", () => {
     const parser = new Parser("booleanTypeLiteral");
 
     it("parses `Boolean`", () => {
-        const ast = parser.parse("Boolean");
+        const actual = parser.parse("Boolean").root().denormalize().anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(booleanTypeLiteral(undefined));
+        const expected = new DenormalizedAst(
+            booleanTypeLiteral(undefined),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 });
@@ -25,10 +26,11 @@ describe("floatTypeLiteral", () => {
     const parser = new Parser("floatTypeLiteral");
 
     it("parses `Float`", () => {
-        const ast = parser.parse("Float");
+        const actual = parser.parse("Float").root().denormalize().anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(floatTypeLiteral(undefined));
+        const expected = new DenormalizedAst(
+            floatTypeLiteral(undefined),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 });
@@ -37,10 +39,11 @@ describe("integerTypeLiteral", () => {
     const parser = new Parser("integerTypeLiteral");
 
     it("parses `Integer`", () => {
-        const ast = parser.parse("Integer");
+        const actual = parser.parse("Integer").root().denormalize().anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(integerTypeLiteral(undefined));
+        const expected = new DenormalizedAst(
+            integerTypeLiteral(undefined),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 });
@@ -49,10 +52,11 @@ describe("stringTypeLiteral", () => {
     const parser = new Parser("stringTypeLiteral");
 
     it("parses `String`", () => {
-        const ast = parser.parse("String");
+        const actual = parser.parse("String").root().denormalize().anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(stringTypeLiteral(undefined));
+        const expected = new DenormalizedAst(
+            stringTypeLiteral(undefined),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 });
@@ -61,10 +65,11 @@ describe("largeTypeTypeLiteral", () => {
     const parser = new Parser("largeTypeTypeLiteral");
 
     it("parses `Type`", () => {
-        const ast = parser.parse("Type");
+        const actual = parser.parse("Type").root().denormalize().anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(largeTypeTypeLiteral(undefined));
+        const expected = new DenormalizedAst(
+            largeTypeTypeLiteral(undefined),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 });

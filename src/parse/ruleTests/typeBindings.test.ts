@@ -1,4 +1,4 @@
-import { anonymize, unsafeTypeBinding } from "@flock/ast";
+import { DenormalizedAst, unsafeTypeBinding } from "@flock/ast";
 
 import { Parser } from "../parser";
 
@@ -6,26 +6,29 @@ describe("typeBinding", () => {
     const parser = new Parser("typeBinding");
 
     it("parses PascalCase identifiers", () => {
-        const ast = parser.parse("FooBar");
+        const actual = parser.parse("FooBar").root().denormalize().anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(unsafeTypeBinding("FooBar"));
+        const expected = new DenormalizedAst(
+            unsafeTypeBinding("FooBar"),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses identifiers with hyphens in tail positions", () => {
-        const ast = parser.parse("Foo-Bar");
+        const actual = parser.parse("Foo-Bar").root().denormalize().anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(unsafeTypeBinding("Foo-Bar"));
+        const expected = new DenormalizedAst(
+            unsafeTypeBinding("Foo-Bar"),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses identifiers with numerals in tail positions", () => {
-        const ast = parser.parse("Foo1Bar");
+        const actual = parser.parse("Foo1Bar").root().denormalize().anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(unsafeTypeBinding("Foo1Bar"));
+        const expected = new DenormalizedAst(
+            unsafeTypeBinding("Foo1Bar"),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 

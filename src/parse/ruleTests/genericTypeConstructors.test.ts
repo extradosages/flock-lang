@@ -1,5 +1,5 @@
 import {
-    anonymize,
+    DenormalizedAst,
     booleanTypeLiteral,
     genericTypeConstructor,
     productType,
@@ -15,10 +15,13 @@ describe("genericTypeConstructor", () => {
     const parser = new Parser("genericTypeConstructor");
 
     it("parses a generic type constructor with only a codomain type", () => {
-        const ast = parser.parse("[^ => [* Boolean String *] ^]");
+        const actual = parser
+            .parse("[^ => [* Boolean String *] ^]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             genericTypeConstructor({
                 codomainType: productType([
                     booleanTypeLiteral(undefined),
@@ -26,15 +29,18 @@ describe("genericTypeConstructor", () => {
                 ]),
                 domainBindings: [],
             }),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a generic type constructor with a single domain binding", () => {
-        const ast = parser.parse("[^ Foo => [+ Foo String +] ^]");
+        const actual = parser
+            .parse("[^ Foo => [+ Foo String +] ^]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             genericTypeConstructor({
                 codomainType: sumType([
                     unsafeTypeReference("Foo"),
@@ -42,15 +48,18 @@ describe("genericTypeConstructor", () => {
                 ]),
                 domainBindings: [unsafeTypeBinding("Foo")],
             }),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a generic type constructor with several domain bindings", () => {
-        const ast = parser.parse("[^ Foo Bar Baz => Baz ^]");
+        const actual = parser
+            .parse("[^ Foo Bar Baz => Baz ^]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             genericTypeConstructor({
                 codomainType: unsafeTypeReference("Baz"),
                 domainBindings: [
@@ -59,7 +68,7 @@ describe("genericTypeConstructor", () => {
                     unsafeTypeBinding("Baz"),
                 ],
             }),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 

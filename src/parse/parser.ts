@@ -1,4 +1,4 @@
-import { Ast, AstNodeUnknown } from "@flock/ast";
+import { AstNodeTypeUnknown, NormalizedAst } from "@flock/ast";
 import { readFileSync } from "fs";
 
 import * as peggy from "peggy";
@@ -6,17 +6,20 @@ import * as peggy from "peggy";
 const sourcePath = "./grammar/library.pegjs";
 export const source = readFileSync(sourcePath, "utf8");
 
-export class Parser {
+export class Parser<RootNodeType extends AstNodeTypeUnknown = "library"> {
+    rootNodeType: RootNodeType;
     private parser: peggy.Parser;
 
-    constructor(rule?: string) {
-        rule = rule ?? "source";
-        this.parser = peggy.generate(source, { allowedStartRules: [rule] });
+    constructor(rule?: RootNodeType) {
+        const rootNodeType = rule ?? ("library" as RootNodeType);
+        this.rootNodeType = rootNodeType;
+        this.parser = peggy.generate(source, {
+            allowedStartRules: [rootNodeType],
+        });
     }
 
-    parse(input: string, rule?: string) {
-        rule = rule ?? "source";
-        const ast = new Ast();
+    parse(input: string): NormalizedAst<RootNodeType> {
+        const ast = new NormalizedAst(this.rootNodeType);
         this.parser.parse(input, { ast });
         return ast;
     }

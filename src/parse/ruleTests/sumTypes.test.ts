@@ -1,4 +1,5 @@
 import {
+    DenormalizedAst,
     booleanTypeLiteral,
     functionType,
     genericTypeEliminator,
@@ -6,7 +7,6 @@ import {
     stringTypeLiteral,
     productType,
     unsafeTypeReference,
-    anonymize,
 } from "@flock/ast";
 
 import { Parser } from "../parser";
@@ -15,110 +15,151 @@ describe("sumType", () => {
     const parser = new Parser("sumType");
 
     it("parses the empty sum type", () => {
-        const ast = parser.parse("[++]");
+        const actual = parser.parse("[++]").root().denormalize().anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(sumType([]));
+        const expected = new DenormalizedAst(sumType([])).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a sum type with one small literal type", () => {
-        const ast = parser.parse("[+ Boolean +]");
+        const actual = parser
+            .parse("[+ Boolean +]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(sumType([booleanTypeLiteral(undefined)]));
+        const expected = new DenormalizedAst(
+            sumType([booleanTypeLiteral(undefined)]),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a sum type with several small literal types", () => {
-        const ast = parser.parse("[+ Boolean String Boolean +]");
+        const actual = parser
+            .parse("[+ Boolean String Boolean +]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             sumType([
                 booleanTypeLiteral(undefined),
                 stringTypeLiteral(undefined),
                 booleanTypeLiteral(undefined),
             ]),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a sum type with a single type reference", () => {
-        const ast = parser.parse("[+ Foo +]");
+        const actual = parser
+            .parse("[+ Foo +]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(sumType([unsafeTypeReference("Foo")]));
+        const expected = new DenormalizedAst(
+            sumType([unsafeTypeReference("Foo")]),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a sum type with several type references", () => {
-        const ast = parser.parse("[+ Foo Bar Baz Qux +]");
+        const actual = parser
+            .parse("[+ Foo Bar Baz Qux +]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             sumType([
                 unsafeTypeReference("Foo"),
                 unsafeTypeReference("Bar"),
                 unsafeTypeReference("Baz"),
                 unsafeTypeReference("Qux"),
             ]),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a sum type with a single nested sum type", () => {
-        const ast = parser.parse("[+ [++] +]");
+        const actual = parser
+            .parse("[+ [++] +]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(sumType([sumType([])]));
+        const expected = new DenormalizedAst(
+            sumType([sumType([])]),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a sum type with several nested sum types", () => {
-        const ast = parser.parse("[+ [++] [++] +]");
+        const actual = parser
+            .parse("[+ [++] [++] +]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(sumType([sumType([]), sumType([])]));
+        const expected = new DenormalizedAst(
+            sumType([sumType([]), sumType([])]),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a sum type with a single nested product type", () => {
-        const ast = parser.parse("[+ [**] +]");
+        const actual = parser
+            .parse("[+ [**] +]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(sumType([productType([])]));
+        const expected = new DenormalizedAst(
+            sumType([productType([])]),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a sum type with several nested product types", () => {
-        const ast = parser.parse("[+ [**] [**] +]");
+        const actual = parser
+            .parse("[+ [**] [**] +]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(sumType([productType([]), productType([])]));
+        const expected = new DenormalizedAst(
+            sumType([productType([]), productType([])]),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a sum type with a single nested function type", () => {
-        const ast = parser.parse("[+ [^ -> Boolean ^] +]");
+        const actual = parser
+            .parse("[+ [^ -> Boolean ^] +]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             sumType([
                 functionType({
                     codomain: booleanTypeLiteral(undefined),
                     domains: [],
                 }),
             ]),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a sum type with several nested function types", () => {
-        const ast = parser.parse("[+ [^ -> Boolean ^] [^  -> String ^] +]");
+        const actual = parser
+            .parse("[+ [^ -> Boolean ^] [^  -> String ^] +]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             sumType([
                 functionType({
                     codomain: booleanTypeLiteral(undefined),
@@ -129,30 +170,36 @@ describe("sumType", () => {
                     domains: [],
                 }),
             ]),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a sum type with a single generic type eliminator", () => {
-        const ast = parser.parse("[+ (Foo String) +]");
+        const actual = parser
+            .parse("[+ (Foo String) +]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             sumType([
                 genericTypeEliminator({
                     function: unsafeTypeReference("Foo"),
                     arguments: [stringTypeLiteral(undefined)],
                 }),
             ]),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a sum type with several generic type eliminators", () => {
-        const ast = parser.parse("[+ (Foo String) (Foo Boolean) +]");
+        const actual = parser
+            .parse("[+ (Foo String) (Foo Boolean) +]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             sumType([
                 genericTypeEliminator({
                     function: unsafeTypeReference("Foo"),
@@ -163,17 +210,18 @@ describe("sumType", () => {
                     arguments: [booleanTypeLiteral(undefined)],
                 }),
             ]),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a complicated sum type", () => {
-        const ast = parser.parse(
-            "[+ String [+ [^ -> Boolean ^] Foo +] (Foo Boolean) [**] +]",
-        );
+        const actual = parser
+            .parse("[+ String [+ [^ -> Boolean ^] Foo +] (Foo Boolean) [**] +]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             sumType([
                 stringTypeLiteral(undefined),
                 sumType([
@@ -189,7 +237,7 @@ describe("sumType", () => {
                 }),
                 productType([]),
             ]),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 });

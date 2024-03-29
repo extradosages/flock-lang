@@ -1,5 +1,5 @@
 import {
-    anonymize,
+    DenormalizedAst,
     booleanTypeLiteral,
     floatTypeLiteral,
     functionType,
@@ -15,36 +15,45 @@ describe("functionType", () => {
     const parser = new Parser("functionType");
 
     it("parses a function type with only a type literal codomain", () => {
-        const ast = parser.parse("[^ -> Boolean ^]");
+        const actual = parser
+            .parse("[^ -> Boolean ^]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             functionType({
                 codomain: booleanTypeLiteral(undefined),
                 domains: [],
             }),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a function type with only a type reference codomain", () => {
-        const ast = parser.parse("[^ -> Foo ^]");
+        const actual = parser
+            .parse("[^ -> Foo ^]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             functionType({
                 codomain: unsafeTypeReference("Foo"),
                 domains: [],
             }),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a function type with only a product type codomain", () => {
-        const ast = parser.parse("[^ -> [* Boolean Foo *] ^]");
+        const actual = parser
+            .parse("[^ -> [* Boolean Foo *] ^]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             functionType({
                 codomain: productType([
                     booleanTypeLiteral(undefined),
@@ -52,15 +61,18 @@ describe("functionType", () => {
                 ]),
                 domains: [],
             }),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a function type with only a sum type codomain", () => {
-        const ast = parser.parse("[^ -> [+ Boolean Foo +] ^]");
+        const actual = parser
+            .parse("[^ -> [+ Boolean Foo +] ^]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             functionType({
                 codomain: sumType([
                     booleanTypeLiteral(undefined),
@@ -68,17 +80,18 @@ describe("functionType", () => {
                 ]),
                 domains: [],
             }),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a function type with only a function type codomain", () => {
-        const ast = parser.parse(
-            "[^ -> [^ Boolean -> [+ String String +] ^] ^]",
-        );
+        const actual = parser
+            .parse("[^ -> [^ Boolean -> [+ String String +] ^] ^]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             functionType({
                 codomain: functionType({
                     codomain: sumType([
@@ -89,17 +102,18 @@ describe("functionType", () => {
                 }),
                 domains: [],
             }),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a function type with several type literal domains", () => {
-        const ast = parser.parse(
-            "[^ Boolean Boolean String -> [* Foo String *] ^]",
-        );
+        const actual = parser
+            .parse("[^ Boolean Boolean String -> [* Foo String *] ^]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             functionType({
                 codomain: productType([
                     unsafeTypeReference("Foo"),
@@ -111,15 +125,18 @@ describe("functionType", () => {
                     stringTypeLiteral(undefined),
                 ],
             }),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a function type with several type reference domains", () => {
-        const ast = parser.parse("[^ Foo Foo Bar -> [* Baz Bar *] ^]");
+        const actual = parser
+            .parse("[^ Foo Foo Bar -> [* Baz Bar *] ^]")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             functionType({
                 codomain: productType([
                     unsafeTypeReference("Baz"),
@@ -131,17 +148,20 @@ describe("functionType", () => {
                     unsafeTypeReference("Bar"),
                 ],
             }),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a function type with several product type, sum type, and function type domains", () => {
-        const ast = parser.parse(
-            "[^ [* Foo String *] [+ Boolean +] [^ Boolean -> [+ String Bar +] ^] -> Float ^]",
-        );
+        const actual = parser
+            .parse(
+                "[^ [* Foo String *] [+ Boolean +] [^ Boolean -> [+ String Bar +] ^] -> Float ^]",
+            )
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             functionType({
                 codomain: floatTypeLiteral(undefined),
                 domains: [
@@ -159,7 +179,7 @@ describe("functionType", () => {
                     }),
                 ],
             }),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 });

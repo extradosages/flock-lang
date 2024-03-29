@@ -1,4 +1,4 @@
-import { anonymize, unsafeTermBinding } from "@flock/ast";
+import { DenormalizedAst, unsafeTermBinding } from "@flock/ast";
 
 import { Parser } from "../parser";
 
@@ -6,34 +6,38 @@ describe("termBinding", () => {
     const parser = new Parser("termBinding");
 
     it("parses a camelCase identifier", () => {
-        const ast = parser.parse("fooBar");
+        const actual = parser.parse("fooBar").root().denormalize().anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(unsafeTermBinding("fooBar"));
+        const expected = new DenormalizedAst(
+            unsafeTermBinding("fooBar"),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses an all lower-case identifier", () => {
-        const ast = parser.parse("foo");
+        const actual = parser.parse("foo").root().denormalize().anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(unsafeTermBinding("foo"));
+        const expected = new DenormalizedAst(
+            unsafeTermBinding("foo"),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses an identifier with a hyphen in a tail position", () => {
-        const ast = parser.parse("foo-Bar");
+        const actual = parser.parse("foo-Bar").root().denormalize().anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(unsafeTermBinding("foo-Bar"));
+        const expected = new DenormalizedAst(
+            unsafeTermBinding("foo-Bar"),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses an identifier with numerals in tail positions", () => {
-        const ast = parser.parse("foo-123");
+        const actual = parser.parse("foo-123").root().denormalize().anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(unsafeTermBinding("foo-123"));
+        const expected = new DenormalizedAst(
+            unsafeTermBinding("foo-123"),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 

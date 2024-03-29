@@ -5,13 +5,6 @@
     const { ast } = options;
 }}
 
-// ## Source
-source
-    = library
-    {
-        return ast;
-    }
-
 // ## Library
 library
     = value:(typeDefinition / termDefinition)|..,_*| _*

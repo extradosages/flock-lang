@@ -1,5 +1,5 @@
 import {
-    anonymize,
+    DenormalizedAst,
     booleanTypeLiteral,
     clientImplementation,
     floatTypeLiteral,
@@ -22,32 +22,37 @@ describe("library", () => {
     const parser = new Parser("library");
 
     it("parses an empty library", () => {
-        const ast = parser.parse("");
+        const actual = parser.parse("").root().denormalize().anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             library({ termDefinitions: [], typeDefinitions: [] }),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a library with only newlines", () => {
-        const ast = parser.parse("\n\n\n\n");
+        const actual = parser
+            .parse("\n\n\n\n")
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             library({ termDefinitions: [], typeDefinitions: [] }),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a small library", () => {
-        const ast = parser.parse(
-            "defterm not:[^ Boolean -> Boolean ^] client\ndefterm or:[^ Boolean Boolean -> Boolean ^] [^ left-prop right-prop -> (not (and (not left-prop) (not right-prop))) ^]\ndeftype Number:Type [+ Integer Float +]",
-        );
+        const actual = parser
+            .parse(
+                "defterm not:[^ Boolean -> Boolean ^] client\ndefterm or:[^ Boolean Boolean -> Boolean ^] [^ left-prop right-prop -> (not (and (not left-prop) (not right-prop))) ^]\ndeftype Number:Type [+ Integer Float +]",
+            )
+            .root()
+            .denormalize()
+            .anonymize();
 
-        const actual = anonymize(ast.denormalizedRoot());
-        const expected = anonymize(
+        const expected = new DenormalizedAst(
             library({
                 termDefinitions: [
                     termDefinition({
@@ -113,7 +118,7 @@ describe("library", () => {
                     }),
                 ],
             }),
-        );
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 });
