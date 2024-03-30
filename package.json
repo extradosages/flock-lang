@@ -5,6 +5,7 @@
   },
   "dependencies": {
     "@flock/ast": "link:../ast",
+    "graphology": "^0.25.4",
     "peggy": "^4.0.2",
     "uuid": "^9.0.1"
   },
