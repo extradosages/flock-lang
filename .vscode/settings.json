@@ -9,10 +9,14 @@
         "EdgeǁEdge",
         "Kindǁ",
         "Nodeǁ",
+        "NodeǁData",
         "NodeǁKind",
+        "NodeǁParser",
         "Relationalǁ",
+        "RelationalǁParser",
         "RelationalǁValue",
         "Scalarǁ",
+        "ScalarǁParser",
         "typedash",
         "unenumerated"
     ]
