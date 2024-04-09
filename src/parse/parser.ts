@@ -29,7 +29,6 @@ export class Parser<Kind extends StrongNodeKind = "library"> {
         const root: StrongDenormalizedNode<Kind> = this.#parser.parse(input, {
             flockAst,
         });
-        debugger;
         return new DenormalizedAst(root).normalize();
     }
 }

@@ -14,7 +14,10 @@ describe("productType", () => {
     const parser = new Parser("productType");
 
     it("parses the empty product type", () => {
-        const actual = parser.parse("[**]").denormalize().anonymize();
+        const first = parser.parse("[**]");
+        debugger;
+        const second = first.denormalize();
+        const actual = second.anonymize();
 
         const expected = new DenormalizedAst(
             dProductType({ components: [] }),

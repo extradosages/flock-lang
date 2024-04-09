@@ -182,7 +182,7 @@ productType
     = "[*" _? components:smallType|..,_| _? "*]"
     {
         const data = { components };
-        return options.flockAst.dProductType(components);
+        return options.flockAst.dProductType(data);
     }
 
 // #### Product Term
