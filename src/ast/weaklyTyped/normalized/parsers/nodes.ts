@@ -1,4 +1,5 @@
 import { z } from "zod";
+
 import { idParser } from "../../../id";
 import { WeakNormalizedData } from "../types";
 import { weakNormalizedDataParser } from "./data";

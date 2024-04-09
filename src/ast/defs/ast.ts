@@ -4,19 +4,15 @@
  */
 import { z } from "zod";
 
+import { emptyDataParser, scalarDataParser } from "../common";
 import {
-    weakAstParsers,
-    weakDenormalizedScalarParser,
-    weakNormalizedEmptyParser,
-    weakNormalizedScalarParser,
-    weakNormalizedRelationalParser,
-    weakDenormalizedRelationalParser,
+    parserBundle,
+    weakNormalizedRelationalDataParser,
+    weakDenormalizedRelationalDataParser,
     weakNormalizedNodeParser,
     weakDenormalizedNodeParser,
     weakEdgeParser,
-    weakDenormalizedEmptyParser,
 } from "../weaklyTyped";
-import { WeakAstParsers } from "../weaklyTyped/types";
 
 // Boolean term
 
@@ -24,7 +20,7 @@ const booleanTermKindParser = z.literal("booleanTerm");
 
 type BooleanTermKind = z.infer<typeof booleanTermKindParser>;
 
-const normalizedBooleanTermDataParser = weakNormalizedScalarParser(z.boolean());
+const normalizedBooleanTermDataParser = scalarDataParser(z.boolean());
 
 type NormalizedBooleanTermData = z.infer<
     typeof normalizedBooleanTermDataParser
@@ -45,9 +41,7 @@ type NormalizedBooleanTermEdge = z.infer<
     (typeof normalizedBooleanTermEdgeParsers)[never]
 >;
 
-const denormalizedBooleanTermDataParser = weakDenormalizedScalarParser(
-    z.boolean(),
-);
+const denormalizedBooleanTermDataParser = scalarDataParser(z.boolean());
 
 type DenormalizedBooleanTermDataParser = z.infer<
     typeof denormalizedBooleanTermDataParser
@@ -62,13 +56,11 @@ type DenormalizedBooleanTermNode = z.infer<
     typeof denormalizedBooleanTermNodeParser
 >;
 
-export const booleanTerm = weakAstParsers({
+export const booleanTerm = parserBundle({
     denormalizedData: denormalizedBooleanTermDataParser,
-    denormalizedNode: denormalizedBooleanTermNodeParser,
     kind: booleanTermKindParser,
     normalizedData: normalizedBooleanTermDataParser,
     normalizedEdges: normalizedBooleanTermEdgeParsers,
-    normalizedNode: normalizedBooleanTermNodeParser,
 });
 
 // Boolean type
@@ -77,7 +69,7 @@ const booleanTypeKindParser = z.literal("booleanType");
 
 type BooleanTypeKind = z.infer<typeof booleanTypeKindParser>;
 
-const normalizedBooleanTypeDataParser = weakNormalizedEmptyParser;
+const normalizedBooleanTypeDataParser = emptyDataParser;
 
 type NormalizedBooleanTypeData = z.infer<
     typeof normalizedBooleanTypeDataParser
@@ -98,7 +90,7 @@ type NormalizedBooleanTypeEdge = z.infer<
     (typeof normalizedBooleanTypeEdgeParsers)[never]
 >;
 
-const denormalizedBooleanTypeDataParser = weakDenormalizedEmptyParser;
+const denormalizedBooleanTypeDataParser = emptyDataParser;
 
 const denormalizedBooleanTypeNodeParser = weakDenormalizedNodeParser(
     booleanTypeKindParser,
@@ -109,13 +101,11 @@ type DenormalizedBooleanTypeNode = z.infer<
     typeof denormalizedBooleanTypeNodeParser
 >;
 
-export const booleanType = weakAstParsers({
+export const booleanType = parserBundle({
     denormalizedData: denormalizedBooleanTypeDataParser,
-    denormalizedNode: denormalizedBooleanTypeNodeParser,
     kind: booleanTypeKindParser,
     normalizedData: normalizedBooleanTypeDataParser,
     normalizedEdges: normalizedBooleanTypeEdgeParsers,
-    normalizedNode: normalizedBooleanTypeNodeParser,
 });
 
 // Client implementation
@@ -124,7 +114,7 @@ const clientImplementationKindParser = z.literal("clientImplementation");
 
 type ClientImplementationKind = z.infer<typeof clientImplementationKindParser>;
 
-const normalizedClientImplementationDataParser = weakNormalizedEmptyParser;
+const normalizedClientImplementationDataParser = emptyDataParser;
 
 type NormalizedClientImplementationData = z.infer<
     typeof normalizedClientImplementationDataParser
@@ -145,7 +135,7 @@ type NormalizedClientImplementationEdge = z.infer<
     (typeof normalizedClientImplementationEdgeParsers)[never]
 >;
 
-const denormalizedClientImplementationDataParser = weakDenormalizedEmptyParser;
+const denormalizedClientImplementationDataParser = emptyDataParser;
 
 type DenormalizedClientImplementationData = z.infer<
     typeof denormalizedClientImplementationDataParser
@@ -160,13 +150,11 @@ type DenormalizedClientImplementationNode = z.infer<
     typeof denormalizedClientImplementationNodeParser
 >;
 
-export const clientImplementation = weakAstParsers({
+export const clientImplementation = parserBundle({
     denormalizedData: denormalizedClientImplementationDataParser,
-    denormalizedNode: denormalizedClientImplementationNodeParser,
     kind: clientImplementationKindParser,
     normalizedData: normalizedClientImplementationDataParser,
     normalizedEdges: normalizedClientImplementationEdgeParsers,
-    normalizedNode: normalizedClientImplementationNodeParser,
 });
 
 // Float term
@@ -175,7 +163,7 @@ const floatTermKindParser = z.literal("floatTerm");
 
 type FloatTermKind = z.infer<typeof floatTermKindParser>;
 
-const normalizedFloatTermDataParser = weakNormalizedScalarParser(z.number());
+const normalizedFloatTermDataParser = scalarDataParser(z.number());
 
 type NormalizedFloatTermData = z.infer<typeof normalizedFloatTermDataParser>;
 
@@ -192,9 +180,7 @@ type NormalizedFloatTermEdge = z.infer<
     (typeof normalizedFloatTermEdgeParsers)[never]
 >;
 
-const denormalizedFloatTermDataParser = weakDenormalizedScalarParser(
-    z.number(),
-);
+const denormalizedFloatTermDataParser = scalarDataParser(z.number());
 
 type DenormalizedFloatTermData = z.infer<
     typeof denormalizedFloatTermDataParser
@@ -209,13 +195,11 @@ type DenormalizedFloatTermNode = z.infer<
     typeof denormalizedFloatTermNodeParser
 >;
 
-export const floatTerm = weakAstParsers({
+export const floatTerm = parserBundle({
     denormalizedData: denormalizedFloatTermDataParser,
-    denormalizedNode: denormalizedFloatTermNodeParser,
     kind: floatTermKindParser,
     normalizedData: normalizedFloatTermDataParser,
     normalizedEdges: normalizedFloatTermEdgeParsers,
-    normalizedNode: normalizedFloatTermNodeParser,
 });
 
 // Float type
@@ -224,7 +208,7 @@ const floatTypeKindParser = z.literal("floatType");
 
 type FloatTypeKind = z.infer<typeof floatTypeKindParser>;
 
-const normalizedFloatTypeDataParser = weakNormalizedEmptyParser;
+const normalizedFloatTypeDataParser = emptyDataParser;
 
 type NormalizedFloatTypeData = z.infer<typeof normalizedFloatTypeDataParser>;
 
@@ -241,7 +225,7 @@ type NormalizedFloatTypeEdge = z.infer<
     (typeof normalizedFloatTypeEdgeParsers)[never]
 >;
 
-const denormalizedFloatTypeDataParser = weakDenormalizedEmptyParser;
+const denormalizedFloatTypeDataParser = emptyDataParser;
 
 type DenormalizedFloatTypeData = z.infer<
     typeof denormalizedFloatTypeDataParser
@@ -256,13 +240,11 @@ type DenormalizedFloatTypeNode = z.infer<
     typeof denormalizedFloatTypeNodeParser
 >;
 
-export const floatType = weakAstParsers({
+export const floatType = parserBundle({
     denormalizedData: denormalizedFloatTypeDataParser,
-    denormalizedNode: denormalizedFloatTypeNodeParser,
     kind: floatTypeKindParser,
     normalizedData: normalizedFloatTypeDataParser,
     normalizedEdges: normalizedFloatTypeEdgeParsers,
-    normalizedNode: normalizedFloatTypeNodeParser,
 });
 
 // Function term eliminator
@@ -274,7 +256,7 @@ type FunctionTermEliminatorKind = z.infer<
 >;
 
 const normalizedFunctionTermEliminatorDataParser =
-    weakNormalizedRelationalParser;
+    weakNormalizedRelationalDataParser;
 
 type NormalizedFunctionTermEliminatorData = z.infer<
     typeof normalizedFunctionTermEliminatorDataParser
@@ -319,7 +301,7 @@ type DenormalizedFunctionTermEliminatorData = {
 };
 
 const denormalizedFunctionTermEliminatorDataParser: z.ZodType<DenormalizedFunctionTermEliminatorData> =
-    weakDenormalizedRelationalParser(
+    weakDenormalizedRelationalDataParser(
         z.object({
             arguments: z.array(z.lazy(() => denormalizedTermNodeParser)),
             function: z.lazy(
@@ -340,13 +322,11 @@ const denormalizedFunctionTermEliminatorNodeParser: z.ZodType<DenormalizedFuncti
         denormalizedFunctionTermEliminatorDataParser,
     );
 
-export const functionTermEliminator = weakAstParsers({
+export const functionTermEliminator = parserBundle({
     denormalizedData: denormalizedFunctionTermEliminatorDataParser,
-    denormalizedNode: denormalizedFunctionTermEliminatorNodeParser,
     kind: functionTermEliminatorKindParser,
     normalizedData: normalizedFunctionTermEliminatorDataParser,
     normalizedEdges: normalizedFunctionTermEliminatorEdgeParsers,
-    normalizedNode: normalizedFunctionTermEliminatorNodeParser,
 });
 
 // Function type
@@ -355,7 +335,7 @@ const functionTypeKindParser = z.literal("functionType");
 
 type FunctionTypeKind = z.infer<typeof functionTypeKindParser>;
 
-const normalizedFunctionTypeDataParser = weakNormalizedRelationalParser;
+const normalizedFunctionTypeDataParser = weakNormalizedRelationalDataParser;
 
 type NormalizedFunctionTypeData = z.infer<
     typeof normalizedFunctionTypeDataParser
@@ -398,7 +378,7 @@ type DenormalizedFunctionTypeData = {
 };
 
 const denormalizedFunctionTypeDataParser: z.ZodType<DenormalizedFunctionTypeData> =
-    weakDenormalizedRelationalParser(
+    weakDenormalizedRelationalDataParser(
         z.object({
             codomain: z.lazy(() => denormalizedSmallTypeNodeParser),
             domains: z.array(z.lazy(() => denormalizedSmallTypeNodeParser)),
@@ -417,13 +397,11 @@ const denormalizedFunctionTypeNodeParser: z.ZodType<DenormalizedFunctionTypeNode
         denormalizedFunctionTypeDataParser,
     );
 
-export const functionType = weakAstParsers({
+export const functionType = parserBundle({
     denormalizedData: denormalizedFunctionTypeDataParser,
-    denormalizedNode: denormalizedFunctionTypeNodeParser,
     kind: functionTypeKindParser,
     normalizedData: normalizedFunctionTypeDataParser,
     normalizedEdges: normalizedFunctionTypeEdgeParsers,
-    normalizedNode: normalizedFunctionTypeNodeParser,
 });
 
 // Generic type constructor
@@ -435,7 +413,7 @@ type GenericTypeConstructorKind = z.infer<
 >;
 
 const normalizedGenericTypeConstructorDataParser =
-    weakNormalizedRelationalParser;
+    weakNormalizedRelationalDataParser;
 
 type NormalizedGenericTypeConstructorData = z.infer<
     typeof normalizedGenericTypeConstructorDataParser
@@ -480,7 +458,7 @@ type DenormalizedGenericTypeConstructorData = {
 };
 
 const denormalizedGenericTypeConstructorDataParser: z.ZodType<DenormalizedGenericTypeConstructorData> =
-    weakDenormalizedRelationalParser(
+    weakDenormalizedRelationalDataParser(
         z.object({
             codomainType: z.lazy(() => denormalizedSmallTypeNodeParser),
             domainTypeBindings: z.array(
@@ -501,13 +479,11 @@ const denormalizedGenericTypeConstructorNodeParser: z.ZodType<DenormalizedGeneri
         denormalizedGenericTypeConstructorDataParser,
     );
 
-export const genericTypeConstructor = weakAstParsers({
+export const genericTypeConstructor = parserBundle({
     denormalizedData: denormalizedGenericTypeConstructorDataParser,
-    denormalizedNode: denormalizedGenericTypeConstructorNodeParser,
     kind: genericTypeConstructorKindParser,
     normalizedData: normalizedGenericTypeConstructorDataParser,
     normalizedEdges: normalizedGenericTypeConstructorEdgeParsers,
-    normalizedNode: normalizedGenericTypeConstructorNodeParser,
 });
 
 // Generic type eliminator
@@ -519,7 +495,7 @@ type GenericTypeEliminatorKind = z.infer<
 >;
 
 const normalizedGenericTypeEliminatorDataParser =
-    weakNormalizedRelationalParser;
+    weakNormalizedRelationalDataParser;
 
 type NormalizedGenericTypeEliminatorData = z.infer<
     typeof normalizedGenericTypeEliminatorDataParser
@@ -564,7 +540,7 @@ type DenormalizedGenericTypeEliminatorData = {
 };
 
 const denormalizedGenericTypeEliminatorDataParser: z.ZodType<DenormalizedGenericTypeEliminatorData> =
-    weakDenormalizedRelationalParser(
+    weakDenormalizedRelationalDataParser(
         z.object({
             arguments: z.array(z.lazy(() => denormalizedSmallTypeNodeParser)),
             genericType: z.lazy(() => denormalizedLargeTypeNodeParser),
@@ -583,13 +559,11 @@ const denormalizedGenericTypeEliminatorNodeParser: z.ZodType<DenormalizedGeneric
         denormalizedGenericTypeEliminatorDataParser,
     );
 
-export const genericTypeEliminator = weakAstParsers({
+export const genericTypeEliminator = parserBundle({
     denormalizedData: denormalizedGenericTypeEliminatorDataParser,
-    denormalizedNode: denormalizedGenericTypeEliminatorNodeParser,
     kind: genericTypeEliminatorKindParser,
     normalizedData: normalizedGenericTypeEliminatorDataParser,
     normalizedEdges: normalizedGenericTypeEliminatorEdgeParsers,
-    normalizedNode: normalizedGenericTypeEliminatorNodeParser,
 });
 
 // Integer term
@@ -598,9 +572,7 @@ const integerTermKindParser = z.literal("integerTerm");
 
 type IntegerTermKind = z.infer<typeof integerTermKindParser>;
 
-const normalizedIntegerTermDataParser = weakNormalizedScalarParser(
-    z.number().int(),
-);
+const normalizedIntegerTermDataParser = scalarDataParser(z.number().int());
 
 type NormalizedIntegerTermData = z.infer<
     typeof normalizedIntegerTermDataParser
@@ -621,9 +593,7 @@ type NormalizedIntegerTermEdge = z.infer<
     (typeof normalizedIntegerTermEdgeParsers)[never]
 >;
 
-const denormalizedIntegerTermDataParser = weakDenormalizedScalarParser(
-    z.number().int(),
-);
+const denormalizedIntegerTermDataParser = scalarDataParser(z.number().int());
 
 type DenormalizedIntegerTermData = z.infer<
     typeof denormalizedIntegerTermDataParser
@@ -638,13 +608,11 @@ type DenormalizedIntegerTermNode = z.infer<
     typeof denormalizedIntegerTermNodeParser
 >;
 
-export const integerTerm = weakAstParsers({
+export const integerTerm = parserBundle({
     denormalizedData: denormalizedIntegerTermDataParser,
-    denormalizedNode: denormalizedIntegerTermNodeParser,
     kind: integerTermKindParser,
     normalizedData: normalizedIntegerTermDataParser,
     normalizedEdges: normalizedIntegerTermEdgeParsers,
-    normalizedNode: normalizedIntegerTermNodeParser,
 });
 
 // Integer type
@@ -653,7 +621,7 @@ const integerTypeKindParser = z.literal("integerType");
 
 type IntegerTypeKind = z.infer<typeof integerTypeKindParser>;
 
-const normalizedIntegerTypeDataParser = weakNormalizedEmptyParser;
+const normalizedIntegerTypeDataParser = emptyDataParser;
 
 type NormalizedIntegerTypeData = z.infer<
     typeof normalizedIntegerTypeDataParser
@@ -674,7 +642,7 @@ type NormalizedIntegerTypeEdge = z.infer<
     (typeof normalizedIntegerTypeEdgeParsers)[never]
 >;
 
-const denormalizedIntegerTypeDataParser = weakDenormalizedEmptyParser;
+const denormalizedIntegerTypeDataParser = emptyDataParser;
 
 type DenormalizedIntegerTypeData = z.infer<
     typeof denormalizedIntegerTypeDataParser
@@ -689,13 +657,11 @@ type DenormalizedIntegerTypeNode = z.infer<
     typeof denormalizedIntegerTypeNodeParser
 >;
 
-export const integerType = weakAstParsers({
+export const integerType = parserBundle({
     denormalizedData: denormalizedIntegerTypeDataParser,
-    denormalizedNode: denormalizedIntegerTypeNodeParser,
     kind: integerTypeKindParser,
     normalizedData: normalizedIntegerTypeDataParser,
     normalizedEdges: normalizedIntegerTypeEdgeParsers,
-    normalizedNode: normalizedIntegerTypeNodeParser,
 });
 
 // Lambda constructor
@@ -704,7 +670,8 @@ const lambdaConstructorKindParser = z.literal("lambdaConstructor");
 
 type LambdaConstructorKind = z.infer<typeof lambdaConstructorKindParser>;
 
-const normalizedLambdaConstructorDataParser = weakNormalizedRelationalParser;
+const normalizedLambdaConstructorDataParser =
+    weakNormalizedRelationalDataParser;
 
 type NormalizedLambdaConstructorData = z.infer<
     typeof normalizedLambdaConstructorDataParser
@@ -749,7 +716,7 @@ type DenormalizedLambdaConstructorData = {
 };
 
 const denormalizedLambdaConstructorDataParser: z.ZodType<DenormalizedLambdaConstructorData> =
-    weakDenormalizedRelationalParser(
+    weakDenormalizedRelationalDataParser(
         z.object({
             codomainTerm: z.lazy(() => denormalizedTermNodeParser),
             domainTermBindings: z.array(
@@ -770,13 +737,11 @@ const denormalizedLambdaConstructorNodeParser: z.ZodType<DenormalizedLambdaConst
         denormalizedLambdaConstructorDataParser,
     );
 
-const lambdaConstructor = weakAstParsers({
+export const lambdaConstructor = parserBundle({
     denormalizedData: denormalizedLambdaConstructorDataParser,
-    denormalizedNode: denormalizedLambdaConstructorNodeParser,
     kind: lambdaConstructorKindParser,
     normalizedData: normalizedLambdaConstructorDataParser,
     normalizedEdges: normalizedLambdaConstructorEdgeParsers,
-    normalizedNode: normalizedLambdaConstructorNodeParser,
 });
 
 // Large type type
@@ -785,7 +750,7 @@ const largeTypeTypeKindParser = z.literal("largeTypeType");
 
 type LargeTypeTypeKind = z.infer<typeof largeTypeTypeKindParser>;
 
-const normalizedLargeTypeTypeDataParser = weakNormalizedEmptyParser;
+const normalizedLargeTypeTypeDataParser = emptyDataParser;
 
 type NormalizedLargeTypeTypeData = z.infer<
     typeof normalizedLargeTypeTypeDataParser
@@ -806,7 +771,7 @@ type NormalizedLargeTypeTypeEdge = z.infer<
     (typeof normalizedLargeTypeTypeEdgeParsers)[never]
 >;
 
-const denormalizedLargeTypeTypeDataParser = weakNormalizedEmptyParser;
+const denormalizedLargeTypeTypeDataParser = emptyDataParser;
 
 type DenormalizedLargeTypeTypeData = z.infer<
     typeof denormalizedLargeTypeTypeDataParser
@@ -821,13 +786,11 @@ type DenormalizedLargeTypeTypeNode = z.infer<
     typeof denormalizedLargeTypeTypeNodeParser
 >;
 
-export const largeTypeType = weakAstParsers({
+export const largeTypeType = parserBundle({
     denormalizedData: denormalizedLargeTypeTypeDataParser,
-    denormalizedNode: denormalizedLargeTypeTypeNodeParser,
     kind: largeTypeTypeKindParser,
     normalizedData: normalizedLargeTypeTypeDataParser,
     normalizedEdges: normalizedLargeTypeTypeEdgeParsers,
-    normalizedNode: normalizedLargeTypeTypeNodeParser,
 });
 
 // Library
@@ -836,7 +799,7 @@ const libraryKindParser = z.literal("library");
 
 type LibraryKind = z.infer<typeof libraryKindParser>;
 
-const normalizedLibraryDataParser = weakNormalizedRelationalParser;
+const normalizedLibraryDataParser = weakNormalizedRelationalDataParser;
 
 type NormalizedLibraryData = z.infer<typeof normalizedLibraryDataParser>;
 
@@ -866,7 +829,7 @@ type NormalizedLibraryEdge = z.infer<
     (typeof normalizedLibraryEdgeParsers)["termDefinitions" | "typeDefinitions"]
 >;
 
-const denormalizedLibraryDataParser = weakDenormalizedRelationalParser(
+const denormalizedLibraryDataParser = weakDenormalizedRelationalDataParser(
     z.object({
         termDefinitions: z.array(
             z.lazy(() => denormalizedTermDefinitionNodeParser),
@@ -886,13 +849,11 @@ const denormalizedLibraryNodeParser = weakDenormalizedNodeParser(
 
 type DenormalizedLibraryNode = z.infer<typeof denormalizedLibraryNodeParser>;
 
-export const library = weakAstParsers({
+export const library = parserBundle({
     denormalizedData: denormalizedLibraryDataParser,
-    denormalizedNode: denormalizedLibraryNodeParser,
     kind: libraryKindParser,
     normalizedData: normalizedLibraryDataParser,
     normalizedEdges: normalizedLibraryEdgeParsers,
-    normalizedNode: normalizedLibraryNodeParser,
 });
 
 // Product term constructor
@@ -904,7 +865,7 @@ type ProductTermConstructorKind = z.infer<
 >;
 
 const normalizedProductTermConstructorDataParser =
-    weakNormalizedRelationalParser;
+    weakNormalizedRelationalDataParser;
 
 type NormalizedProductTermConstructorData = z.infer<
     typeof normalizedProductTermConstructorDataParser
@@ -940,7 +901,7 @@ type DenormalizedProductTermConstructorData = {
 };
 
 const denormalizedProductTermConstructorDataParser: z.ZodType<DenormalizedProductTermConstructorData> =
-    weakDenormalizedRelationalParser(
+    weakDenormalizedRelationalDataParser(
         z.object({
             components: z.array(z.lazy(() => denormalizedTermNodeParser)),
         }),
@@ -958,13 +919,11 @@ const denormalizedProductTermConstructorNodeParser: z.ZodType<DenormalizedProduc
         denormalizedProductTermConstructorDataParser,
     );
 
-export const productTermConstructor = weakAstParsers({
+export const productTermConstructor = parserBundle({
     denormalizedData: denormalizedProductTermConstructorDataParser,
-    denormalizedNode: denormalizedProductTermConstructorNodeParser,
     kind: productTermConstructorKindParser,
     normalizedData: normalizedProductTermConstructorDataParser,
     normalizedEdges: normalizedProductTermConstructorEdgeParsers,
-    normalizedNode: normalizedProductTermConstructorNodeParser,
 });
 
 // Product term eliminator
@@ -975,7 +934,7 @@ type ProductTermEliminatorKind = z.infer<
     typeof productTermEliminatorKindParser
 >;
 
-const normalizedProductTermEliminatorDataParser = weakNormalizedScalarParser(
+const normalizedProductTermEliminatorDataParser = scalarDataParser(
     z.number().int(),
 );
 
@@ -998,8 +957,9 @@ type NormalizedProductTermEliminatorEdge = z.infer<
     (typeof normalizedProductTermEliminatorEdgeParsers)[never]
 >;
 
-const denormalizedProductTermEliminatorDataParser =
-    weakDenormalizedScalarParser(z.number().int());
+const denormalizedProductTermEliminatorDataParser = scalarDataParser(
+    z.number().int(),
+);
 
 type DenormalizedProductTermEliminatorData = z.infer<
     typeof denormalizedProductTermEliminatorDataParser
@@ -1014,13 +974,11 @@ type DenormalizedProductTermEliminatorNode = z.infer<
     typeof denormalizedProductTermEliminatorNodeParser
 >;
 
-export const productTermEliminator = weakAstParsers({
+export const productTermEliminator = parserBundle({
     denormalizedData: denormalizedProductTermEliminatorDataParser,
-    denormalizedNode: denormalizedProductTermEliminatorNodeParser,
     kind: productTermEliminatorKindParser,
     normalizedData: normalizedProductTermEliminatorDataParser,
     normalizedEdges: normalizedProductTermEliminatorEdgeParsers,
-    normalizedNode: normalizedProductTermEliminatorNodeParser,
 });
 
 // Product type
@@ -1029,7 +987,7 @@ const productTypeKindParser = z.literal("productType");
 
 type ProductTypeKind = z.infer<typeof productTypeKindParser>;
 
-const normalizedProductTypeDataParser = weakNormalizedRelationalParser;
+const normalizedProductTypeDataParser = weakNormalizedRelationalDataParser;
 
 type NormalizedProductTypeData = z.infer<
     typeof normalizedProductTypeDataParser
@@ -1065,7 +1023,7 @@ type DenormalizedProductTypeData = {
 };
 
 const denormalizedProductTypeDataParser: z.ZodType<DenormalizedProductTypeData> =
-    weakDenormalizedRelationalParser(
+    weakDenormalizedRelationalDataParser(
         z.object({
             components: z.array(z.lazy(() => denormalizedSmallTypeNodeParser)),
         }),
@@ -1083,13 +1041,11 @@ const denormalizedProductTypeNodeParser: z.ZodType<DenormalizedProductTypeNode> 
         denormalizedProductTypeDataParser,
     );
 
-export const productType = weakAstParsers({
+export const productType = parserBundle({
     denormalizedData: denormalizedProductTypeDataParser,
-    denormalizedNode: denormalizedProductTypeNodeParser,
     kind: productTypeKindParser,
     normalizedData: normalizedProductTypeDataParser,
     normalizedEdges: normalizedProductTypeEdgeParsers,
-    normalizedNode: normalizedProductTypeNodeParser,
 });
 
 // Sum term constructor
@@ -1098,7 +1054,7 @@ const sumTermConstructorKindParser = z.literal("sumTermConstructor");
 
 type SumTermConstructorKind = z.infer<typeof sumTermConstructorKindParser>;
 
-const normalizedSumTermConstructorDataParser = weakNormalizedScalarParser(
+const normalizedSumTermConstructorDataParser = scalarDataParser(
     z.number().int(),
 );
 
@@ -1121,7 +1077,7 @@ type NormalizedSumTermConstructorEdge = z.infer<
     (typeof normalizedSumTermConstructorEdgeParsers)[never]
 >;
 
-const denormalizedSumTermConstructorDataParser = weakDenormalizedScalarParser(
+const denormalizedSumTermConstructorDataParser = scalarDataParser(
     z.number().int(),
 );
 
@@ -1138,13 +1094,11 @@ type DenormalizedSumTermConstructorNode = z.infer<
     typeof denormalizedSumTermConstructorNodeParser
 >;
 
-export const sumTermConstructor = weakAstParsers({
+export const sumTermConstructor = parserBundle({
     denormalizedData: denormalizedSumTermConstructorDataParser,
-    denormalizedNode: denormalizedSumTermConstructorNodeParser,
     kind: sumTermConstructorKindParser,
     normalizedData: normalizedSumTermConstructorDataParser,
     normalizedEdges: normalizedSumTermConstructorEdgeParsers,
-    normalizedNode: normalizedSumTermConstructorNodeParser,
 });
 
 // Sum term eliminator
@@ -1153,7 +1107,8 @@ const sumTermEliminatorKindParser = z.literal("sumTermEliminator");
 
 type SumTermEliminatorKind = z.infer<typeof sumTermEliminatorKindParser>;
 
-const normalizedSumTermEliminatorDataParser = weakNormalizedRelationalParser;
+const normalizedSumTermEliminatorDataParser =
+    weakNormalizedRelationalDataParser;
 
 type NormalizedSumTermEliminatorData = z.infer<
     typeof normalizedSumTermEliminatorDataParser
@@ -1189,7 +1144,7 @@ type DenormalizedSumTermEliminatorData = {
 };
 
 const denormalizedSumTermEliminatorDataParser: z.ZodType<DenormalizedSumTermEliminatorData> =
-    weakDenormalizedRelationalParser(
+    weakDenormalizedRelationalDataParser(
         z.object({
             components: z.array(
                 z.lazy(() => denormalizedFunctionTermConstructorNodeParser),
@@ -1209,13 +1164,11 @@ const denormalizedSumTermEliminatorNodeParser: z.ZodType<DenormalizedSumTermElim
         denormalizedSumTermEliminatorDataParser,
     );
 
-export const sumTermEliminator = weakAstParsers({
+export const sumTermEliminator = parserBundle({
     denormalizedData: denormalizedSumTermEliminatorDataParser,
-    denormalizedNode: denormalizedSumTermEliminatorNodeParser,
     kind: sumTermEliminatorKindParser,
     normalizedData: normalizedSumTermEliminatorDataParser,
     normalizedEdges: normalizedSumTermEliminatorEdgeParsers,
-    normalizedNode: normalizedSumTermEliminatorNodeParser,
 });
 
 // Sum type
@@ -1224,7 +1177,7 @@ const sumTypeKindParser = z.literal("sumType");
 
 type SumTypeKind = z.infer<typeof sumTypeKindParser>;
 
-const normalizedSumTypeDataParser = weakNormalizedRelationalParser;
+const normalizedSumTypeDataParser = weakNormalizedRelationalDataParser;
 
 type NormalizedSumTypeData = z.infer<typeof normalizedSumTypeDataParser>;
 
@@ -1256,7 +1209,7 @@ type DenormalizedSumTypeData = {
 };
 
 const denormalizedSumTypeDataParser: z.ZodType<DenormalizedSumTypeData> =
-    weakDenormalizedRelationalParser(
+    weakDenormalizedRelationalDataParser(
         z.object({
             components: z.array(z.lazy(() => denormalizedSmallTypeNodeParser)),
         }),
@@ -1274,13 +1227,11 @@ const denormalizedSumTypeNodeParser: z.ZodType<DenormalizedSumTypeNode> =
         denormalizedSumTypeDataParser,
     );
 
-export const sumType = weakAstParsers({
+export const sumType = parserBundle({
     denormalizedData: denormalizedSumTypeDataParser,
-    denormalizedNode: denormalizedSumTypeNodeParser,
     kind: sumTypeKindParser,
     normalizedData: normalizedSumTypeDataParser,
     normalizedEdges: normalizedSumTypeEdgeParsers,
-    normalizedNode: normalizedSumTypeNodeParser,
 });
 
 // String term
@@ -1289,7 +1240,7 @@ const stringTermKindParser = z.literal("stringTerm");
 
 type StringTermKind = z.infer<typeof stringTermKindParser>;
 
-const normalizedStringTermDataParser = weakNormalizedScalarParser(z.string());
+const normalizedStringTermDataParser = scalarDataParser(z.string());
 
 type NormalizedStringTermData = z.infer<typeof normalizedStringTermDataParser>;
 
@@ -1306,9 +1257,7 @@ type NormalizedStringTermEdge = z.infer<
     (typeof normalizedStringTermEdgeParsers)[never]
 >;
 
-const denormalizedStringTermDataParser = weakDenormalizedScalarParser(
-    z.string(),
-);
+const denormalizedStringTermDataParser = scalarDataParser(z.string());
 
 type DenormalizedStringTermData = z.infer<
     typeof denormalizedStringTermDataParser
@@ -1323,13 +1272,11 @@ type DenormalizedStringTermNode = z.infer<
     typeof denormalizedStringTermNodeParser
 >;
 
-export const stringTerm = weakAstParsers({
+export const stringTerm = parserBundle({
     denormalizedData: denormalizedStringTermDataParser,
-    denormalizedNode: denormalizedStringTermNodeParser,
     kind: stringTermKindParser,
     normalizedData: normalizedStringTermDataParser,
     normalizedEdges: normalizedStringTermEdgeParsers,
-    normalizedNode: normalizedStringTermNodeParser,
 });
 
 // String type
@@ -1338,7 +1285,7 @@ const stringTypeKindParser = z.literal("stringType");
 
 type StringTypeKind = z.infer<typeof stringTypeKindParser>;
 
-const normalizedStringTypeDataParser = weakNormalizedEmptyParser;
+const normalizedStringTypeDataParser = emptyDataParser;
 
 type NormalizedStringTypeData = z.infer<typeof normalizedStringTypeDataParser>;
 
@@ -1355,7 +1302,7 @@ type NormalizedStringTypeEdge = z.infer<
     (typeof normalizedStringTypeEdgeParsers)[never]
 >;
 
-const denormalizedStringTypeDataParser = weakDenormalizedEmptyParser;
+const denormalizedStringTypeDataParser = emptyDataParser;
 
 type DenormalizedStringTypeData = z.infer<
     typeof denormalizedStringTypeDataParser
@@ -1370,13 +1317,11 @@ type DenormalizedStringTypeNode = z.infer<
     typeof denormalizedStringTypeNodeParser
 >;
 
-export const stringType = weakAstParsers({
+export const stringType = parserBundle({
     denormalizedData: denormalizedStringTypeDataParser,
-    denormalizedNode: denormalizedStringTypeNodeParser,
     kind: stringTypeKindParser,
     normalizedData: normalizedStringTypeDataParser,
     normalizedEdges: normalizedStringTypeEdgeParsers,
-    normalizedNode: normalizedStringTypeNodeParser,
 });
 
 // Term binding
@@ -1385,7 +1330,7 @@ const termBindingKindParser = z.literal("termBinding");
 
 type TermBindingKind = z.infer<typeof termBindingKindParser>;
 
-const normalizedTermBindingDataParser = weakNormalizedScalarParser(z.string());
+const normalizedTermBindingDataParser = scalarDataParser(z.string());
 
 type NormalizedTermBindingData = z.infer<
     typeof normalizedTermBindingDataParser
@@ -1406,9 +1351,7 @@ type NormalizedTermBindingEdge = z.infer<
     (typeof normalizedTermBindingEdgeParsers)[never]
 >;
 
-const denormalizedTermBindingDataParser = weakDenormalizedScalarParser(
-    z.string(),
-);
+const denormalizedTermBindingDataParser = scalarDataParser(z.string());
 
 type DenormalizedTermBindingData = z.infer<
     typeof denormalizedTermBindingDataParser
@@ -1423,13 +1366,11 @@ type DenormalizedTermBindingNode = z.infer<
     typeof denormalizedTermBindingNodeParser
 >;
 
-export const termBinding = weakAstParsers({
+export const termBinding = parserBundle({
     denormalizedData: denormalizedTermBindingDataParser,
-    denormalizedNode: denormalizedTermBindingNodeParser,
     kind: termBindingKindParser,
     normalizedData: normalizedTermBindingDataParser,
     normalizedEdges: normalizedTermBindingEdgeParsers,
-    normalizedNode: normalizedTermBindingNodeParser,
 });
 
 // Term definition
@@ -1438,7 +1379,7 @@ const termDefinitionKindParser = z.literal("termDefinition");
 
 type TermDefinitionKind = z.infer<typeof termDefinitionKindParser>;
 
-const normalizedTermDefinitionDataParser = weakNormalizedRelationalParser;
+const normalizedTermDefinitionDataParser = weakNormalizedRelationalDataParser;
 
 type NormalizedTermDefinitionData = z.infer<
     typeof normalizedTermDefinitionDataParser
@@ -1480,18 +1421,19 @@ type NormalizedTermDefinitionEdge = z.infer<
     (typeof normalizedTermDefinitionEdgeParsers)["binding" | "term" | "type"]
 >;
 
-const denormalizedTermDefinitionDataParser = weakDenormalizedRelationalParser(
-    z.object({
-        binding: denormalizedTermBindingNodeParser,
-        term: z.lazy(() =>
-            z.union([
-                denormalizedTermNodeParser,
-                denormalizedClientImplementationNodeParser,
-            ]),
-        ),
-        type: z.lazy(() => denormalizedLargeTypeNodeParser),
-    }),
-);
+const denormalizedTermDefinitionDataParser =
+    weakDenormalizedRelationalDataParser(
+        z.object({
+            binding: denormalizedTermBindingNodeParser,
+            term: z.lazy(() =>
+                z.union([
+                    denormalizedTermNodeParser,
+                    denormalizedClientImplementationNodeParser,
+                ]),
+            ),
+            type: z.lazy(() => denormalizedLargeTypeNodeParser),
+        }),
+    );
 
 type DenormalizedTermDefinitionData = z.infer<
     typeof denormalizedTermDefinitionDataParser
@@ -1506,13 +1448,11 @@ type DenormalizedTermDefinitionNode = z.infer<
     typeof denormalizedTermDefinitionNodeParser
 >;
 
-export const termDefinition = weakAstParsers({
+export const termDefinition = parserBundle({
     denormalizedData: denormalizedTermDefinitionDataParser,
-    denormalizedNode: denormalizedTermDefinitionNodeParser,
     kind: termDefinitionKindParser,
     normalizedData: normalizedTermDefinitionDataParser,
     normalizedEdges: normalizedTermDefinitionEdgeParsers,
-    normalizedNode: normalizedTermDefinitionNodeParser,
 });
 
 // Term reference
@@ -1521,9 +1461,7 @@ const termReferenceKindParser = z.literal("termReference");
 
 type TermReferenceKind = z.infer<typeof termReferenceKindParser>;
 
-const normalizedTermReferenceDataParser = weakNormalizedScalarParser(
-    z.string(),
-);
+const normalizedTermReferenceDataParser = scalarDataParser(z.string());
 
 type NormalizedTermReferenceData = z.infer<
     typeof normalizedTermReferenceDataParser
@@ -1544,9 +1482,7 @@ type NormalizedTermReferenceEdge = z.infer<
     (typeof normalizedTermReferenceEdgeParsers)[never]
 >;
 
-const denormalizedTermReferenceDataParser = weakDenormalizedScalarParser(
-    z.string(),
-);
+const denormalizedTermReferenceDataParser = scalarDataParser(z.string());
 
 type DenormalizedTermReferenceData = z.infer<
     typeof denormalizedTermReferenceDataParser
@@ -1561,13 +1497,11 @@ type DenormalizedTermReferenceNode = z.infer<
     typeof denormalizedTermReferenceNodeParser
 >;
 
-export const termReference = weakAstParsers({
+export const termReference = parserBundle({
     denormalizedData: denormalizedTermReferenceDataParser,
-    denormalizedNode: denormalizedTermReferenceNodeParser,
     kind: termReferenceKindParser,
     normalizedData: normalizedTermReferenceDataParser,
     normalizedEdges: normalizedTermReferenceEdgeParsers,
-    normalizedNode: normalizedTermReferenceNodeParser,
 });
 
 // Type binding
@@ -1576,7 +1510,7 @@ const typeBindingKindParser = z.literal("typeBinding");
 
 type TypeBindingKind = z.infer<typeof typeBindingKindParser>;
 
-const normalizedTypeBindingDataParser = weakNormalizedScalarParser(z.string());
+const normalizedTypeBindingDataParser = scalarDataParser(z.string());
 
 type NormalizedTypeBindingData = z.infer<
     typeof normalizedTypeBindingDataParser
@@ -1597,9 +1531,7 @@ type NormalizedTypeBindingEdge = z.infer<
     (typeof normalizedTypeBindingEdgeParsers)[never]
 >;
 
-const denormalizedTypeBindingDataParser = weakDenormalizedScalarParser(
-    z.string(),
-);
+const denormalizedTypeBindingDataParser = scalarDataParser(z.string());
 
 type DenormalizedTypeBindingData = z.infer<
     typeof denormalizedTypeBindingDataParser
@@ -1614,13 +1546,11 @@ type DenormalizedTypeBindingNode = z.infer<
     typeof denormalizedTypeBindingNodeParser
 >;
 
-export const typeBinding = weakAstParsers({
+export const typeBinding = parserBundle({
     denormalizedData: denormalizedTypeBindingDataParser,
-    denormalizedNode: denormalizedTypeBindingNodeParser,
     kind: typeBindingKindParser,
     normalizedData: normalizedTypeBindingDataParser,
     normalizedEdges: normalizedTypeBindingEdgeParsers,
-    normalizedNode: normalizedTypeBindingNodeParser,
 });
 
 // Type definition
@@ -1629,7 +1559,7 @@ const typeDefinitionKindParser = z.literal("typeDefinition");
 
 type TypeDefinitionKind = z.infer<typeof typeDefinitionKindParser>;
 
-const normalizedTypeDefinitionDataParser = weakNormalizedRelationalParser;
+const normalizedTypeDefinitionDataParser = weakNormalizedRelationalDataParser;
 
 type NormalizedTypeDefinitionData = z.infer<
     typeof normalizedTypeDefinitionDataParser
@@ -1663,12 +1593,13 @@ type NormalizedTypeDefinitionEdge = z.infer<
     (typeof normalizedTypeDefinitionEdgeParsers)["binding" | "type"]
 >;
 
-const denormalizedTypeDefinitionDataParser = weakDenormalizedRelationalParser(
-    z.object({
-        binding: denormalizedTypeBindingNodeParser,
-        type: z.lazy(() => denormalizedLargeTypeNodeParser),
-    }),
-);
+const denormalizedTypeDefinitionDataParser =
+    weakDenormalizedRelationalDataParser(
+        z.object({
+            binding: denormalizedTypeBindingNodeParser,
+            type: z.lazy(() => denormalizedLargeTypeNodeParser),
+        }),
+    );
 
 type DenormalizedTypeDefinitionData = z.infer<
     typeof denormalizedTypeDefinitionDataParser
@@ -1683,13 +1614,11 @@ type DenormalizedTypeDefinitionNode = z.infer<
     typeof denormalizedTypeDefinitionNodeParser
 >;
 
-export const typeDefinition = weakAstParsers({
+export const typeDefinition = parserBundle({
     denormalizedData: denormalizedTypeDefinitionDataParser,
-    denormalizedNode: denormalizedTypeDefinitionNodeParser,
     kind: typeDefinitionKindParser,
     normalizedData: normalizedTypeDefinitionDataParser,
     normalizedEdges: normalizedTypeDefinitionEdgeParsers,
-    normalizedNode: normalizedTypeDefinitionNodeParser,
 });
 
 // Type reference
@@ -1698,9 +1627,7 @@ const typeReferenceKindParser = z.literal("typeReference");
 
 type TypeReferenceKind = z.infer<typeof typeReferenceKindParser>;
 
-const normalizedTypeReferenceDataParser = weakNormalizedScalarParser(
-    z.string(),
-);
+const normalizedTypeReferenceDataParser = scalarDataParser(z.string());
 
 type NormalizedTypeReferenceData = z.infer<
     typeof normalizedTypeReferenceDataParser
@@ -1721,9 +1648,7 @@ type NormalizedTypeReferenceEdge = z.infer<
     (typeof normalizedTypeReferenceEdgeParsers)[never]
 >;
 
-const denormalizedTypeReferenceDataParser = weakDenormalizedScalarParser(
-    z.string(),
-);
+const denormalizedTypeReferenceDataParser = scalarDataParser(z.string());
 
 type DenormalizedTypeReferenceData = z.infer<
     typeof denormalizedTypeReferenceDataParser
@@ -1738,13 +1663,11 @@ type DenormalizedTypeReferenceNode = z.infer<
     typeof denormalizedTypeReferenceNodeParser
 >;
 
-export const typeReference = weakAstParsers({
+export const typeReference = parserBundle({
     denormalizedData: denormalizedTypeReferenceDataParser,
-    denormalizedNode: denormalizedTypeReferenceNodeParser,
     kind: typeReferenceKindParser,
     normalizedData: normalizedTypeReferenceDataParser,
     normalizedEdges: normalizedTypeReferenceEdgeParsers,
-    normalizedNode: normalizedTypeReferenceNodeParser,
 });
 
 // ## Unions

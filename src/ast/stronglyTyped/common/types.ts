@@ -10,7 +10,7 @@ export type StrongNodeKind = z.infer<typeof strongNodeKindParser>;
 export type StrongNodeKindOptions = typeof strongNodeKindParser.options;
 
 export type StrongEdges<SourceKind extends StrongNodeKind> =
-    Enumeration[SourceKind]["normalized"]["edges"];
+    Enumeration[SourceKind]["normalizedEdges"];
 
 export type StrongEdgeKind<SourceKind extends StrongNodeKind> =
     keyof StrongEdges<SourceKind>;

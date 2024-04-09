@@ -4,12 +4,12 @@ import {
     StrongEdgeKind,
     StrongEdges,
     StrongNodeKind,
-    strongAstParsers,
+    lookupParsers,
 } from "../../common";
 
 export const strongEdgeParsers = <SourceKind extends StrongNodeKind>(
     sourceKind: SourceKind,
-): StrongEdges<SourceKind> => strongAstParsers(sourceKind).normalized.edges;
+): StrongEdges<SourceKind> => lookupParsers(sourceKind).normalizedEdges;
 
 export const strongEdgeParser = <
     SourceKind extends StrongNodeKind,

@@ -1,4 +1,4 @@
-import { DenormalizedAst, unsafeTermBinding } from "@flock/ast";
+import { DenormalizedAst, termBinding } from "@flock/ast";
 
 import { Parser } from "../parser";
 
@@ -8,18 +8,14 @@ describe("termBinding", () => {
     it("parses a camelCase identifier", () => {
         const actual = parser.parse("fooBar").root().denormalize().anonymize();
 
-        const expected = new DenormalizedAst(
-            unsafeTermBinding("fooBar"),
-        ).anonymize();
+        const expected = new DenormalizedAst(termBinding("fooBar")).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses an all lower-case identifier", () => {
         const actual = parser.parse("foo").root().denormalize().anonymize();
 
-        const expected = new DenormalizedAst(
-            unsafeTermBinding("foo"),
-        ).anonymize();
+        const expected = new DenormalizedAst(termBinding("foo")).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
@@ -27,7 +23,7 @@ describe("termBinding", () => {
         const actual = parser.parse("foo-Bar").root().denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            unsafeTermBinding("foo-Bar"),
+            termBinding("foo-Bar"),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
@@ -36,7 +32,7 @@ describe("termBinding", () => {
         const actual = parser.parse("foo-123").root().denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            unsafeTermBinding("foo-123"),
+            termBinding("foo-123"),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });

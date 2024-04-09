@@ -1,20 +1,17 @@
 import { ErrorWithContext } from "../../../lib/errorsWithContext";
-import { denormalizedEmpty } from "./constructors";
-import {
-    DenormalizedData,
-    DenormalizedEmpty,
-    WeakDenormalizedRelationalǁ,
-    WeakDenormalizedScalarǁ,
-} from "./denormalized";
+import { EmptyData, emptyData } from "../../common";
+import { WeakScalarData_ } from "../common";
 
-const defaultEmptyFn = () => denormalizedEmpty();
+import { WeakDenormalizedData, WeakDenormalizedRelationalData_ } from "./types";
+
+const defaultEmptyFn = () => emptyData();
 const defaultScalarFn = <Input>(input: Input) => input;
 const defaultRelationalFn = <Input>(input: Input) => input;
 
-export const denormalizedDataMap = <
-    EmptyOutput = DenormalizedEmpty,
-    ScalarOutput = WeakDenormalizedScalarǁ,
-    RelationalOutput = WeakDenormalizedRelationalǁ,
+export const mapDenormalizedData = <
+    EmptyOutput = EmptyData,
+    ScalarOutput = WeakScalarData_,
+    RelationalOutput = WeakDenormalizedRelationalData_,
 >(
     {
         emptyFn,
@@ -22,19 +19,21 @@ export const denormalizedDataMap = <
         relationalFn,
     }: {
         emptyFn?: () => EmptyOutput;
-        scalarFn?: (input: WeakDenormalizedScalarǁ) => ScalarOutput;
-        relationalFn?: (input: WeakDenormalizedRelationalǁ) => RelationalOutput;
+        scalarFn?: (input: WeakScalarData_) => ScalarOutput;
+        relationalFn?: (
+            input: WeakDenormalizedRelationalData_,
+        ) => RelationalOutput;
     },
-    data: DenormalizedData,
+    data: WeakDenormalizedData,
 ) => {
     emptyFn = emptyFn ?? (defaultEmptyFn as () => EmptyOutput);
     scalarFn =
         scalarFn ??
-        (defaultScalarFn as (input: WeakDenormalizedScalarǁ) => ScalarOutput);
+        (defaultScalarFn as (input: WeakScalarData_) => ScalarOutput);
     relationalFn =
         relationalFn ??
         (defaultRelationalFn as (
-            input: WeakDenormalizedRelationalǁ,
+            input: WeakDenormalizedRelationalData_,
         ) => RelationalOutput);
 
     if (data.dimensionality === "empty") {

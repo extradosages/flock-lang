@@ -1,31 +1,27 @@
 import {
     DenormalizedAst,
-    booleanTermLiteral,
+    booleanTerm,
     floatTermLiteral,
     stringTermLiteral,
-    unsafeIntegerTermLiteral,
+    integerTerm,
 } from "@flock/ast";
 
 import { Parser } from "../parser";
 
-describe("booleanTermLiteral", () => {
-    const parser = new Parser("booleanTermLiteral");
+describe("booleanTerm", () => {
+    const parser = new Parser("booleanTerm");
 
     it("parses `true`", () => {
         const actual = parser.parse("true").root().denormalize().anonymize();
 
-        const expected = new DenormalizedAst(
-            booleanTermLiteral(true),
-        ).anonymize();
+        const expected = new DenormalizedAst(booleanTerm(true)).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses `false`", () => {
         const actual = parser.parse("false").root().denormalize().anonymize();
 
-        const expected = new DenormalizedAst(
-            booleanTermLiteral(false),
-        ).anonymize();
+        const expected = new DenormalizedAst(booleanTerm(false)).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
@@ -74,9 +70,7 @@ describe("integerTermLiteral", () => {
     it("parses <1`", () => {
         const actual = parser.parse("1").root().denormalize().anonymize();
 
-        const expected = new DenormalizedAst(
-            unsafeIntegerTermLiteral(1),
-        ).anonymize();
+        const expected = new DenormalizedAst(integerTerm(1)).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 

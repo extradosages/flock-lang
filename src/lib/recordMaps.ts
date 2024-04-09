@@ -4,7 +4,7 @@ export const recordValueOrValueArrayMap = <
     Value extends Record<string, Input | Input[]>,
 >(
     fn: (input: Input, key: string, index?: number) => Output,
-    record: Record<string, Input | Input[]>,
+    record: Value,
 ): { [K in keyof Value]: Value[K] extends Input ? Output : Output[] } => {
     const mapped = Object.fromEntries(
         Object.entries(record).map(([key, valueOrValueArray]) => {

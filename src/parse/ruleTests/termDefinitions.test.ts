@@ -1,6 +1,6 @@
 import {
     DenormalizedAst,
-    booleanTermLiteral,
+    booleanTerm,
     booleanTypeLiteral,
     clientImplementation,
     functionTermEliminator,
@@ -12,8 +12,8 @@ import {
     stringTermLiteral,
     stringTypeLiteral,
     termDefinition,
-    unsafeTermBinding,
-    unsafeTermReference,
+    termBinding,
+    termReference,
     unsafeTypeBinding,
     unsafeTypeReference,
 } from "@flock/ast";
@@ -32,8 +32,8 @@ describe("termDefinition", () => {
 
         const expected = new DenormalizedAst(
             termDefinition({
-                binding: unsafeTermBinding("foo"),
-                term: booleanTermLiteral(true),
+                binding: termBinding("foo"),
+                term: booleanTerm(true),
                 type: booleanTypeLiteral(undefined),
             }),
         ).anonymize();
@@ -49,8 +49,8 @@ describe("termDefinition", () => {
 
         const expected = new DenormalizedAst(
             termDefinition({
-                binding: unsafeTermBinding("foo"),
-                term: booleanTermLiteral(true),
+                binding: termBinding("foo"),
+                term: booleanTerm(true),
                 type: genericTypeConstructor({
                     codomainType: booleanTypeLiteral(undefined),
                     domainBindings: [unsafeTypeBinding("Foo")],
@@ -69,9 +69,9 @@ describe("termDefinition", () => {
 
         const expected = new DenormalizedAst(
             termDefinition({
-                binding: unsafeTermBinding("foo"),
+                binding: termBinding("foo"),
                 term: productTermConstructor([
-                    booleanTermLiteral(true),
+                    booleanTerm(true),
                     stringTermLiteral("bar"),
                 ]),
                 type: productType([
@@ -92,10 +92,10 @@ describe("termDefinition", () => {
 
         const expected = new DenormalizedAst(
             termDefinition({
-                binding: unsafeTermBinding("foo"),
+                binding: termBinding("foo"),
                 term: functionTermEliminator({
-                    arguments: [booleanTermLiteral(true)],
-                    function: unsafeTermReference("not"),
+                    arguments: [booleanTerm(true)],
+                    function: termReference("not"),
                 }),
                 type: booleanTypeLiteral(undefined),
             }),
@@ -114,17 +114,17 @@ describe("termDefinition", () => {
 
         const expected = new DenormalizedAst(
             termDefinition({
-                binding: unsafeTermBinding("foo"),
+                binding: termBinding("foo"),
                 term: lambdaConstructor({
                     codomainTerm: functionTermEliminator({
                         arguments: [
-                            unsafeTermReference("bar"),
+                            termReference("bar"),
                             stringTermLiteral("true"),
                             stringTermLiteral("false"),
                         ],
-                        function: unsafeTermReference("if-then-else"),
+                        function: termReference("if-then-else"),
                     }),
-                    domainBindings: [unsafeTermBinding("bar")],
+                    domainBindings: [termBinding("bar")],
                 }),
                 type: functionType({
                     codomain: stringTypeLiteral(undefined),
@@ -146,23 +146,23 @@ describe("termDefinition", () => {
 
         const expected = new DenormalizedAst(
             termDefinition({
-                binding: unsafeTermBinding("not-is-equal"),
+                binding: termBinding("not-is-equal"),
                 term: lambdaConstructor({
                     codomainTerm: functionTermEliminator({
                         arguments: [
                             functionTermEliminator({
                                 arguments: [
-                                    unsafeTermReference("term1"),
-                                    unsafeTermReference("term2"),
+                                    termReference("term1"),
+                                    termReference("term2"),
                                 ],
-                                function: unsafeTermReference("is-equal"),
+                                function: termReference("is-equal"),
                             }),
                         ],
-                        function: unsafeTermReference("not"),
+                        function: termReference("not"),
                     }),
                     domainBindings: [
-                        unsafeTermBinding("term1"),
-                        unsafeTermBinding("term2"),
+                        termBinding("term1"),
+                        termBinding("term2"),
                     ],
                 }),
                 type: genericTypeConstructor({
@@ -189,7 +189,7 @@ describe("termDefinition", () => {
 
         const expected = new DenormalizedAst(
             termDefinition({
-                binding: unsafeTermBinding("foo"),
+                binding: termBinding("foo"),
                 term: clientImplementation(undefined),
                 type: booleanTypeLiteral(undefined),
             }),
@@ -206,7 +206,7 @@ describe("termDefinition", () => {
 
         const expected = new DenormalizedAst(
             termDefinition({
-                binding: unsafeTermBinding("foo"),
+                binding: termBinding("foo"),
                 term: clientImplementation(undefined),
                 type: productType([
                     booleanTypeLiteral(undefined),
@@ -226,7 +226,7 @@ describe("termDefinition", () => {
 
         const expected = new DenormalizedAst(
             termDefinition({
-                binding: unsafeTermBinding("foo"),
+                binding: termBinding("foo"),
                 term: clientImplementation(undefined),
                 type: functionType({
                     codomain: stringTypeLiteral(undefined),
@@ -246,7 +246,7 @@ describe("termDefinition", () => {
 
         const expected = new DenormalizedAst(
             termDefinition({
-                binding: unsafeTermBinding("is-equal"),
+                binding: termBinding("is-equal"),
                 term: clientImplementation(undefined),
                 type: genericTypeConstructor({
                     codomainType: functionType({

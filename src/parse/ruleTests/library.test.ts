@@ -11,8 +11,8 @@ import {
     sumType,
     termDefinition,
     typeDefinition,
-    unsafeTermBinding,
-    unsafeTermReference,
+    termBinding,
+    termReference,
     unsafeTypeBinding,
 } from "@flock/ast";
 
@@ -56,7 +56,7 @@ describe("library", () => {
             library({
                 termDefinitions: [
                     termDefinition({
-                        binding: unsafeTermBinding("not"),
+                        binding: termBinding("not"),
                         term: clientImplementation(undefined),
                         type: functionType({
                             codomain: booleanTypeLiteral(undefined),
@@ -64,7 +64,7 @@ describe("library", () => {
                         }),
                     }),
                     termDefinition({
-                        binding: unsafeTermBinding("or"),
+                        binding: termBinding("or"),
                         term: lambdaConstructor({
                             codomainTerm: functionTermEliminator({
                                 arguments: [
@@ -72,31 +72,25 @@ describe("library", () => {
                                         arguments: [
                                             functionTermEliminator({
                                                 arguments: [
-                                                    unsafeTermReference(
-                                                        "left-prop",
-                                                    ),
+                                                    termReference("left-prop"),
                                                 ],
-                                                function:
-                                                    unsafeTermReference("not"),
+                                                function: termReference("not"),
                                             }),
                                             functionTermEliminator({
                                                 arguments: [
-                                                    unsafeTermReference(
-                                                        "right-prop",
-                                                    ),
+                                                    termReference("right-prop"),
                                                 ],
-                                                function:
-                                                    unsafeTermReference("not"),
+                                                function: termReference("not"),
                                             }),
                                         ],
-                                        function: unsafeTermReference("and"),
+                                        function: termReference("and"),
                                     }),
                                 ],
-                                function: unsafeTermReference("not"),
+                                function: termReference("not"),
                             }),
                             domainBindings: [
-                                unsafeTermBinding("left-prop"),
-                                unsafeTermBinding("right-prop"),
+                                termBinding("left-prop"),
+                                termBinding("right-prop"),
                             ],
                         }),
                         type: functionType({

@@ -1,14 +1,14 @@
 import {
     DenormalizedAst,
-    booleanTermLiteral,
+    booleanTerm,
     lambdaConstructor,
     functionTermEliminator,
     productTermConstructor,
     unsafeProductTermEliminator,
     stringTermLiteral,
     sumTermEliminator,
-    unsafeTermBinding,
-    unsafeTermReference,
+    termBinding,
+    termReference,
 } from "@flock/ast";
 import { Parser } from "../parser";
 
@@ -32,7 +32,7 @@ describe("productTermConstructor", () => {
             .anonymize();
 
         const expected = new DenormalizedAst(
-            productTermConstructor([booleanTermLiteral(true)]),
+            productTermConstructor([booleanTerm(true)]),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
@@ -45,7 +45,7 @@ describe("productTermConstructor", () => {
             .anonymize();
 
         const expected = new DenormalizedAst(
-            productTermConstructor([unsafeTermReference("foo")]),
+            productTermConstructor([termReference("foo")]),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
@@ -59,7 +59,7 @@ describe("productTermConstructor", () => {
 
         const expected = new DenormalizedAst(
             productTermConstructor([
-                productTermConstructor([booleanTermLiteral(true)]),
+                productTermConstructor([booleanTerm(true)]),
             ]),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
@@ -74,10 +74,7 @@ describe("productTermConstructor", () => {
 
         const expected = new DenormalizedAst(
             productTermConstructor([
-                sumTermEliminator([
-                    unsafeTermReference("foo"),
-                    unsafeTermReference("bar"),
-                ]),
+                sumTermEliminator([termReference("foo"), termReference("bar")]),
             ]),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
@@ -93,8 +90,8 @@ describe("productTermConstructor", () => {
         const expected = new DenormalizedAst(
             productTermConstructor([
                 lambdaConstructor({
-                    codomainTerm: unsafeTermReference("bar"),
-                    domainBindings: [unsafeTermBinding("foo")],
+                    codomainTerm: termReference("bar"),
+                    domainBindings: [termBinding("foo")],
                 }),
             ]),
         ).anonymize();
@@ -111,8 +108,8 @@ describe("productTermConstructor", () => {
         const expected = new DenormalizedAst(
             productTermConstructor([
                 functionTermEliminator({
-                    function: unsafeTermReference("foo"),
-                    arguments: [booleanTermLiteral(true)],
+                    function: termReference("foo"),
+                    arguments: [booleanTerm(true)],
                 }),
             ]),
         ).anonymize();
@@ -128,12 +125,12 @@ describe("productTermConstructor", () => {
 
         const expected = new DenormalizedAst(
             productTermConstructor([
-                booleanTermLiteral(true),
-                unsafeTermReference("foo"),
-                productTermConstructor([booleanTermLiteral(true)]),
+                booleanTerm(true),
+                termReference("foo"),
+                productTermConstructor([booleanTerm(true)]),
                 lambdaConstructor({
                     codomainTerm: stringTermLiteral("hello"),
-                    domainBindings: [unsafeTermBinding("bar")],
+                    domainBindings: [termBinding("bar")],
                 }),
             ]),
         ).anonymize();

@@ -4,51 +4,22 @@ import {
     weakEdgeParser,
     weakEdge_KindT_ManyToOneT_Parser,
     weakEdge_TargetKindT_KindT_ManyToOneT_Parser,
-    weakNormalizedDataParser,
-    weakNormalizedEmptyParser,
     weakNormalizedNodeParser,
     weakNormalizedNode_KindT_Parser,
     weakNormalizedNode_KindT_DataT_Parser,
-    weakNormalizedRelationalParser,
-    weakNormalizedScalarParser,
-    weakNormalizedScalar_ValueT_Parser,
+    weakNormalizedRelationalDataParser,
     weakNormalizedNode_DataT_Parser,
     weakEdge_SourceKindT_TargetKindT_KindT_ManyToOneT_Parser,
     weakEdge_TargetKindT_ManyToOneT_Parser,
+    weakNormalizedDataParser,
 } from "./parsers";
 import { WeakEdgeKind, WeakNodeKind } from "../common";
 
 /**
- * Weakly typed empty data in normalized AST.
- */
-export type WeakNormalizedEmpty = z.infer<typeof weakNormalizedEmptyParser>;
-
-/**
- * Weakly typed scalar data in normalized AST.
- */
-export type WeakNormalizedScalar<Value> = z.infer<
-    ReturnType<typeof weakNormalizedScalarParser<Value>>
->;
-
-/**
- * Weakly typed scalar data in normalized AST, marginalized over `Value` parameter.
- */
-export type WeakNormalizedScalar_ValueT_ = z.infer<
-    typeof weakNormalizedScalar_ValueT_Parser
->;
-
-/**
- * Weakly typed scalar data in normalized AST, marginalized over all parameters.
- *
- * @alias WeakNormalizedScalar_ValueT_
- */
-export type WeakNormalizedScalar_ = WeakNormalizedScalar_ValueT_;
-
-/**
  * Weakly typed relational data in normalized AST.
  */
-export type WeakNormalizedRelational = z.infer<
-    typeof weakNormalizedRelationalParser
+export type WeakNormalizedRelationalData = z.infer<
+    typeof weakNormalizedRelationalDataParser
 >;
 
 /**

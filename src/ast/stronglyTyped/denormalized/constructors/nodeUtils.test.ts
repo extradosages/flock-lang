@@ -1,4 +1,4 @@
-import { anonymizeDenormalizedNode } from "../anonymize";
+import { anonymizeDenormalizedNode } from "../../../old/anonymize";
 import { denormalizedNodeConstructor } from "./utils";
 
 describe("denormalizedNodeConstructor", () => {

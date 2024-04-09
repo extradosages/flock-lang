@@ -1,10 +1,20 @@
 import { DirectedGraph } from "graphology";
+import { groupBy, mapValues, orderBy } from "typedash";
 
 import { ErrorWithContext } from "../../../lib/errorsWithContext";
-import { WeakEdge_ } from "../../weaklyTyped";
+import {
+    WeakDenormalizedData,
+    WeakDenormalizedNode_,
+    WeakEdge_,
+} from "../../weaklyTyped";
 import { StrongNodeKind } from "../common";
-import { StrongDenormalizedData, StrongDenormalizedNode } from "../denormalized";
-import { StrongNormalizedData, StrongNormalizedNode, StrongNormalizedNode_ } from "./types";
+import {
+    StrongNormalizedData_,
+    StrongNormalizedNode,
+    StrongNormalizedNode_,
+} from "./types";
+import { anonymize } from "../../common";
+import { DenormalizedAst, StrongDenormalizedNode } from "../denormalized";
 
 const isRoot = (graph: DirectedGraph) => (node: string) =>
     graph.inDegree(node) === 0;
@@ -78,27 +88,84 @@ export class NormalizedAst<Kind extends StrongNodeKind> {
         this.#clearRootIdCache();
     }
 
-    // Denormalization
+    // Anonymize
 
-    #denormalizeData<Kind extends StrongNodeKind>(data: StrongNormalizedData<Kind>): StrongDenormalizedData<Kind> {
-
+    anonymize() {
+        return {
+            nodes: orderBy(
+                this.graph.mapNodes((_, node) => anonymize(node)),
+                JSON.stringify,
+            ),
+            edges: orderBy(
+                this.graph.mapEdges((_, edge) => anonymize(edge)),
+                JSON.stringify,
+            ),
+        };
     }
 
-    #denormalizeNode<Kind extends StrongNodeKind>(node: StrongNormalizedNode<Kind>): StrongDenormalizedNode<Kind> {
+    // Denormalize
+
+    #denormalizeRelationalData(id: string): WeakDenormalizedData {
+        const edges = Array.from(this.graph.outEdgeEntries(id)).map(
+            ({ attributes: edge }) => edge,
+        );
+
+        const edgesByKind = groupBy(edges, (edge) => edge.kind);
+        const value = mapValues(edgesByKind, (edges, kind) => {
+            if (edges === undefined) {
+                throw new ErrorWithContext({ kind }, "Edges are undefined");
+            }
+
+            const isOneToOne = edges.every(({ index }) => index === undefined);
+            if (isOneToOne && edges.length !== 1) {
+                throw new ErrorWithContext(
+                    { kind },
+                    "Multiple one-to-one edges found",
+                );
+            }
+
+            if (isOneToOne) {
+                return this.#denormalizeNode(edges[0].targetId);
+            }
+
+            const orderedEdges = orderBy(edges, ({ index }) => index);
+            return orderedEdges.map((edge) =>
+                this.#denormalizeNode(edge.targetId),
+            );
+        });
+
+        return { dimensionality: "relational", value };
+    }
+
+    #denormalizeData(
+        id: string,
+        data: StrongNormalizedData_,
+    ): WeakDenormalizedData {
+        if (data.dimensionality === "empty") {
+            return data;
+        }
+        if (data.dimensionality === "scalar") {
+            return data;
+        }
+        if (data.dimensionality === "relational") {
+            return this.#denormalizeRelationalData(id);
+        }
+        throw new ErrorWithContext({ data }, "Unknown dimensionality");
+    }
+
+    #denormalizeNode(id: string): WeakDenormalizedNode_ {
+        const node = this.node(id);
         const data = this.#denormalizeData(id, node.data);
         return {
             ...node,
             data,
         };
     }
-        const node = this.getNodeById(id);
-        const data = this.#denormalizeData(id, node.data);
-        return {
-            ...node,
-            data,
-        };
-    }
+
     denormalize() {
         const root = this.root();
+        return new DenormalizedAst(
+            this.#denormalizeNode(root.id) as StrongDenormalizedNode<Kind>,
+        );
     }
 }

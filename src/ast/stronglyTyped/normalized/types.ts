@@ -57,7 +57,7 @@ export type StrongNormalizedNode_ = StrongNormalizedNode_KindT_;
 type StrongEdgeParser<
     SourceKind extends StrongNodeKind,
     EdgeKind extends StrongEdgeKind<SourceKind>,
-> = Enumeration[SourceKind]["normalized"]["edges"][EdgeKind];
+> = Enumeration[SourceKind]["normalizedEdges"][EdgeKind];
 
 /**
  * Strongly typed edges in normalized AST.
@@ -94,3 +94,11 @@ export type StrongEdge_EdgeKindT_<SourceKind extends StrongNodeKind> =
  * Strongly typed edges in normalized AST, marginalized over all the parameters.
  */
 // export type StrongEdge_ = StrongEdge_SourceKindT_EdgeKindT_;
+
+/**
+ * Strongly typed edge target kind in normalized AST.
+ */
+export type StrongEdgeTargetKind<
+    SourceKind extends StrongNodeKind,
+    EdgeKind extends StrongEdgeKind<SourceKind>,
+> = StrongEdge<SourceKind, EdgeKind>["targetKind"];

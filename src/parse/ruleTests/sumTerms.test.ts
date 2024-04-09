@@ -2,10 +2,10 @@ import {
     DenormalizedAst,
     sumTermEliminator,
     stringTermLiteral,
-    unsafeTermBinding,
-    unsafeTermReference,
+    termBinding,
+    termReference,
     lambdaConstructor,
-    unsafeSumTermConstructor,
+    sumTermConstructor,
 } from "@flock/ast";
 
 import { Parser } from "../parser";
@@ -28,7 +28,7 @@ describe("sumTermEliminator", () => {
             .anonymize();
 
         const expected = new DenormalizedAst(
-            sumTermEliminator([unsafeTermReference("foo")]),
+            sumTermEliminator([termReference("foo")]),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
@@ -42,10 +42,7 @@ describe("sumTermEliminator", () => {
 
         const expected = new DenormalizedAst(
             sumTermEliminator([
-                sumTermEliminator([
-                    unsafeTermReference("foo"),
-                    unsafeTermReference("bar"),
-                ]),
+                sumTermEliminator([termReference("foo"), termReference("bar")]),
             ]),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
@@ -61,8 +58,8 @@ describe("sumTermEliminator", () => {
         const expected = new DenormalizedAst(
             sumTermEliminator([
                 lambdaConstructor({
-                    codomainTerm: unsafeTermReference("bar"),
-                    domainBindings: [unsafeTermBinding("foo")],
+                    codomainTerm: termReference("bar"),
+                    domainBindings: [termBinding("foo")],
                 }),
             ]),
         ).anonymize();
@@ -78,11 +75,11 @@ describe("sumTermEliminator", () => {
 
         const expected = new DenormalizedAst(
             sumTermEliminator([
-                unsafeTermReference("foo"),
-                sumTermEliminator([unsafeTermReference("bar")]),
+                termReference("foo"),
+                sumTermEliminator([termReference("bar")]),
                 lambdaConstructor({
                     codomainTerm: stringTermLiteral("hello"),
-                    domainBindings: [unsafeTermBinding("baz")],
+                    domainBindings: [termBinding("baz")],
                 }),
             ]),
         ).anonymize();
@@ -96,18 +93,14 @@ describe("sumTermConstructor", () => {
     it("parses a sum term constructor with an index of <0`", () => {
         const actual = parser.parse("<0").root().denormalize().anonymize();
 
-        const expected = new DenormalizedAst(
-            unsafeSumTermConstructor(0),
-        ).anonymize();
+        const expected = new DenormalizedAst(sumTermConstructor(0)).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a sum term constructor with an index of <1`", () => {
         const actual = parser.parse("<1").root().denormalize().anonymize();
 
-        const expected = new DenormalizedAst(
-            unsafeSumTermConstructor(1),
-        ).anonymize();
+        const expected = new DenormalizedAst(sumTermConstructor(1)).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 

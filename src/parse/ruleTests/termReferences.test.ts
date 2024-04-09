@@ -1,4 +1,4 @@
-import { DenormalizedAst, unsafeTermReference } from "@flock/ast";
+import { DenormalizedAst, termReference } from "@flock/ast";
 
 import { Parser } from "../parser";
 
@@ -9,7 +9,7 @@ describe("termReference", () => {
         const actual = parser.parse("fooBar").root().denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            unsafeTermReference("fooBar"),
+            termReference("fooBar"),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
@@ -17,9 +17,7 @@ describe("termReference", () => {
     it("parses an all lower-case identifier", () => {
         const actual = parser.parse("foo").root().denormalize().anonymize();
 
-        const expected = new DenormalizedAst(
-            unsafeTermReference("foo"),
-        ).anonymize();
+        const expected = new DenormalizedAst(termReference("foo")).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
@@ -27,7 +25,7 @@ describe("termReference", () => {
         const actual = parser.parse("foo-Bar").root().denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            unsafeTermReference("foo-Bar"),
+            termReference("foo-Bar"),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
@@ -36,7 +34,7 @@ describe("termReference", () => {
         const actual = parser.parse("foo-123").root().denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            unsafeTermReference("foo-123"),
+            termReference("foo-123"),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });

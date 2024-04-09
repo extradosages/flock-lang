@@ -1,3 +1,3 @@
-export * from "./ast";
+export * from "./parserBundles";
 export * from "./denormalized";
 export * from "./normalized";

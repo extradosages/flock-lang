@@ -1,34 +1,17 @@
 import { z } from "zod";
+
 import {
-    emptyDimensionalityParser,
+    emptyDataParser,
     relationalDimensionalityParser,
-    scalarDimensionalityParser,
-} from "../../common";
+} from "../../../common";
+import { weakScalarData_Parser } from "../../common";
 
-export const weakNormalizedEmptyParser = z
-    .object({
-        dimensionality: emptyDimensionalityParser,
-    })
-    .strict();
-
-export const weakNormalizedScalarParser = <Value>(value: z.ZodType<Value>) =>
-    z
-        .object({
-            dimensionality: scalarDimensionalityParser,
-            value,
-        })
-        .strict();
-
-export const weakNormalizedScalar_ValueT_Parser = weakNormalizedScalarParser(
-    z.unknown(),
-);
-
-export const weakNormalizedRelationalParser = z
+export const weakNormalizedRelationalDataParser = z
     .object({ dimensionality: relationalDimensionalityParser })
     .strict();
 
-export const weakNormalizedDataParser = z.discriminatedUnion("dimensionality", [
-    weakNormalizedEmptyParser,
-    weakNormalizedScalar_ValueT_Parser,
-    weakNormalizedRelationalParser,
+export const weakNormalizedDataParser = z.union([
+    emptyDataParser,
+    weakScalarData_Parser,
+    weakNormalizedRelationalDataParser,
 ]);

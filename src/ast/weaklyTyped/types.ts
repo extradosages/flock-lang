@@ -1,6 +1,6 @@
-import { weakAstParsers } from "./ast";
+import { parserBundle } from "./parserBundles";
 import { WeakNodeKind } from "./common";
-import { WeakDenormalizedData, WeakDenormalizedNode } from "./denormalized";
+import { WeakDenormalizedData } from "./denormalized";
 import {
     WeakEdgeMap_SourceKindT_EdgeKindT_,
     WeakNormalizedData,
@@ -10,8 +10,6 @@ import {
 export type WeakAstParsers<
     Kind extends WeakNodeKind,
     DData extends WeakDenormalizedData,
-    DNode extends WeakDenormalizedNode<Kind, DData>,
     NData extends WeakNormalizedData,
-    NNode extends WeakNormalizedNode<Kind, NData>,
     NEdges extends WeakEdgeMap_SourceKindT_EdgeKindT_,
-> = ReturnType<typeof weakAstParsers<Kind, DData, DNode, NData, NNode, NEdges>>;
+> = ReturnType<typeof parserBundle<Kind, DData, NData, NEdges>>;

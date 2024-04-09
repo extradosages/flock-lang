@@ -2,9 +2,10 @@ import { z } from "zod";
 
 import { idParser } from "../../../id";
 import { WeakDenormalizedData } from "../types";
-import { weakDenormalizedDataParser } from "./data";
 import { WeakNodeKind } from "../../common/types";
 import { weakNodeKindParser } from "../../common/parsers";
+
+import { weakDenormalizedDataParser } from "./data";
 
 export const weakDenormalizedNodeParser = <
     Kind extends WeakNodeKind,

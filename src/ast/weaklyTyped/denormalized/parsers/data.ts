@@ -1,28 +1,14 @@
 import { z } from "zod";
+
 import {
-    emptyDimensionalityParser,
+    emptyDataParser,
     relationalDimensionalityParser,
-    scalarDimensionalityParser,
-} from "../../common";
+} from "../../../common";
+import { weakScalarData_Parser } from "../../common";
 
-export const weakDenormalizedEmptyParser = z
-    .object({ dimensionality: emptyDimensionalityParser })
-    .strict();
-
-export const weakDenormalizedScalarParser = <Value>(value: z.ZodType<Value>) =>
-    z
-        .object({
-            dimensionality: scalarDimensionalityParser,
-            value,
-        })
-        .strict();
-
-export const weakDenormalizedScalar_ValueT_Parser =
-    weakDenormalizedScalarParser(z.unknown());
-
-export const weakDenormalizedRelationalParser = <
-    RecordValue,
-    Value extends Record<string, RecordValue | RecordValue[]>,
+export const weakDenormalizedRelationalDataParser = <
+    T,
+    Value extends Record<string, T | T[]>,
 >(
     value: z.ZodType<Value>,
 ) =>
@@ -33,22 +19,21 @@ export const weakDenormalizedRelationalParser = <
         })
         .strict();
 
-export const weakDenormalizedRelational_ValueT_Parser = <RecordValue>(
-    recordValue: z.ZodType<RecordValue>,
+export const weakDenormalizedRelationalData_ValueT_Parser = <T>(
+    t: z.ZodType<T>,
 ) =>
-    weakDenormalizedRelationalParser<
-        RecordValue,
-        Record<string, RecordValue | RecordValue[]>
-    >(z.record(z.string(), z.union([recordValue, z.array(recordValue)])));
+    weakDenormalizedRelationalDataParser(
+        z.record(z.string(), z.union([t, z.array(t)])),
+    );
 
-export const weakDenormalizedRelational_ValueT_RecordValueT_Parser =
-    weakDenormalizedRelational_ValueT_Parser(z.unknown());
+export const weakDenormalizedRelationalData_TT_ValueT_Parser =
+    weakDenormalizedRelationalData_ValueT_Parser(z.unknown());
 
-export const weakDenormalizedDataParser = z.discriminatedUnion(
-    "dimensionality",
-    [
-        weakDenormalizedEmptyParser,
-        weakDenormalizedScalar_ValueT_Parser,
-        weakDenormalizedRelational_ValueT_RecordValueT_Parser,
-    ],
-);
+export const weakDenormalizedRelationalData_Parser =
+    weakDenormalizedRelationalData_TT_ValueT_Parser;
+
+export const weakDenormalizedDataParser = z.union([
+    emptyDataParser,
+    weakScalarData_Parser,
+    weakDenormalizedRelationalData_Parser,
+]);
