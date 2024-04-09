@@ -1,13 +1,9 @@
 import { id } from "../../../id";
-import {
-    StrongEdge,
-    StrongEdgeKind,
-    StrongEdgeTargetKind,
-    StrongNodeKind,
-} from "../..";
+import { StrongEdgeKind, StrongEdgeSourceKind } from "../../common";
+import { StrongEdge, StrongEdgeTargetKind } from "../types";
 
 export const edge = <
-    SourceKind extends StrongNodeKind,
+    SourceKind extends StrongEdgeSourceKind,
     EdgeKind extends StrongEdgeKind<SourceKind>,
     TargetKind extends StrongEdgeTargetKind<SourceKind, EdgeKind>,
 >({

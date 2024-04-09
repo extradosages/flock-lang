@@ -60,7 +60,7 @@ export const strongNodeKinds = [
     "typeReference",
 ] as const;
 
-export const enumeration = {
+export const strongNodes = {
     booleanTerm,
     booleanType,
     clientImplementation,
@@ -90,3 +90,34 @@ export const enumeration = {
     typeDefinition,
     typeReference,
 } as const satisfies Record<(typeof strongNodeKinds)[number], unknown>;
+
+export const strongEdges = {
+    booleanTerm: booleanTerm.normalizedEdges,
+    booleanType: booleanType.normalizedEdges,
+    clientImplementation: clientImplementation.normalizedEdges,
+    floatTerm: floatTerm.normalizedEdges,
+    floatType: floatType.normalizedEdges,
+    functionTermEliminator: functionTermEliminator.normalizedEdges,
+    functionType: functionType.normalizedEdges,
+    genericTypeConstructor: genericTypeConstructor.normalizedEdges,
+    genericTypeEliminator: genericTypeEliminator.normalizedEdges,
+    integerTerm: integerTerm.normalizedEdges,
+    integerType: integerType.normalizedEdges,
+    lambdaConstructor: lambdaConstructor.normalizedEdges,
+    largeTypeType: largeTypeType.normalizedEdges,
+    library: library.normalizedEdges,
+    productTermConstructor: productTermConstructor.normalizedEdges,
+    productTermEliminator: productTermEliminator.normalizedEdges,
+    productType: productType.normalizedEdges,
+    stringTerm: stringTerm.normalizedEdges,
+    stringType: stringType.normalizedEdges,
+    sumTermConstructor: sumTermConstructor.normalizedEdges,
+    sumTermEliminator: sumTermEliminator.normalizedEdges,
+    sumType: sumType.normalizedEdges,
+    termBinding: termBinding.normalizedEdges,
+    termDefinition: termDefinition.normalizedEdges,
+    termReference: termReference.normalizedEdges,
+    typeBinding: typeBinding.normalizedEdges,
+    typeDefinition: typeDefinition.normalizedEdges,
+    typeReference: typeReference.normalizedEdges,
+} as const;

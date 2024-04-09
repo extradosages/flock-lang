@@ -1,15 +1,15 @@
 import {
     DenormalizedAst,
-    booleanTerm,
-    functionTermEliminator,
-    integerTerm,
-    lambdaConstructor,
-    productTermConstructor,
-    productTermEliminator,
-    sumTermConstructor,
-    sumTermEliminator,
-    termBinding,
-    termReference,
+    dBooleanTerm,
+    dFunctionTermEliminator,
+    dIntegerTerm,
+    dLambdaConstructor,
+    dProductTermConstructor,
+    dProductTermEliminator,
+    dSumTermConstructor,
+    dSumTermEliminator,
+    dTermBinding,
+    dTermReference,
 } from "../../ast";
 import { Parser } from "../parser";
 
@@ -17,11 +17,15 @@ describe("lambdaConstructor", () => {
     const parser = new Parser("lambdaConstructor");
 
     it("parses a lambda constructor with no bindings and a term literal body", () => {
-        const actual = parser.parse("[^ -> true ^]").denormalize().anonymize();
+        const first = parser.parse("[^ -> true ^]");
+        const second = first.denormalize();
+        const third = second.anonymize();
+        debugger;
+        const actual = third;
 
         const expected = new DenormalizedAst(
-            lambdaConstructor({
-                codomainTerm: booleanTerm(true),
+            dLambdaConstructor({
+                codomainTerm: dBooleanTerm(true),
                 domainTermBindings: [],
             }),
         ).anonymize();
@@ -32,8 +36,8 @@ describe("lambdaConstructor", () => {
         const actual = parser.parse("[^ -> foo ^]").denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            lambdaConstructor({
-                codomainTerm: termReference("foo"),
+            dLambdaConstructor({
+                codomainTerm: dTermReference("foo"),
                 domainTermBindings: [],
             }),
         ).anonymize();
@@ -47,9 +51,9 @@ describe("lambdaConstructor", () => {
             .anonymize();
 
         const expected = new DenormalizedAst(
-            lambdaConstructor({
-                codomainTerm: productTermConstructor({
-                    components: [termReference("foo"), termReference("bar")],
+            dLambdaConstructor({
+                codomainTerm: dProductTermConstructor({
+                    components: [dTermReference("foo"), dTermReference("bar")],
                 }),
                 domainTermBindings: [],
             }),
@@ -64,9 +68,9 @@ describe("lambdaConstructor", () => {
             .anonymize();
 
         const expected = new DenormalizedAst(
-            lambdaConstructor({
-                codomainTerm: lambdaConstructor({
-                    codomainTerm: booleanTerm(true),
+            dLambdaConstructor({
+                codomainTerm: dLambdaConstructor({
+                    codomainTerm: dBooleanTerm(true),
                     domainTermBindings: [],
                 }),
                 domainTermBindings: [],
@@ -82,10 +86,10 @@ describe("lambdaConstructor", () => {
             .anonymize();
 
         const expected = new DenormalizedAst(
-            lambdaConstructor({
-                codomainTerm: functionTermEliminator({
-                    arguments: [booleanTerm(true)],
-                    function: termReference("foo"),
+            dLambdaConstructor({
+                codomainTerm: dFunctionTermEliminator({
+                    arguments: [dBooleanTerm(true)],
+                    function: dTermReference("foo"),
                 }),
                 domainTermBindings: [],
             }),
@@ -100,26 +104,26 @@ describe("lambdaConstructor", () => {
             .anonymize();
 
         const expected = new DenormalizedAst(
-            lambdaConstructor({
-                codomainTerm: productTermConstructor({
+            dLambdaConstructor({
+                codomainTerm: dProductTermConstructor({
                     components: [
-                        lambdaConstructor({
-                            codomainTerm: booleanTerm(true),
-                            domainTermBindings: [termBinding("qux")],
+                        dLambdaConstructor({
+                            codomainTerm: dBooleanTerm(true),
+                            domainTermBindings: [dTermBinding("qux")],
                         }),
-                        functionTermEliminator({
+                        dFunctionTermEliminator({
                             arguments: [
-                                termReference("bar"),
-                                termReference("baz"),
+                                dTermReference("bar"),
+                                dTermReference("baz"),
                             ],
-                            function: termReference("add"),
+                            function: dTermReference("add"),
                         }),
                     ],
                 }),
                 domainTermBindings: [
-                    termBinding("foo"),
-                    termBinding("bar"),
-                    termBinding("baz"),
+                    dTermBinding("foo"),
+                    dTermBinding("bar"),
+                    dTermBinding("baz"),
                 ],
             }),
         ).anonymize();
@@ -142,9 +146,9 @@ describe("functionTermEliminator", () => {
         const actual = parser.parse("(foo)").denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            functionTermEliminator({
+            dFunctionTermEliminator({
                 arguments: [],
-                function: termReference("foo"),
+                function: dTermReference("foo"),
             }),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
@@ -154,9 +158,9 @@ describe("functionTermEliminator", () => {
         const actual = parser.parse("(foo bar 1)").denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            functionTermEliminator({
-                arguments: [termReference("bar"), integerTerm(1)],
-                function: termReference("foo"),
+            dFunctionTermEliminator({
+                arguments: [dTermReference("bar"), dIntegerTerm(1)],
+                function: dTermReference("foo"),
             }),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
@@ -169,10 +173,10 @@ describe("functionTermEliminator", () => {
             .anonymize();
 
         const expected = new DenormalizedAst(
-            functionTermEliminator({
+            dFunctionTermEliminator({
                 arguments: [],
-                function: lambdaConstructor({
-                    codomainTerm: booleanTerm(true),
+                function: dLambdaConstructor({
+                    codomainTerm: dBooleanTerm(true),
                     domainTermBindings: [],
                 }),
             }),
@@ -187,16 +191,19 @@ describe("functionTermEliminator", () => {
             .anonymize();
 
         const expected = new DenormalizedAst(
-            functionTermEliminator({
-                arguments: [integerTerm(1), integerTerm(2)],
-                function: lambdaConstructor({
-                    codomainTerm: functionTermEliminator({
-                        arguments: [termReference("foo"), termReference("bar")],
-                        function: termReference("add"),
+            dFunctionTermEliminator({
+                arguments: [dIntegerTerm(1), dIntegerTerm(2)],
+                function: dLambdaConstructor({
+                    codomainTerm: dFunctionTermEliminator({
+                        arguments: [
+                            dTermReference("foo"),
+                            dTermReference("bar"),
+                        ],
+                        function: dTermReference("add"),
                     }),
                     domainTermBindings: [
-                        termBinding("foo"),
-                        termBinding("bar"),
+                        dTermBinding("foo"),
+                        dTermBinding("bar"),
                     ],
                 }),
             }),
@@ -211,13 +218,13 @@ describe("functionTermEliminator", () => {
             .anonymize();
 
         const expected = new DenormalizedAst(
-            functionTermEliminator({
+            dFunctionTermEliminator({
                 arguments: [
-                    productTermConstructor({
-                        components: [booleanTerm(true), booleanTerm(false)],
+                    dProductTermConstructor({
+                        components: [dBooleanTerm(true), dBooleanTerm(false)],
                     }),
                 ],
-                function: productTermEliminator(0),
+                function: dProductTermEliminator(0),
             }),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
@@ -227,9 +234,9 @@ describe("functionTermEliminator", () => {
         const actual = parser.parse("(<0 true)").denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            functionTermEliminator({
-                arguments: [booleanTerm(true)],
-                function: sumTermConstructor(0),
+            dFunctionTermEliminator({
+                arguments: [dBooleanTerm(true)],
+                function: dSumTermConstructor(0),
             }),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
@@ -242,23 +249,25 @@ describe("functionTermEliminator", () => {
             .anonymize();
 
         const expected = new DenormalizedAst(
-            functionTermEliminator({
+            dFunctionTermEliminator({
                 arguments: [
-                    functionTermEliminator({
-                        arguments: [booleanTerm(true)],
-                        function: sumTermConstructor(1),
+                    dFunctionTermEliminator({
+                        arguments: [dBooleanTerm(true)],
+                        function: dSumTermConstructor(1),
                     }),
                 ],
-                function: sumTermEliminator([
-                    lambdaConstructor({
-                        codomainTerm: termReference("foo"),
-                        domainTermBindings: [termBinding("foo")],
-                    }),
-                    lambdaConstructor({
-                        codomainTerm: booleanTerm(true),
-                        domainTermBindings: [termBinding("bar")],
-                    }),
-                ]),
+                function: dSumTermEliminator({
+                    components: [
+                        dLambdaConstructor({
+                            codomainTerm: dTermReference("foo"),
+                            domainTermBindings: [dTermBinding("foo")],
+                        }),
+                        dLambdaConstructor({
+                            codomainTerm: dBooleanTerm(true),
+                            domainTermBindings: [dTermBinding("bar")],
+                        }),
+                    ],
+                }),
             }),
         ).anonymize();
         expect(actual).toStrictEqual(expected);

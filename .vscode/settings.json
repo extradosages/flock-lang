@@ -2,9 +2,12 @@
     "cSpell.words": [
         "codomain",
         "Dataǁ",
+        "defterm",
+        "deftype",
         "Denormalization",
         "Denormalize",
         "Denormalized",
+        "denormalizes",
         "Edgeǁ",
         "EdgeǁEdge",
         "Kindǁ",
@@ -19,5 +22,6 @@
         "ScalarǁParser",
         "typedash",
         "unenumerated"
-    ]
+    ],
+    "typescript.tsdk": "node_modules/typescript/lib"
 }

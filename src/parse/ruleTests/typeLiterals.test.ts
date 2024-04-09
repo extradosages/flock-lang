@@ -1,74 +1,71 @@
 import {
     DenormalizedAst,
-    booleanTypeLiteral,
-    floatTypeLiteral,
-    integerTypeLiteral,
-    largeTypeTypeLiteral,
-    stringTypeLiteral,
-} from "@flock/ast";
-
+    dBooleanType,
+    dFloatType,
+    dIntegerType,
+    dStringType,
+    dLargeTypeType,
+} from "../../ast";
 import { Parser } from "../parser";
 
-describe("booleanTypeLiteral", () => {
-    const parser = new Parser("booleanTypeLiteral");
+describe("booleanType", () => {
+    const parser = new Parser("booleanType");
 
     it("parses `Boolean`", () => {
-        const actual = parser.parse("Boolean").root().denormalize().anonymize();
+        const actual = parser.parse("Boolean").denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            booleanTypeLiteral(undefined),
+            dBooleanType(undefined),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 });
 
-describe("floatTypeLiteral", () => {
-    const parser = new Parser("floatTypeLiteral");
+describe("floatType", () => {
+    const parser = new Parser("floatType");
 
     it("parses `Float`", () => {
-        const actual = parser.parse("Float").root().denormalize().anonymize();
+        const actual = parser.parse("Float").denormalize().anonymize();
 
-        const expected = new DenormalizedAst(
-            floatTypeLiteral(undefined),
-        ).anonymize();
+        const expected = new DenormalizedAst(dFloatType(undefined)).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 });
 
-describe("integerTypeLiteral", () => {
-    const parser = new Parser("integerTypeLiteral");
+describe("integerType", () => {
+    const parser = new Parser("integerType");
 
     it("parses `Integer`", () => {
-        const actual = parser.parse("Integer").root().denormalize().anonymize();
+        const actual = parser.parse("Integer").denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            integerTypeLiteral(undefined),
+            dIntegerType(undefined),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 });
 
-describe("stringTypeLiteral", () => {
-    const parser = new Parser("stringTypeLiteral");
+describe("stringType", () => {
+    const parser = new Parser("stringType");
 
     it("parses `String`", () => {
-        const actual = parser.parse("String").root().denormalize().anonymize();
+        const actual = parser.parse("String").denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            stringTypeLiteral(undefined),
+            dStringType(undefined),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 });
 
-describe("largeTypeTypeLiteral", () => {
-    const parser = new Parser("largeTypeTypeLiteral");
+describe("largeTypeType", () => {
+    const parser = new Parser("largeTypeType");
 
     it("parses `Type`", () => {
-        const actual = parser.parse("Type").root().denormalize().anonymize();
+        const actual = parser.parse("Type").denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            largeTypeTypeLiteral(undefined),
+            dLargeTypeType(undefined),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });

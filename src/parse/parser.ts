@@ -2,12 +2,18 @@ import { readFileSync } from "fs";
 
 import * as peggy from "peggy";
 
-import * as ast from "../ast";
+import * as flockAst from "../ast";
+import {
+    DenormalizedAst,
+    NormalizedAst,
+    StrongDenormalizedNode,
+    StrongNodeKind,
+} from "../ast";
 
 const sourcePath = "./grammar/library.pegjs";
 export const source = readFileSync(sourcePath, "utf8");
 
-export class Parser<Kind extends ast.StrongNodeKind = "library"> {
+export class Parser<Kind extends StrongNodeKind = "library"> {
     #kind: Kind;
     #parser: peggy.Parser;
 
@@ -19,9 +25,11 @@ export class Parser<Kind extends ast.StrongNodeKind = "library"> {
         });
     }
 
-    parse(input: string): ast.NormalizedAst<Kind> {
-        const tree = new ast.NormalizedAst(this.#kind);
-        this.#parser.parse(input, { ast, tree });
-        return tree;
+    parse(input: string) {
+        const root: StrongDenormalizedNode<Kind> = this.#parser.parse(input, {
+            flockAst,
+        });
+        debugger;
+        return new DenormalizedAst(root).normalize();
     }
 }

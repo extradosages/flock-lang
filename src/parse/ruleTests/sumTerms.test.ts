@@ -1,34 +1,32 @@
 import {
     DenormalizedAst,
-    sumTermEliminator,
-    stringTermLiteral,
-    termBinding,
-    termReference,
-    lambdaConstructor,
-    sumTermConstructor,
-} from "@flock/ast";
-
+    dSumTermEliminator,
+    dTermReference,
+    dLambdaConstructor,
+    dTermBinding,
+    dStringTerm,
+    dSumTermConstructor,
+} from "../../ast";
+import { sumTermConstructor } from "../../ast/defs";
 import { Parser } from "../parser";
 
 describe("sumTermEliminator", () => {
     const parser = new Parser("sumTermEliminator");
 
     it("parses an empty sum", () => {
-        const actual = parser.parse("[++]").root().denormalize().anonymize();
+        const actual = parser.parse("[++]").denormalize().anonymize();
 
-        const expected = new DenormalizedAst(sumTermEliminator([])).anonymize();
+        const expected = new DenormalizedAst(
+            dSumTermEliminator({ components: [] }),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a sum with a single term reference", () => {
-        const actual = parser
-            .parse("[+ foo +]")
-            .root()
-            .denormalize()
-            .anonymize();
+        const actual = parser.parse("[+ foo +]").denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            sumTermEliminator([termReference("foo")]),
+            dSumTermEliminator({ components: [dTermReference("foo")] }),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
@@ -36,14 +34,20 @@ describe("sumTermEliminator", () => {
     it("parses a sum with a single sum term eliminator", () => {
         const actual = parser
             .parse("[+ [+ foo bar +] +]")
-            .root()
             .denormalize()
             .anonymize();
 
         const expected = new DenormalizedAst(
-            sumTermEliminator([
-                sumTermEliminator([termReference("foo"), termReference("bar")]),
-            ]),
+            dSumTermEliminator({
+                components: [
+                    dSumTermEliminator({
+                        components: [
+                            dTermReference("foo"),
+                            dTermReference("bar"),
+                        ],
+                    }),
+                ],
+            }),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
@@ -51,17 +55,18 @@ describe("sumTermEliminator", () => {
     it("parses a sum with a single function term constructor", () => {
         const actual = parser
             .parse("[+ [^ foo -> bar ^] +]")
-            .root()
             .denormalize()
             .anonymize();
 
         const expected = new DenormalizedAst(
-            sumTermEliminator([
-                lambdaConstructor({
-                    codomainTerm: termReference("bar"),
-                    domainBindings: [termBinding("foo")],
-                }),
-            ]),
+            dSumTermEliminator({
+                components: [
+                    dLambdaConstructor({
+                        codomainTerm: dTermReference("bar"),
+                        domainTermBindings: [dTermBinding("foo")],
+                    }),
+                ],
+            }),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
@@ -69,19 +74,20 @@ describe("sumTermEliminator", () => {
     it("parses a sum with several components", () => {
         const actual = parser
             .parse('[+  foo [+ bar +] [^ baz -> "hello" ^] +]')
-            .root()
             .denormalize()
             .anonymize();
 
         const expected = new DenormalizedAst(
-            sumTermEliminator([
-                termReference("foo"),
-                sumTermEliminator([termReference("bar")]),
-                lambdaConstructor({
-                    codomainTerm: stringTermLiteral("hello"),
-                    domainBindings: [termBinding("baz")],
-                }),
-            ]),
+            dSumTermEliminator({
+                components: [
+                    dTermReference("foo"),
+                    dSumTermEliminator({ components: [dTermReference("bar")] }),
+                    dLambdaConstructor({
+                        codomainTerm: dStringTerm("hello"),
+                        domainTermBindings: [dTermBinding("baz")],
+                    }),
+                ],
+            }),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
@@ -91,16 +97,20 @@ describe("sumTermConstructor", () => {
     const parser = new Parser("sumTermConstructor");
 
     it("parses a sum term constructor with an index of <0`", () => {
-        const actual = parser.parse("<0").root().denormalize().anonymize();
+        const actual = parser.parse("<0").denormalize().anonymize();
 
-        const expected = new DenormalizedAst(sumTermConstructor(0)).anonymize();
+        const expected = new DenormalizedAst(
+            dSumTermConstructor(0),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a sum term constructor with an index of <1`", () => {
-        const actual = parser.parse("<1").root().denormalize().anonymize();
+        const actual = parser.parse("<1").denormalize().anonymize();
 
-        const expected = new DenormalizedAst(sumTermConstructor(1)).anonymize();
+        const expected = new DenormalizedAst(
+            dSumTermConstructor(1),
+        ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 

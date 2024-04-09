@@ -1,6 +1,11 @@
 import { z } from "zod";
 
-import { Enumeration, StrongEdgeKind, StrongNodeKind } from "../common";
+import {
+    StrongEdgeKind,
+    StrongEdgeSourceKind,
+    StrongEdges,
+    StrongNodeKind,
+} from "../common";
 
 import {
     strongNormalizedDataParser,
@@ -51,54 +56,49 @@ export type StrongNormalizedNode_KindT_ = z.infer<
  */
 export type StrongNormalizedNode_ = StrongNormalizedNode_KindT_;
 
-/**
- * Strongly typed edge PARSERS in normalized AST.
- */
 type StrongEdgeParser<
-    SourceKind extends StrongNodeKind,
+    SourceKind extends StrongEdgeSourceKind,
     EdgeKind extends StrongEdgeKind<SourceKind>,
-> = Enumeration[SourceKind]["normalizedEdges"][EdgeKind];
+> = StrongEdges[SourceKind][EdgeKind];
 
 /**
  * Strongly typed edges in normalized AST.
- *
- * TODO: Derive from parser!
- *
  */
 export type StrongEdge<
-    SourceKind extends StrongNodeKind,
+    SourceKind extends StrongEdgeSourceKind,
     EdgeKind extends StrongEdgeKind<SourceKind>,
 > = z.infer<
-    StrongEdgeParser<SourceKind, EdgeKind> extends z.ZodType
+    StrongEdgeParser<SourceKind, EdgeKind> extends z.ZodTypeAny
         ? StrongEdgeParser<SourceKind, EdgeKind>
         : never
 >;
 
 /**
  * Strongly typed edges in normalized AST, marginalized over the `EdgeKind` parameter.
- *
- * TODO: Derive from parser!
  */
-export type StrongEdge_EdgeKindT_<SourceKind extends StrongNodeKind> =
+export type StrongEdge_EdgeKindT_<SourceKind extends StrongEdgeSourceKind> =
     StrongEdge<SourceKind, StrongEdgeKind<SourceKind>>;
 
 /**
  * Strongly typed edges in normalized AST, marginalized over all `EdgeKind` and `SourceKind` parameters.
  *
- * TODO: This type is totally broken, doesn't work at all.
+ * This definition is crazy but it is necessary to avoid this type collapsing to `never`.
  */
-// export type StrongEdge_SourceKindT_EdgeKindT_ =
-//     StrongEdge_EdgeKindT_<StrongNodeKind>;
+export type StrongEdge_SourceKindT_EdgeKindT_ = {
+    [SourceKind in StrongEdgeSourceKind]: StrongEdge_EdgeKindT_<SourceKind>;
+}[StrongEdgeSourceKind];
 
 /**
  * Strongly typed edges in normalized AST, marginalized over all the parameters.
  */
-// export type StrongEdge_ = StrongEdge_SourceKindT_EdgeKindT_;
+export type StrongEdge_ = StrongEdge_SourceKindT_EdgeKindT_;
 
 /**
  * Strongly typed edge target kind in normalized AST.
  */
 export type StrongEdgeTargetKind<
-    SourceKind extends StrongNodeKind,
+    SourceKind extends StrongEdgeSourceKind,
     EdgeKind extends StrongEdgeKind<SourceKind>,
 > = StrongEdge<SourceKind, EdgeKind>["targetKind"];
+
+type Test = StrongEdgeTargetKind<"library", "termDefinitions">;

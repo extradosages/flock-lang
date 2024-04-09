@@ -1,44 +1,39 @@
 import {
     DenormalizedAst,
-    booleanTypeLiteral,
-    clientImplementation,
-    floatTypeLiteral,
-    functionTermEliminator,
-    functionType,
-    integerTypeLiteral,
-    lambdaConstructor,
-    library,
-    sumType,
-    termDefinition,
-    typeDefinition,
-    termBinding,
-    termReference,
-    unsafeTypeBinding,
-} from "@flock/ast";
-
+    dBooleanType,
+    dClientImplementation,
+    dFloatType,
+    dFunctionTermEliminator,
+    dFunctionType,
+    dIntegerType,
+    dLambdaConstructor,
+    dLibrary,
+    dSumType,
+    dTermBinding,
+    dTermDefinition,
+    dTermReference,
+    dTypeBinding,
+    dTypeDefinition,
+} from "../../ast";
 import { Parser } from "../parser";
 
 describe("library", () => {
     const parser = new Parser("library");
 
     it("parses an empty library", () => {
-        const actual = parser.parse("").root().denormalize().anonymize();
+        const actual = parser.parse("").denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            library({ termDefinitions: [], typeDefinitions: [] }),
+            dLibrary({ termDefinitions: [], typeDefinitions: [] }),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses a library with only newlines", () => {
-        const actual = parser
-            .parse("\n\n\n\n")
-            .root()
-            .denormalize()
-            .anonymize();
+        const actual = parser.parse("\n\n\n\n").denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            library({ termDefinitions: [], typeDefinitions: [] }),
+            dLibrary({ termDefinitions: [], typeDefinitions: [] }),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
@@ -48,67 +43,70 @@ describe("library", () => {
             .parse(
                 "defterm not:[^ Boolean -> Boolean ^] client\ndefterm or:[^ Boolean Boolean -> Boolean ^] [^ left-prop right-prop -> (not (and (not left-prop) (not right-prop))) ^]\ndeftype Number:Type [+ Integer Float +]",
             )
-            .root()
             .denormalize()
             .anonymize();
 
         const expected = new DenormalizedAst(
-            library({
+            dLibrary({
                 termDefinitions: [
-                    termDefinition({
-                        binding: termBinding("not"),
-                        term: clientImplementation(undefined),
-                        type: functionType({
-                            codomain: booleanTypeLiteral(undefined),
-                            domains: [booleanTypeLiteral(undefined)],
+                    dTermDefinition({
+                        binding: dTermBinding("not"),
+                        term: dClientImplementation(undefined),
+                        type: dFunctionType({
+                            codomain: dBooleanType(undefined),
+                            domains: [dBooleanType(undefined)],
                         }),
                     }),
-                    termDefinition({
-                        binding: termBinding("or"),
-                        term: lambdaConstructor({
-                            codomainTerm: functionTermEliminator({
+                    dTermDefinition({
+                        binding: dTermBinding("or"),
+                        term: dLambdaConstructor({
+                            codomainTerm: dFunctionTermEliminator({
                                 arguments: [
-                                    functionTermEliminator({
+                                    dFunctionTermEliminator({
                                         arguments: [
-                                            functionTermEliminator({
+                                            dFunctionTermEliminator({
                                                 arguments: [
-                                                    termReference("left-prop"),
+                                                    dTermReference("left-prop"),
                                                 ],
-                                                function: termReference("not"),
+                                                function: dTermReference("not"),
                                             }),
-                                            functionTermEliminator({
+                                            dFunctionTermEliminator({
                                                 arguments: [
-                                                    termReference("right-prop"),
+                                                    dTermReference(
+                                                        "right-prop",
+                                                    ),
                                                 ],
-                                                function: termReference("not"),
+                                                function: dTermReference("not"),
                                             }),
                                         ],
-                                        function: termReference("and"),
+                                        function: dTermReference("and"),
                                     }),
                                 ],
-                                function: termReference("not"),
+                                function: dTermReference("not"),
                             }),
-                            domainBindings: [
-                                termBinding("left-prop"),
-                                termBinding("right-prop"),
+                            domainTermBindings: [
+                                dTermBinding("left-prop"),
+                                dTermBinding("right-prop"),
                             ],
                         }),
-                        type: functionType({
-                            codomain: booleanTypeLiteral(undefined),
+                        type: dFunctionType({
+                            codomain: dBooleanType(undefined),
                             domains: [
-                                booleanTypeLiteral(undefined),
-                                booleanTypeLiteral(undefined),
+                                dBooleanType(undefined),
+                                dBooleanType(undefined),
                             ],
                         }),
                     }),
                 ],
                 typeDefinitions: [
-                    typeDefinition({
-                        binding: unsafeTypeBinding("Number"),
-                        type: sumType([
-                            integerTypeLiteral(undefined),
-                            floatTypeLiteral(undefined),
-                        ]),
+                    dTypeDefinition({
+                        binding: dTypeBinding("Number"),
+                        type: dSumType({
+                            components: [
+                                dIntegerType(undefined),
+                                dFloatType(undefined),
+                            ],
+                        }),
                     }),
                 ],
             }),

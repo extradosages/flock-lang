@@ -1,16 +1,17 @@
 import { z } from "zod";
 
-import { enumeration } from "./enumeration";
+import { strongEdges, strongNodes } from "./enumeration";
 import { strongNodeKindParser } from "./parsers";
 
-export type Enumeration = typeof enumeration;
+export type StrongNodes = typeof strongNodes;
 
 export type StrongNodeKind = z.infer<typeof strongNodeKindParser>;
 
 export type StrongNodeKindOptions = typeof strongNodeKindParser.options;
 
-export type StrongEdges<SourceKind extends StrongNodeKind> =
-    Enumeration[SourceKind]["normalizedEdges"];
+export type StrongEdges = typeof strongEdges;
 
-export type StrongEdgeKind<SourceKind extends StrongNodeKind> =
-    keyof StrongEdges<SourceKind>;
+export type StrongEdgeSourceKind = keyof StrongEdges;
+
+export type StrongEdgeKind<SourceKind extends StrongEdgeSourceKind> =
+    keyof StrongEdges[SourceKind];

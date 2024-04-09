@@ -1,14 +1,23 @@
+import * as _ from "lodash";
+
+import { ErrorWithContext } from "../../../lib/errorsWithContext";
 import { recordValueOrValueArrayMap } from "../../../lib/recordMaps";
-import { anonymize } from "../../common";
+import { anonymize, emptyData, scalarData } from "../../common";
 import { id } from "../../id";
 import {
     WeakDenormalizedNode_,
     WeakDenormalizedRelationalData_ValueT_,
     WeakEdge_,
     mapDenormalizedData,
+    weakNormalizedRelationalData,
 } from "../../weaklyTyped";
 import { StrongNodeKind } from "../common";
-import { NormalizedAst } from "../normalized";
+import {
+    NormalizedAst,
+    StrongEdge_,
+    StrongNormalizedData_,
+    StrongNormalizedNode_,
+} from "../normalized";
 
 import { StrongDenormalizedNode, StrongDenormalizedNode_ } from "./types";
 
@@ -59,42 +68,106 @@ export class DenormalizedAst<Kind extends StrongNodeKind> {
 
     // Normalize
 
-    #normalizeNode(
-        ast: NormalizedAst<StrongNodeKind>,
+    #normalizedRelationalData(
+        nodesAccumulator: StrongNormalizedNode_[],
+        edgesAccumulator: WeakEdge_[],
         node: StrongDenormalizedNode_,
-        edgeIds: EdgeId[],
-    ): void {
-        ast.addNode(node);
+    ) {
+        const value = node.data.value as Record<
+            string,
+            StrongDenormalizedNode_ | StrongDenormalizedNode_[]
+        >;
 
-        const { data } = node;
-        if (data.dimensionality === "relational") {
-            recordValueOrValueArrayMap<StrongDenormalizedNode_, void, any>(
-                (targetNode, kind, index) => {
-                    const edgeId =
-                        findEdgeId(edgeIds, node.id, targetNode.id) ?? id();
+        // Imperative recursive kernel
+        recordValueOrValueArrayMap<
+            StrongDenormalizedNode_,
+            void,
+            Record<string, StrongDenormalizedNode_ | StrongDenormalizedNode_[]>
+        >((targetNode, kind, index) => {
+            const edgeId = id();
 
-                    const edge: WeakEdge_ = {
-                        id: edgeId,
-                        kind,
-                        sourceId: node.id,
-                        sourceKind: node.kind,
-                        targetId: targetNode.id,
-                        targetKind: targetNode.kind,
-                        index,
-                    };
+            const edge: WeakEdge_ = {
+                id: edgeId,
+                kind,
+                sourceId: node.id,
+                sourceKind: node.kind,
+                targetId: targetNode.id,
+                targetKind: targetNode.kind,
+                index,
+            };
 
-                    ast.addEdge(edge);
-                    this.#normalizeNode(ast, targetNode, edgeIds);
-                },
-                data as any,
-            );
-        }
+            edgesAccumulator.push(edge);
+
+            this.#normalizeNode(nodesAccumulator, edgesAccumulator, targetNode);
+
+            return {};
+        }, value);
+
+        // Infer type
+        const type = _.mapValues(value, (value) => ({
+            manyToOne: Array.isArray(value),
+        })) as Record<string, { manyToOne: boolean }>;
+
+        return weakNormalizedRelationalData(type);
     }
 
-    normalize(edgeIds: EdgeId[] = []) {
+    #normalizedData(
+        nodesAccumulator: StrongNormalizedNode_[],
+        edgesAccumulator: WeakEdge_[],
+        node: StrongDenormalizedNode_,
+    ): StrongNormalizedData_ {
+        const {
+            data: { dimensionality, value },
+        } = node;
+
+        if (dimensionality === "empty") {
+            return emptyData();
+        }
+        if (dimensionality === "scalar") {
+            return scalarData(value);
+        }
+        if (dimensionality === "relational") {
+            return this.#normalizedRelationalData(
+                nodesAccumulator,
+                edgesAccumulator,
+                node,
+            ) as any;
+        }
+
+        throw new ErrorWithContext(
+            { dimensionality },
+            "Unsupported dimensionality",
+        );
+    }
+
+    #normalizeNode(
+        nodesAccumulator: StrongNormalizedNode_[],
+        edgesAccumulator: WeakEdge_[],
+        node: StrongDenormalizedNode_,
+    ): void {
+        const normalizedData = this.#normalizedData(
+            nodesAccumulator,
+            edgesAccumulator,
+            node,
+        );
+
+        const normalizedNode = {
+            ...node,
+            data: normalizedData,
+        } as StrongNormalizedNode_;
+
+        nodesAccumulator.push(normalizedNode);
+    }
+
+    normalize() {
+        const nodesAccumulator: StrongNormalizedNode_[] = [];
+        const edgesAccumulator: WeakEdge_[] = [];
         const root = this.root();
+        this.#normalizeNode(nodesAccumulator, edgesAccumulator, root);
+
         const ast = new NormalizedAst(root.kind);
-        this.#normalizeNode(ast, root, edgeIds);
+        nodesAccumulator.forEach((node) => ast.addNode(node));
+        edgesAccumulator.forEach((edge) => ast.addEdge(edge));
         return ast;
     }
 }

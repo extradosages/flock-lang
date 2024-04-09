@@ -1,23 +1,22 @@
 import {
     DenormalizedAst,
-    booleanTerm,
-    booleanTypeLiteral,
-    clientImplementation,
-    functionTermEliminator,
-    functionType,
-    genericTypeConstructor,
-    lambdaConstructor,
-    productTermConstructor,
-    productType,
-    stringTermLiteral,
-    stringTypeLiteral,
-    termDefinition,
-    termBinding,
-    termReference,
-    unsafeTypeBinding,
-    unsafeTypeReference,
-} from "@flock/ast";
-
+    dTermDefinition,
+    dTermBinding,
+    dBooleanTerm,
+    dBooleanType,
+    dGenericTypeConstructor,
+    dTypeBinding,
+    dProductTermConstructor,
+    dStringTerm,
+    dProductType,
+    dStringType,
+    dFunctionTermEliminator,
+    dTermReference,
+    dLambdaConstructor,
+    dFunctionType,
+    dTypeReference,
+    dClientImplementation,
+} from "../../ast";
 import { Parser } from "../parser";
 
 describe("termDefinition", () => {
@@ -26,15 +25,14 @@ describe("termDefinition", () => {
     it("parses a a term definition with a literal type and a term literal body", () => {
         const actual = parser
             .parse("defterm foo:Boolean true")
-            .root()
             .denormalize()
             .anonymize();
 
         const expected = new DenormalizedAst(
-            termDefinition({
-                binding: termBinding("foo"),
-                term: booleanTerm(true),
-                type: booleanTypeLiteral(undefined),
+            dTermDefinition({
+                binding: dTermBinding("foo"),
+                term: dBooleanTerm(true),
+                type: dBooleanType(undefined),
             }),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
@@ -43,17 +41,16 @@ describe("termDefinition", () => {
     it("parses a term definition with a generic type and a term literal body", () => {
         const actual = parser
             .parse("defterm foo:[^ Foo => Boolean ^] true")
-            .root()
             .denormalize()
             .anonymize();
 
         const expected = new DenormalizedAst(
-            termDefinition({
-                binding: termBinding("foo"),
-                term: booleanTerm(true),
-                type: genericTypeConstructor({
-                    codomainType: booleanTypeLiteral(undefined),
-                    domainBindings: [unsafeTypeBinding("Foo")],
+            dTermDefinition({
+                binding: dTermBinding("foo"),
+                term: dBooleanTerm(true),
+                type: dGenericTypeConstructor({
+                    codomainType: dBooleanType(undefined),
+                    domainTypeBindings: [dTypeBinding("Foo")],
                 }),
             }),
         ).anonymize();
@@ -63,21 +60,21 @@ describe("termDefinition", () => {
     it("parses a term definition with a composite type and a composite term body", () => {
         const actual = parser
             .parse('defterm foo:[* Boolean String *] [* true "bar" *]')
-            .root()
             .denormalize()
             .anonymize();
 
         const expected = new DenormalizedAst(
-            termDefinition({
-                binding: termBinding("foo"),
-                term: productTermConstructor([
-                    booleanTerm(true),
-                    stringTermLiteral("bar"),
-                ]),
-                type: productType([
-                    booleanTypeLiteral(undefined),
-                    stringTypeLiteral(undefined),
-                ]),
+            dTermDefinition({
+                binding: dTermBinding("foo"),
+                term: dProductTermConstructor({
+                    components: [dBooleanTerm(true), dStringTerm("bar")],
+                }),
+                type: dProductType({
+                    components: [
+                        dBooleanType(undefined),
+                        dStringType(undefined),
+                    ],
+                }),
             }),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
@@ -86,18 +83,17 @@ describe("termDefinition", () => {
     it("parses a term definition with a function eliminator body", () => {
         const actual = parser
             .parse("defterm foo:Boolean (not true)")
-            .root()
             .denormalize()
             .anonymize();
 
         const expected = new DenormalizedAst(
-            termDefinition({
-                binding: termBinding("foo"),
-                term: functionTermEliminator({
-                    arguments: [booleanTerm(true)],
-                    function: termReference("not"),
+            dTermDefinition({
+                binding: dTermBinding("foo"),
+                term: dFunctionTermEliminator({
+                    arguments: [dBooleanTerm(true)],
+                    function: dTermReference("not"),
                 }),
-                type: booleanTypeLiteral(undefined),
+                type: dBooleanType(undefined),
             }),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
@@ -108,27 +104,26 @@ describe("termDefinition", () => {
             .parse(
                 'defterm foo:[^ Boolean -> String ^] [^ bar -> (if-then-else bar "true" "false") ^]',
             )
-            .root()
             .denormalize()
             .anonymize();
 
         const expected = new DenormalizedAst(
-            termDefinition({
-                binding: termBinding("foo"),
-                term: lambdaConstructor({
-                    codomainTerm: functionTermEliminator({
+            dTermDefinition({
+                binding: dTermBinding("foo"),
+                term: dLambdaConstructor({
+                    codomainTerm: dFunctionTermEliminator({
                         arguments: [
-                            termReference("bar"),
-                            stringTermLiteral("true"),
-                            stringTermLiteral("false"),
+                            dTermReference("bar"),
+                            dStringTerm("true"),
+                            dStringTerm("false"),
                         ],
-                        function: termReference("if-then-else"),
+                        function: dTermReference("if-then-else"),
                     }),
-                    domainBindings: [termBinding("bar")],
+                    domainTermBindings: [dTermBinding("bar")],
                 }),
-                type: functionType({
-                    codomain: stringTypeLiteral(undefined),
-                    domains: [booleanTypeLiteral(undefined)],
+                type: dFunctionType({
+                    codomain: dStringType(undefined),
+                    domains: [dBooleanType(undefined)],
                 }),
             }),
         ).anonymize();
@@ -140,40 +135,36 @@ describe("termDefinition", () => {
             .parse(
                 "defterm not-is-equal:[^ T => [^ T T -> Boolean ^] ^] [^ term1 term2 -> (not (is-equal term1 term2)) ^]",
             )
-            .root()
             .denormalize()
             .anonymize();
 
         const expected = new DenormalizedAst(
-            termDefinition({
-                binding: termBinding("not-is-equal"),
-                term: lambdaConstructor({
-                    codomainTerm: functionTermEliminator({
+            dTermDefinition({
+                binding: dTermBinding("not-is-equal"),
+                term: dLambdaConstructor({
+                    codomainTerm: dFunctionTermEliminator({
                         arguments: [
-                            functionTermEliminator({
+                            dFunctionTermEliminator({
                                 arguments: [
-                                    termReference("term1"),
-                                    termReference("term2"),
+                                    dTermReference("term1"),
+                                    dTermReference("term2"),
                                 ],
-                                function: termReference("is-equal"),
+                                function: dTermReference("is-equal"),
                             }),
                         ],
-                        function: termReference("not"),
+                        function: dTermReference("not"),
                     }),
-                    domainBindings: [
-                        termBinding("term1"),
-                        termBinding("term2"),
+                    domainTermBindings: [
+                        dTermBinding("term1"),
+                        dTermBinding("term2"),
                     ],
                 }),
-                type: genericTypeConstructor({
-                    codomainType: functionType({
-                        codomain: booleanTypeLiteral(undefined),
-                        domains: [
-                            unsafeTypeReference("T"),
-                            unsafeTypeReference("T"),
-                        ],
+                type: dGenericTypeConstructor({
+                    codomainType: dFunctionType({
+                        codomain: dBooleanType(undefined),
+                        domains: [dTypeReference("T"), dTypeReference("T")],
                     }),
-                    domainBindings: [unsafeTypeBinding("T")],
+                    domainTypeBindings: [dTypeBinding("T")],
                 }),
             }),
         ).anonymize();
@@ -183,15 +174,14 @@ describe("termDefinition", () => {
     it("parses a term definition with a literal type and a client implementation body", () => {
         const actual = parser
             .parse("defterm foo:Boolean client")
-            .root()
             .denormalize()
             .anonymize();
 
         const expected = new DenormalizedAst(
-            termDefinition({
-                binding: termBinding("foo"),
-                term: clientImplementation(undefined),
-                type: booleanTypeLiteral(undefined),
+            dTermDefinition({
+                binding: dTermBinding("foo"),
+                term: dClientImplementation(undefined),
+                type: dBooleanType(undefined),
             }),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
@@ -200,18 +190,19 @@ describe("termDefinition", () => {
     it("parses a term definition with a composite type and a client implementation body", () => {
         const actual = parser
             .parse("defterm foo:[* Boolean String *] client")
-            .root()
             .denormalize()
             .anonymize();
 
         const expected = new DenormalizedAst(
-            termDefinition({
-                binding: termBinding("foo"),
-                term: clientImplementation(undefined),
-                type: productType([
-                    booleanTypeLiteral(undefined),
-                    stringTypeLiteral(undefined),
-                ]),
+            dTermDefinition({
+                binding: dTermBinding("foo"),
+                term: dClientImplementation(undefined),
+                type: dProductType({
+                    components: [
+                        dBooleanType(undefined),
+                        dStringType(undefined),
+                    ],
+                }),
             }),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
@@ -220,17 +211,16 @@ describe("termDefinition", () => {
     it("parses a term definition with a function type and a client implementation body", () => {
         const actual = parser
             .parse("defterm foo:[^ Boolean -> String ^] client")
-            .root()
             .denormalize()
             .anonymize();
 
         const expected = new DenormalizedAst(
-            termDefinition({
-                binding: termBinding("foo"),
-                term: clientImplementation(undefined),
-                type: functionType({
-                    codomain: stringTypeLiteral(undefined),
-                    domains: [booleanTypeLiteral(undefined)],
+            dTermDefinition({
+                binding: dTermBinding("foo"),
+                term: dClientImplementation(undefined),
+                type: dFunctionType({
+                    codomain: dStringType(undefined),
+                    domains: [dBooleanType(undefined)],
                 }),
             }),
         ).anonymize();
@@ -240,23 +230,19 @@ describe("termDefinition", () => {
     it("parses a term definition with a generic type and a client implementation body", () => {
         const actual = parser
             .parse("defterm is-equal:[^ T => [^ T T -> Boolean ^] ^] client")
-            .root()
             .denormalize()
             .anonymize();
 
         const expected = new DenormalizedAst(
-            termDefinition({
-                binding: termBinding("is-equal"),
-                term: clientImplementation(undefined),
-                type: genericTypeConstructor({
-                    codomainType: functionType({
-                        codomain: booleanTypeLiteral(undefined),
-                        domains: [
-                            unsafeTypeReference("T"),
-                            unsafeTypeReference("T"),
-                        ],
+            dTermDefinition({
+                binding: dTermBinding("is-equal"),
+                term: dClientImplementation(undefined),
+                type: dGenericTypeConstructor({
+                    codomainType: dFunctionType({
+                        codomain: dBooleanType(undefined),
+                        domains: [dTypeReference("T"), dTypeReference("T")],
                     }),
-                    domainBindings: [unsafeTypeBinding("T")],
+                    domainTypeBindings: [dTypeBinding("T")],
                 }),
             }),
         ).anonymize();

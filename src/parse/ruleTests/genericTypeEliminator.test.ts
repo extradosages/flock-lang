@@ -1,26 +1,25 @@
 import {
     DenormalizedAst,
-    booleanTypeLiteral,
-    floatTypeLiteral,
-    genericTypeConstructor,
-    genericTypeEliminator,
-    productType,
-    stringTypeLiteral,
-    unsafeTypeBinding,
-    unsafeTypeReference,
-} from "@flock/ast";
-
+    dBooleanType,
+    dFloatType,
+    dGenericTypeConstructor,
+    dGenericTypeEliminator,
+    dProductType,
+    dStringType,
+    dTypeBinding,
+    dTypeReference,
+} from "../../ast";
 import { Parser } from "../parser";
 
 describe("genericTypeEliminator", () => {
     const parser = new Parser("genericTypeEliminator");
 
     it("parses the generic type eliminator on a reference with no arguments", () => {
-        const actual = parser.parse("(Foo)").root().denormalize().anonymize();
+        const actual = parser.parse("(Foo)").denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            genericTypeEliminator({
-                function: unsafeTypeReference("Foo"),
+            dGenericTypeEliminator({
+                genericType: dTypeReference("Foo"),
                 arguments: [],
             }),
         ).anonymize();
@@ -30,19 +29,20 @@ describe("genericTypeEliminator", () => {
     it("parses the generic type eliminator on a reference with several arguments", () => {
         const actual = parser
             .parse("(Foo Boolean [* Bar String *])")
-            .root()
             .denormalize()
             .anonymize();
 
         const expected = new DenormalizedAst(
-            genericTypeEliminator({
-                function: unsafeTypeReference("Foo"),
+            dGenericTypeEliminator({
+                genericType: dTypeReference("Foo"),
                 arguments: [
-                    booleanTypeLiteral(undefined),
-                    productType([
-                        unsafeTypeReference("Bar"),
-                        stringTypeLiteral(undefined),
-                    ]),
+                    dBooleanType(undefined),
+                    dProductType({
+                        components: [
+                            dTypeReference("Bar"),
+                            dStringType(undefined),
+                        ],
+                    }),
                 ],
             }),
         ).anonymize();
@@ -52,15 +52,14 @@ describe("genericTypeEliminator", () => {
     it("parses the generic type eliminator on a generic type constructor with no arguments", () => {
         const actual = parser
             .parse("([^ => Boolean ^])")
-            .root()
             .denormalize()
             .anonymize();
 
         const expected = new DenormalizedAst(
-            genericTypeEliminator({
-                function: genericTypeConstructor({
-                    codomainType: booleanTypeLiteral(undefined),
-                    domainBindings: [],
+            dGenericTypeEliminator({
+                genericType: dGenericTypeConstructor({
+                    codomainType: dBooleanType(undefined),
+                    domainTypeBindings: [],
                 }),
                 arguments: [],
             }),
@@ -71,27 +70,28 @@ describe("genericTypeEliminator", () => {
     it("parses the generic type eliminator on a generic type constructor with several arguments", () => {
         const actual = parser
             .parse("([^ Foo Bar Baz => Foo ^] [* Boolean String *] Qux Float)")
-            .root()
             .denormalize()
             .anonymize();
 
         const expected = new DenormalizedAst(
-            genericTypeEliminator({
-                function: genericTypeConstructor({
-                    codomainType: unsafeTypeReference("Foo"),
-                    domainBindings: [
-                        unsafeTypeBinding("Foo"),
-                        unsafeTypeBinding("Bar"),
-                        unsafeTypeBinding("Baz"),
+            dGenericTypeEliminator({
+                genericType: dGenericTypeConstructor({
+                    codomainType: dTypeReference("Foo"),
+                    domainTypeBindings: [
+                        dTypeBinding("Foo"),
+                        dTypeBinding("Bar"),
+                        dTypeBinding("Baz"),
                     ],
                 }),
                 arguments: [
-                    productType([
-                        booleanTypeLiteral(undefined),
-                        stringTypeLiteral(undefined),
-                    ]),
-                    unsafeTypeReference("Qux"),
-                    floatTypeLiteral(undefined),
+                    dProductType({
+                        components: [
+                            dBooleanType(undefined),
+                            dStringType(undefined),
+                        ],
+                    }),
+                    dTypeReference("Qux"),
+                    dFloatType(undefined),
                 ],
             }),
         ).anonymize();

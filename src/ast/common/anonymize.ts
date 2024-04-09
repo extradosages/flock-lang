@@ -1,6 +1,11 @@
-export const anonymize = <Value extends { id: string }>(
-    value: Value,
-): Omit<Value, "id"> => {
-    const { id: _id, ...rest } = value;
-    return rest;
+import * as uuid from "uuid";
+
+export const anonymize = (value: Record<string, unknown>) => {
+    const anonymized = { ...value };
+    for (const key in anonymized) {
+        if (key.endsWith("id") || key.endsWith("Id")) {
+            anonymized[key] = uuid.NIL;
+        }
+    }
+    return anonymized;
 };

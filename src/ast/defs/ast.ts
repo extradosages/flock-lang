@@ -256,7 +256,12 @@ type FunctionTermEliminatorKind = z.infer<
 >;
 
 const normalizedFunctionTermEliminatorDataParser =
-    weakNormalizedRelationalDataParser;
+    weakNormalizedRelationalDataParser(
+        z.object({
+            arguments: z.object({ manyToOne: z.literal(true) }),
+            function: z.object({ manyToOne: z.literal(false) }),
+        }),
+    );
 
 type NormalizedFunctionTermEliminatorData = z.infer<
     typeof normalizedFunctionTermEliminatorDataParser
@@ -335,7 +340,12 @@ const functionTypeKindParser = z.literal("functionType");
 
 type FunctionTypeKind = z.infer<typeof functionTypeKindParser>;
 
-const normalizedFunctionTypeDataParser = weakNormalizedRelationalDataParser;
+const normalizedFunctionTypeDataParser = weakNormalizedRelationalDataParser(
+    z.object({
+        codomain: z.object({ manyToOne: z.literal(false) }),
+        domains: z.object({ manyToOne: z.literal(true) }),
+    }),
+);
 
 type NormalizedFunctionTypeData = z.infer<
     typeof normalizedFunctionTypeDataParser
@@ -413,7 +423,12 @@ type GenericTypeConstructorKind = z.infer<
 >;
 
 const normalizedGenericTypeConstructorDataParser =
-    weakNormalizedRelationalDataParser;
+    weakNormalizedRelationalDataParser(
+        z.object({
+            codomainType: z.object({ manyToOne: z.literal(false) }),
+            domainTypeBindings: z.object({ manyToOne: z.literal(true) }),
+        }),
+    );
 
 type NormalizedGenericTypeConstructorData = z.infer<
     typeof normalizedGenericTypeConstructorDataParser
@@ -495,7 +510,12 @@ type GenericTypeEliminatorKind = z.infer<
 >;
 
 const normalizedGenericTypeEliminatorDataParser =
-    weakNormalizedRelationalDataParser;
+    weakNormalizedRelationalDataParser(
+        z.object({
+            genericType: z.object({ manyToOne: z.literal(false) }),
+            arguments: z.object({ manyToOne: z.literal(true) }),
+        }),
+    );
 
 type NormalizedGenericTypeEliminatorData = z.infer<
     typeof normalizedGenericTypeEliminatorDataParser
@@ -671,7 +691,12 @@ const lambdaConstructorKindParser = z.literal("lambdaConstructor");
 type LambdaConstructorKind = z.infer<typeof lambdaConstructorKindParser>;
 
 const normalizedLambdaConstructorDataParser =
-    weakNormalizedRelationalDataParser;
+    weakNormalizedRelationalDataParser(
+        z.object({
+            codomainTerm: z.object({ manyToOne: z.literal(false) }),
+            domainTermBindings: z.object({ manyToOne: z.literal(true) }),
+        }),
+    );
 
 type NormalizedLambdaConstructorData = z.infer<
     typeof normalizedLambdaConstructorDataParser
@@ -799,7 +824,12 @@ const libraryKindParser = z.literal("library");
 
 type LibraryKind = z.infer<typeof libraryKindParser>;
 
-const normalizedLibraryDataParser = weakNormalizedRelationalDataParser;
+const normalizedLibraryDataParser = weakNormalizedRelationalDataParser(
+    z.object({
+        termDefinitions: z.object({ manyToOne: z.literal(true) }),
+        typeDefinitions: z.object({ manyToOne: z.literal(true) }),
+    }),
+);
 
 type NormalizedLibraryData = z.infer<typeof normalizedLibraryDataParser>;
 
@@ -865,7 +895,9 @@ type ProductTermConstructorKind = z.infer<
 >;
 
 const normalizedProductTermConstructorDataParser =
-    weakNormalizedRelationalDataParser;
+    weakNormalizedRelationalDataParser(
+        z.object({ components: z.object({ manyToOne: z.literal(true) }) }),
+    );
 
 type NormalizedProductTermConstructorData = z.infer<
     typeof normalizedProductTermConstructorDataParser
@@ -987,7 +1019,9 @@ const productTypeKindParser = z.literal("productType");
 
 type ProductTypeKind = z.infer<typeof productTypeKindParser>;
 
-const normalizedProductTypeDataParser = weakNormalizedRelationalDataParser;
+const normalizedProductTypeDataParser = weakNormalizedRelationalDataParser(
+    z.object({ components: z.object({ manyToOne: z.literal(true) }) }),
+);
 
 type NormalizedProductTypeData = z.infer<
     typeof normalizedProductTypeDataParser
@@ -1108,7 +1142,9 @@ const sumTermEliminatorKindParser = z.literal("sumTermEliminator");
 type SumTermEliminatorKind = z.infer<typeof sumTermEliminatorKindParser>;
 
 const normalizedSumTermEliminatorDataParser =
-    weakNormalizedRelationalDataParser;
+    weakNormalizedRelationalDataParser(
+        z.object({ components: z.object({ manyToOne: z.literal(true) }) }),
+    );
 
 type NormalizedSumTermEliminatorData = z.infer<
     typeof normalizedSumTermEliminatorDataParser
@@ -1177,7 +1213,9 @@ const sumTypeKindParser = z.literal("sumType");
 
 type SumTypeKind = z.infer<typeof sumTypeKindParser>;
 
-const normalizedSumTypeDataParser = weakNormalizedRelationalDataParser;
+const normalizedSumTypeDataParser = weakNormalizedRelationalDataParser(
+    z.object({ components: z.object({ manyToOne: z.literal(true) }) }),
+);
 
 type NormalizedSumTypeData = z.infer<typeof normalizedSumTypeDataParser>;
 
@@ -1379,7 +1417,13 @@ const termDefinitionKindParser = z.literal("termDefinition");
 
 type TermDefinitionKind = z.infer<typeof termDefinitionKindParser>;
 
-const normalizedTermDefinitionDataParser = weakNormalizedRelationalDataParser;
+const normalizedTermDefinitionDataParser = weakNormalizedRelationalDataParser(
+    z.object({
+        binding: z.object({ manyToOne: z.literal(false) }),
+        term: z.object({ manyToOne: z.literal(false) }),
+        type: z.object({ manyToOne: z.literal(false) }),
+    }),
+);
 
 type NormalizedTermDefinitionData = z.infer<
     typeof normalizedTermDefinitionDataParser
@@ -1559,7 +1603,12 @@ const typeDefinitionKindParser = z.literal("typeDefinition");
 
 type TypeDefinitionKind = z.infer<typeof typeDefinitionKindParser>;
 
-const normalizedTypeDefinitionDataParser = weakNormalizedRelationalDataParser;
+const normalizedTypeDefinitionDataParser = weakNormalizedRelationalDataParser(
+    z.object({
+        binding: z.object({ manyToOne: z.literal(false) }),
+        type: z.object({ manyToOne: z.literal(false) }),
+    }),
+);
 
 type NormalizedTypeDefinitionData = z.infer<
     typeof normalizedTypeDefinitionDataParser

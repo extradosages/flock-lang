@@ -1,15 +1,15 @@
 import { z } from "zod";
 
 import {
-    Enumeration,
+    StrongNodes,
     StrongNodeKind,
-    lookupParsers,
     strongNodeKindParser,
 } from "../../common";
+import { strongNodes } from "../../common/enumeration";
 
 export const strongNormalizedDataParser = <Kind extends StrongNodeKind>(
     kind: Kind,
-): Enumeration[Kind]["normalizedData"] => lookupParsers(kind).normalizedData;
+): StrongNodes[Kind]["normalizedData"] => strongNodes[kind].normalizedData;
 
 export const strongNormalizedData_KindT_Parser = z.union(
     strongNodeKindParser.options.map(strongNormalizedDataParser) as any,

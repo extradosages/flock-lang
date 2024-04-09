@@ -1,70 +1,72 @@
 import { denormalizedNodeConstructor } from "./nodeUtils";
 
-export const booleanTerm = denormalizedNodeConstructor("booleanTerm");
+export const dBooleanTerm = denormalizedNodeConstructor("booleanTerm");
 
-export const booleanType = denormalizedNodeConstructor("booleanType");
+export const dBooleanType = denormalizedNodeConstructor("booleanType");
 
-export const clientImplementation = denormalizedNodeConstructor(
+export const dClientImplementation = denormalizedNodeConstructor(
     "clientImplementation",
 );
 
-export const floatTerm = denormalizedNodeConstructor("floatTerm");
+export const dFloatTerm = denormalizedNodeConstructor("floatTerm");
 
-export const floatType = denormalizedNodeConstructor("floatType");
+export const dFloatType = denormalizedNodeConstructor("floatType");
 
-export const functionTermEliminator = denormalizedNodeConstructor(
+export const dFunctionTermEliminator = denormalizedNodeConstructor(
     "functionTermEliminator",
 );
 
-export const functionType = denormalizedNodeConstructor("functionType");
+export const dFunctionType = denormalizedNodeConstructor("functionType");
 
-export const genericTypeConstructor = denormalizedNodeConstructor(
+export const dGenericTypeConstructor = denormalizedNodeConstructor(
     "genericTypeConstructor",
 );
 
-export const genericTypeEliminator = denormalizedNodeConstructor(
+export const dGenericTypeEliminator = denormalizedNodeConstructor(
     "genericTypeEliminator",
 );
 
-export const integerTerm = denormalizedNodeConstructor("integerTerm");
+export const dIntegerTerm = denormalizedNodeConstructor("integerTerm");
 
-export const integerType = denormalizedNodeConstructor("integerType");
+export const dIntegerType = denormalizedNodeConstructor("integerType");
 
-export const lambdaConstructor =
+export const dLambdaConstructor =
     denormalizedNodeConstructor("lambdaConstructor");
 
-export const largeTypeType = denormalizedNodeConstructor("largeTypeType");
+export const dLargeTypeType = denormalizedNodeConstructor("largeTypeType");
 
-export const library = denormalizedNodeConstructor("library");
+export const dLibrary = denormalizedNodeConstructor("library");
 
-export const productTermConstructor = denormalizedNodeConstructor(
+export const dProductTermConstructor = denormalizedNodeConstructor(
     "productTermConstructor",
 );
 
-export const productTermEliminator = denormalizedNodeConstructor(
+export const dProductTermEliminator = denormalizedNodeConstructor(
     "productTermEliminator",
 );
 
-export const productType = denormalizedNodeConstructor("productType");
+export const dProductType = denormalizedNodeConstructor("productType");
 
-export const stringType = denormalizedNodeConstructor("stringType");
+export const dStringTerm = denormalizedNodeConstructor("stringTerm");
 
-export const sumTermConstructor =
+export const dStringType = denormalizedNodeConstructor("stringType");
+
+export const dSumTermConstructor =
     denormalizedNodeConstructor("sumTermConstructor");
 
-export const sumTermEliminator =
+export const dSumTermEliminator =
     denormalizedNodeConstructor("sumTermEliminator");
 
-export const sumType = denormalizedNodeConstructor("sumType");
+export const dSumType = denormalizedNodeConstructor("sumType");
 
-export const termBinding = denormalizedNodeConstructor("termBinding");
+export const dTermBinding = denormalizedNodeConstructor("termBinding");
 
-export const termDefinition = denormalizedNodeConstructor("termDefinition");
+export const dTermDefinition = denormalizedNodeConstructor("termDefinition");
 
-export const termReference = denormalizedNodeConstructor("termReference");
+export const dTermReference = denormalizedNodeConstructor("termReference");
 
-export const typeBinding = denormalizedNodeConstructor("typeBinding");
+export const dTypeBinding = denormalizedNodeConstructor("typeBinding");
 
-export const typeDefinition = denormalizedNodeConstructor("typeDefinition");
+export const dTypeDefinition = denormalizedNodeConstructor("typeDefinition");
 
-export const typeReference = denormalizedNodeConstructor("typeReference");
+export const dTypeReference = denormalizedNodeConstructor("typeReference");

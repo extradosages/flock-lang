@@ -1,14 +1,13 @@
 import {
     DenormalizedAst,
-    booleanTypeLiteral,
-    floatTypeLiteral,
-    functionType,
-    productType,
-    stringTypeLiteral,
-    sumType,
-    unsafeTypeReference,
-} from "@flock/ast";
-
+    dBooleanType,
+    dFloatType,
+    dFunctionType,
+    dProductType,
+    dStringType,
+    dSumType,
+    dTypeReference,
+} from "../../ast";
 import { Parser } from "../parser";
 
 describe("functionType", () => {
@@ -17,13 +16,12 @@ describe("functionType", () => {
     it("parses a function type with only a type literal codomain", () => {
         const actual = parser
             .parse("[^ -> Boolean ^]")
-            .root()
             .denormalize()
             .anonymize();
 
         const expected = new DenormalizedAst(
-            functionType({
-                codomain: booleanTypeLiteral(undefined),
+            dFunctionType({
+                codomain: dBooleanType(undefined),
                 domains: [],
             }),
         ).anonymize();
@@ -31,15 +29,11 @@ describe("functionType", () => {
     });
 
     it("parses a function type with only a type reference codomain", () => {
-        const actual = parser
-            .parse("[^ -> Foo ^]")
-            .root()
-            .denormalize()
-            .anonymize();
+        const actual = parser.parse("[^ -> Foo ^]").denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            functionType({
-                codomain: unsafeTypeReference("Foo"),
+            dFunctionType({
+                codomain: dTypeReference("Foo"),
                 domains: [],
             }),
         ).anonymize();
@@ -49,16 +43,17 @@ describe("functionType", () => {
     it("parses a function type with only a product type codomain", () => {
         const actual = parser
             .parse("[^ -> [* Boolean Foo *] ^]")
-            .root()
             .denormalize()
             .anonymize();
 
         const expected = new DenormalizedAst(
-            functionType({
-                codomain: productType([
-                    booleanTypeLiteral(undefined),
-                    unsafeTypeReference("Foo"),
-                ]),
+            dFunctionType({
+                codomain: dProductType({
+                    components: [
+                        dBooleanType(undefined),
+                        dTypeReference("Foo"),
+                    ],
+                }),
                 domains: [],
             }),
         ).anonymize();
@@ -68,16 +63,17 @@ describe("functionType", () => {
     it("parses a function type with only a sum type codomain", () => {
         const actual = parser
             .parse("[^ -> [+ Boolean Foo +] ^]")
-            .root()
             .denormalize()
             .anonymize();
 
         const expected = new DenormalizedAst(
-            functionType({
-                codomain: sumType([
-                    booleanTypeLiteral(undefined),
-                    unsafeTypeReference("Foo"),
-                ]),
+            dFunctionType({
+                codomain: dSumType({
+                    components: [
+                        dBooleanType(undefined),
+                        dTypeReference("Foo"),
+                    ],
+                }),
                 domains: [],
             }),
         ).anonymize();
@@ -87,18 +83,19 @@ describe("functionType", () => {
     it("parses a function type with only a function type codomain", () => {
         const actual = parser
             .parse("[^ -> [^ Boolean -> [+ String String +] ^] ^]")
-            .root()
             .denormalize()
             .anonymize();
 
         const expected = new DenormalizedAst(
-            functionType({
-                codomain: functionType({
-                    codomain: sumType([
-                        stringTypeLiteral(undefined),
-                        stringTypeLiteral(undefined),
-                    ]),
-                    domains: [booleanTypeLiteral(undefined)],
+            dFunctionType({
+                codomain: dFunctionType({
+                    codomain: dSumType({
+                        components: [
+                            dStringType(undefined),
+                            dStringType(undefined),
+                        ],
+                    }),
+                    domains: [dBooleanType(undefined)],
                 }),
                 domains: [],
             }),
@@ -109,20 +106,18 @@ describe("functionType", () => {
     it("parses a function type with several type literal domains", () => {
         const actual = parser
             .parse("[^ Boolean Boolean String -> [* Foo String *] ^]")
-            .root()
             .denormalize()
             .anonymize();
 
         const expected = new DenormalizedAst(
-            functionType({
-                codomain: productType([
-                    unsafeTypeReference("Foo"),
-                    stringTypeLiteral(undefined),
-                ]),
+            dFunctionType({
+                codomain: dProductType({
+                    components: [dTypeReference("Foo"), dStringType(undefined)],
+                }),
                 domains: [
-                    booleanTypeLiteral(undefined),
-                    booleanTypeLiteral(undefined),
-                    stringTypeLiteral(undefined),
+                    dBooleanType(undefined),
+                    dBooleanType(undefined),
+                    dStringType(undefined),
                 ],
             }),
         ).anonymize();
@@ -132,20 +127,18 @@ describe("functionType", () => {
     it("parses a function type with several type reference domains", () => {
         const actual = parser
             .parse("[^ Foo Foo Bar -> [* Baz Bar *] ^]")
-            .root()
             .denormalize()
             .anonymize();
 
         const expected = new DenormalizedAst(
-            functionType({
-                codomain: productType([
-                    unsafeTypeReference("Baz"),
-                    unsafeTypeReference("Bar"),
-                ]),
+            dFunctionType({
+                codomain: dProductType({
+                    components: [dTypeReference("Baz"), dTypeReference("Bar")],
+                }),
                 domains: [
-                    unsafeTypeReference("Foo"),
-                    unsafeTypeReference("Foo"),
-                    unsafeTypeReference("Bar"),
+                    dTypeReference("Foo"),
+                    dTypeReference("Foo"),
+                    dTypeReference("Bar"),
                 ],
             }),
         ).anonymize();
@@ -157,25 +150,28 @@ describe("functionType", () => {
             .parse(
                 "[^ [* Foo String *] [+ Boolean +] [^ Boolean -> [+ String Bar +] ^] -> Float ^]",
             )
-            .root()
             .denormalize()
             .anonymize();
 
         const expected = new DenormalizedAst(
-            functionType({
-                codomain: floatTypeLiteral(undefined),
+            dFunctionType({
+                codomain: dFloatType(undefined),
                 domains: [
-                    productType([
-                        unsafeTypeReference("Foo"),
-                        stringTypeLiteral(undefined),
-                    ]),
-                    sumType([booleanTypeLiteral(undefined)]),
-                    functionType({
-                        codomain: sumType([
-                            stringTypeLiteral(undefined),
-                            unsafeTypeReference("Bar"),
-                        ]),
-                        domains: [booleanTypeLiteral(undefined)],
+                    dProductType({
+                        components: [
+                            dTypeReference("Foo"),
+                            dStringType(undefined),
+                        ],
+                    }),
+                    dSumType({ components: [dBooleanType(undefined)] }),
+                    dFunctionType({
+                        codomain: dSumType({
+                            components: [
+                                dStringType(undefined),
+                                dTypeReference("Bar"),
+                            ],
+                        }),
+                        domains: [dBooleanType(undefined)],
                     }),
                 ],
             }),

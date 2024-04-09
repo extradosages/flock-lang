@@ -12,14 +12,37 @@ import {
     weakEdge_SourceKindT_TargetKindT_KindT_ManyToOneT_Parser,
     weakEdge_TargetKindT_ManyToOneT_Parser,
     weakNormalizedDataParser,
+    weakNormalizedRelationalData_TypeT_Parser,
+    weakNormalizedRelationalData_Parser,
+    weakNormalizedRelationSpecParser,
 } from "./parsers";
 import { WeakEdgeKind, WeakNodeKind } from "../common";
+
+export type WeakNormalizedRelationSpec = z.infer<
+    typeof weakNormalizedRelationSpecParser
+>;
 
 /**
  * Weakly typed relational data in normalized AST.
  */
-export type WeakNormalizedRelationalData = z.infer<
-    typeof weakNormalizedRelationalDataParser
+export type WeakNormalizedRelationalData<
+    Type extends WeakNormalizedRelationSpec,
+> = z.infer<ReturnType<typeof weakNormalizedRelationalDataParser<Type>>>;
+
+/**
+ * Weakly typed relational data in normalized AST, marginalized over `Type` parameter.
+ */
+export type WeakNormalizedRelationalData_TypeT_ = z.infer<
+    typeof weakNormalizedRelationalData_TypeT_Parser
+>;
+
+/**
+ * Weakly typed relational data in normalized AST, marginalized over all parameters.
+ *
+ * @alias WeakNormalizedRelationalData_TypeT_
+ */
+export type WeakNormalizedRelationalData_ = z.infer<
+    typeof weakNormalizedRelationalData_Parser
 >;
 
 /**

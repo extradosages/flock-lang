@@ -1,33 +1,32 @@
-import { DenormalizedAst, unsafeTypeReference } from "@flock/ast";
-
+import { DenormalizedAst, dTypeReference } from "../../ast";
 import { Parser } from "../parser";
 
 describe("typeReference", () => {
     const parser = new Parser("typeReference");
 
     it("parses PascalCase identifiers", () => {
-        const actual = parser.parse("FooBar").root().denormalize().anonymize();
+        const actual = parser.parse("FooBar").denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            unsafeTypeReference("FooBar"),
+            dTypeReference("FooBar"),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses identifiers with hyphens in tail positions", () => {
-        const actual = parser.parse("Foo-Bar").root().denormalize().anonymize();
+        const actual = parser.parse("Foo-Bar").denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            unsafeTypeReference("Foo-Bar"),
+            dTypeReference("Foo-Bar"),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses identifiers with numerals in tail positions", () => {
-        const actual = parser.parse("Foo1Bar").root().denormalize().anonymize();
+        const actual = parser.parse("Foo1Bar").denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            unsafeTypeReference("Foo1Bar"),
+            dTypeReference("Foo1Bar"),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });

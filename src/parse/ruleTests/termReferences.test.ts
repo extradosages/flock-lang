@@ -1,40 +1,39 @@
-import { DenormalizedAst, termReference } from "@flock/ast";
-
+import { DenormalizedAst, dTermReference } from "../../ast";
 import { Parser } from "../parser";
 
 describe("termReference", () => {
     const parser = new Parser("termReference");
 
     it("parses a camelCase identifier", () => {
-        const actual = parser.parse("fooBar").root().denormalize().anonymize();
+        const actual = parser.parse("fooBar").denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            termReference("fooBar"),
+            dTermReference("fooBar"),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses an all lower-case identifier", () => {
-        const actual = parser.parse("foo").root().denormalize().anonymize();
+        const actual = parser.parse("foo").denormalize().anonymize();
 
-        const expected = new DenormalizedAst(termReference("foo")).anonymize();
+        const expected = new DenormalizedAst(dTermReference("foo")).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses an identifier with a hyphen in a tail position", () => {
-        const actual = parser.parse("foo-Bar").root().denormalize().anonymize();
+        const actual = parser.parse("foo-Bar").denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            termReference("foo-Bar"),
+            dTermReference("foo-Bar"),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("parses an identifier with numerals in tail positions", () => {
-        const actual = parser.parse("foo-123").root().denormalize().anonymize();
+        const actual = parser.parse("foo-123").denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            termReference("foo-123"),
+            dTermReference("foo-123"),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });

@@ -1,20 +1,22 @@
 import { DirectedGraph } from "graphology";
-import { groupBy, mapValues, orderBy } from "typedash";
+import * as _ from "lodash";
 
 import { ErrorWithContext } from "../../../lib/errorsWithContext";
+import { anonymize } from "../../common";
 import {
     WeakDenormalizedData,
     WeakDenormalizedNode_,
     WeakEdge_,
+    WeakNormalizedRelationSpec,
 } from "../../weaklyTyped";
 import { StrongNodeKind } from "../common";
+import { DenormalizedAst, StrongDenormalizedNode } from "../denormalized";
+
 import {
     StrongNormalizedData_,
     StrongNormalizedNode,
     StrongNormalizedNode_,
 } from "./types";
-import { anonymize } from "../../common";
-import { DenormalizedAst, StrongDenormalizedNode } from "../denormalized";
 
 const isRoot = (graph: DirectedGraph) => (node: string) =>
     graph.inDegree(node) === 0;
@@ -39,7 +41,7 @@ export class NormalizedAst<Kind extends StrongNodeKind> {
 
     #rootId() {
         if (this.#rootIdCache === undefined) {
-            if (this.graph.nodes.length === 0) {
+            if (this.graph.nodes().length === 0) {
                 throw new Error("No nodes in the graph!");
             }
 
@@ -92,11 +94,11 @@ export class NormalizedAst<Kind extends StrongNodeKind> {
 
     anonymize() {
         return {
-            nodes: orderBy(
+            nodes: _.orderBy(
                 this.graph.mapNodes((_, node) => anonymize(node)),
                 JSON.stringify,
             ),
-            edges: orderBy(
+            edges: _.orderBy(
                 this.graph.mapEdges((_, edge) => anonymize(edge)),
                 JSON.stringify,
             ),
@@ -105,33 +107,35 @@ export class NormalizedAst<Kind extends StrongNodeKind> {
 
     // Denormalize
 
-    #denormalizeRelationalData(id: string): WeakDenormalizedData {
-        const edges = Array.from(this.graph.outEdgeEntries(id)).map(
-            ({ attributes: edge }) => edge,
-        );
+    #denormalizeRelationalData(
+        nodeId: string,
+        relSpec: WeakNormalizedRelationSpec,
+    ): WeakDenormalizedData {
+        const value = _.mapValues(relSpec, ({ manyToOne }, kind) => {
+            const edges = Array.from(this.graph.outEdgeEntries(nodeId))
+                .map(({ attributes: edge }) => edge)
+                .filter((edge) => edge.kind === kind);
 
-        const edgesByKind = groupBy(edges, (edge) => edge.kind);
-        const value = mapValues(edgesByKind, (edges, kind) => {
-            if (edges === undefined) {
-                throw new ErrorWithContext({ kind }, "Edges are undefined");
+            if (manyToOne) {
+                const orderedEdges = _.orderBy(edges, ({ index }) => index);
+                return orderedEdges.map((edge) =>
+                    this.#denormalizeNode(edge.targetId),
+                );
             }
 
-            const isOneToOne = edges.every(({ index }) => index === undefined);
-            if (isOneToOne && edges.length !== 1) {
+            if (edges.length > 1) {
                 throw new ErrorWithContext(
                     { kind },
                     "Multiple one-to-one edges found",
                 );
             }
-
-            if (isOneToOne) {
-                return this.#denormalizeNode(edges[0].targetId);
+            if (edges.length === 0) {
+                throw new ErrorWithContext(
+                    { kind },
+                    "No one-to-one edges found",
+                );
             }
-
-            const orderedEdges = orderBy(edges, ({ index }) => index);
-            return orderedEdges.map((edge) =>
-                this.#denormalizeNode(edge.targetId),
-            );
+            return this.#denormalizeNode(edges[0].targetId);
         });
 
         return { dimensionality: "relational", value };
@@ -148,7 +152,8 @@ export class NormalizedAst<Kind extends StrongNodeKind> {
             return data;
         }
         if (data.dimensionality === "relational") {
-            return this.#denormalizeRelationalData(id);
+            const { relSpec } = data;
+            return this.#denormalizeRelationalData(id, relSpec);
         }
         throw new ErrorWithContext({ data }, "Unknown dimensionality");
     }
