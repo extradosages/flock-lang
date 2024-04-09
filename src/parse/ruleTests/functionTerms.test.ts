@@ -1,17 +1,3 @@
-import {
-    DenormalizedAst,
-    booleanTermLiteral,
-    functionTermEliminator,
-    lambdaConstructor,
-    productTermConstructor,
-    sumTermEliminator,
-    unsafeIntegerTermLiteral,
-    unsafeProductTermEliminator,
-    unsafeSumTermConstructor,
-    unsafeTermBinding,
-    unsafeTermReference,
-} from "@flock/ast";
-
 import { Parser } from "../parser";
 
 describe("lambdaConstructor", () => {
