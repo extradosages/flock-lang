@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { nodeIdParser } from "../../../id";
+import { idParser } from "../../../id";
 import { WeakNormalizedData } from "../types";
 import { weakNormalizedDataParser } from "./data";
 
@@ -14,7 +14,7 @@ export const weakNormalizedNodeParser = <
     z
         .object({
             data,
-            id: nodeIdParser,
+            id: idParser,
             kind,
         })
         .strict();

@@ -1,13 +1,12 @@
 import { z } from "zod";
 
-import { nodeIdParser } from "../../../id";
+import { idParser } from "../../../id";
 import {
     WeakEdgeKind,
     WeakNodeKind,
     weakEdgeKindParser,
     weakNodeKindParser,
 } from "../../common";
-import { source } from "../../../../parse/parser";
 
 export type EdgeIndex<ManyToOne extends boolean> = ManyToOne extends true
     ? number
@@ -38,12 +37,12 @@ export const weakEdgeParser = <
 }) =>
     z
         .object({
-            id: nodeIdParser,
+            id: idParser,
             index: indexParser(manyToOne),
             kind,
-            sourceId: nodeIdParser,
+            sourceId: idParser,
             sourceKind,
-            targetId: nodeIdParser,
+            targetId: idParser,
             targetKind,
         })
         .strict();
