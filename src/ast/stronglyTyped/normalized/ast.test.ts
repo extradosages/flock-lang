@@ -1,5 +1,5 @@
-import * as _ from "lodash";
 import { stringify } from "safe-stable-stringify";
+import { apply, execPipe, map, objectEntries, objectFrom } from "iter-tools";
 
 import { StrongNodeKind } from "../common";
 import { DenormalizedAst, dBooleanType, dFunctionType } from "../denormalized";
@@ -7,11 +7,15 @@ import { NormalizedAst } from "./ast";
 import { edge, nBooleanType, nFunctionType } from "./constructors";
 import { StrongEdge } from "./types";
 
-const sort = (record: Record<string, unknown[]>) =>
-    _.mapValues(record, (value) => _.orderBy(value, stringify));
+const sort = (arr: NonNullable<unknown>[]) =>
+    arr.sort((left, right) => (stringify(left) > stringify(right) ? -1 : 1));
 
 const standardize = (normalizedAst: NormalizedAst<StrongNodeKind>) =>
-    sort(normalizedAst.anonymize());
+    execPipe(
+        objectEntries(normalizedAst.anonymize()),
+        map(([key, value]) => [key, sort(value)] as const),
+        apply(objectFrom),
+    );
 
 describe("NormalizedAst", () => {
     describe("`.constructor`", () => {
