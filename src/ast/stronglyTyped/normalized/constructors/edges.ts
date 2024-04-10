@@ -1,6 +1,10 @@
 import { id } from "../../../id";
 import { StrongEdgeKind, StrongEdgeSourceKind } from "../../common";
-import { StrongEdge, StrongEdgeTargetKind } from "../types";
+import {
+    StrongEdge,
+    StrongEdgeTargetKind,
+    StrongNormalizedNode,
+} from "../types";
 
 export const edge = <
     SourceKind extends StrongEdgeSourceKind,
@@ -29,3 +33,22 @@ export const edge = <
     targetId,
     targetKind,
 });
+
+export const edgeFromNodes = <
+    SourceKind extends StrongEdgeSourceKind,
+    EdgeKind extends StrongEdgeKind<SourceKind>,
+    TargetKind extends StrongEdgeTargetKind<SourceKind, EdgeKind>,
+>(
+    sourceNode: StrongNormalizedNode<SourceKind>,
+    edgeKind: EdgeKind,
+    targetNode: StrongNormalizedNode<TargetKind>,
+    index?: number,
+) =>
+    edge<SourceKind, EdgeKind, TargetKind>({
+        index,
+        kind: edgeKind,
+        sourceId: sourceNode.id,
+        sourceKind: sourceNode.kind as SourceKind,
+        targetId: targetNode.id,
+        targetKind: targetNode.kind,
+    });
