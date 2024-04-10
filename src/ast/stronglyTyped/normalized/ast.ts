@@ -9,10 +9,15 @@ import {
     WeakEdge_,
     WeakNormalizedRelationSpec,
 } from "../../weaklyTyped";
-import { StrongNodeKind } from "../common";
+import {
+    StrongEdgeKind,
+    StrongEdgeSourceKind,
+    StrongNodeKind,
+} from "../common";
 import { DenormalizedAst, StrongDenormalizedNode } from "../denormalized";
 
 import {
+    StrongEdge,
     StrongNormalizedData_,
     StrongNormalizedNode,
     StrongNormalizedNode_,
@@ -21,13 +26,13 @@ import {
 const isRoot = (graph: DirectedGraph) => (node: string) =>
     graph.inDegree(node) === 0;
 
-export class NormalizedAst<Kind extends StrongNodeKind> {
+export class NormalizedAst<RootKind extends StrongNodeKind> {
     #rootIdCache?: string;
-    #kind: Kind;
+    rootKind: RootKind;
     graph: DirectedGraph<StrongNormalizedNode_, WeakEdge_>;
 
-    constructor(kind: Kind) {
-        this.#kind = kind;
+    constructor(rootKind: RootKind) {
+        this.rootKind = rootKind;
         this.graph = new DirectedGraph();
     }
 
@@ -61,23 +66,57 @@ export class NormalizedAst<Kind extends StrongNodeKind> {
         return this.#rootIdCache;
     }
 
-    root(): StrongNormalizedNode<Kind> {
-        const node = this.node(this.#rootId());
-        if (node.kind !== this.#kind) {
+    root() {
+        const node = this.node<RootKind>(this.#rootId());
+        if (node.kind !== this.rootKind) {
             throw new ErrorWithContext(
-                { rootKind: node.kind, astKind: this.#kind },
+                { rootKind: node.kind, astKind: this.rootKind },
                 "Root node has the wrong kind",
             );
         }
         return node;
     }
 
-    node(id: string) {
+    node<Kind extends StrongNodeKind = StrongNodeKind>(
+        id: string,
+    ): StrongNormalizedNode<Kind> {
         return this.graph.getNodeAttributes(id);
     }
 
-    edge(id: string) {
+    edge<
+        SourceKind extends StrongEdgeSourceKind = StrongEdgeSourceKind,
+        EdgeKind extends
+            StrongEdgeKind<SourceKind> = StrongEdgeKind<SourceKind>,
+    >(id: string): StrongEdge<SourceKind, EdgeKind> {
         return this.graph.getEdgeAttributes(id);
+    }
+
+    oneToOne<SourceKind extends StrongNodeKind>(
+        id: string,
+        edgeKind: StrongEdgeKind<SourceKind>,
+    ) {
+        const edgeId = this.graph.findOutEdge(
+            id,
+            (_, { kind }) => kind === edgeKind,
+        );
+        if (edgeId === undefined) {
+            throw new ErrorWithContext(
+                { id, edgeKind },
+                "One-to-one edge not found",
+            );
+        }
+
+        const targetId = this.graph.getEdgeAttribute(edgeId, "targetId");
+
+        const node = this.graph.getNodeAttributes(targetId);
+        if (node === undefined) {
+            throw new ErrorWithContext(
+                { id, edgeId, edgeKind, targetId },
+                "One-to-one node not found",
+            );
+        }
+
+        return node;
     }
 
     addNode(node: StrongNormalizedNode_) {
@@ -170,7 +209,7 @@ export class NormalizedAst<Kind extends StrongNodeKind> {
     denormalize() {
         const root = this.root();
         return new DenormalizedAst(
-            this.#denormalizeNode(root.id) as StrongDenormalizedNode<Kind>,
+            this.#denormalizeNode(root.id) as StrongDenormalizedNode<RootKind>,
         );
     }
 }

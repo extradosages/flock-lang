@@ -1,56 +1,67 @@
 import {
-    AstNode,
+    apply,
+    arrayFrom,
+    execPipe,
+    filter,
+    getSize,
+    map,
+    objectFrom,
+    objectKeys,
+    size,
+    splitGroups,
+} from "iter-tools";
+
+import {
     NormalizedAst,
-    isGenericTypeConstructor,
-    isLambdaConstructor,
-} from "@flock/ast";
+    StrongEdge_EdgeKindT_,
+    StrongNormalizedNode,
+} from "../ast";
+import { ErrorWithContext } from "../lib/errorsWithContext";
 
-type genericTypeConstructorDuplicateBindings = {
-    genericTypeConstructorId: string;
-    duplicateDomainBindings: string[];
-};
-
-const genericTypeConstructorDuplicateBindings = (
+const duplicatesByNode = (
     ast: NormalizedAst<"library">,
-    genericTypeConstructorNode: AstNode<"genericTypeConstructor">,
-): genericTypeConstructorDuplicateBindings => {
-    const bindings = genericTypeConstructorNode.data.domainBindings
-        .map(ast.deref)
-        .map((node) => node.data);
-    const counts = bindings.reduce(
-        (counts: Record<string, number>, binding) => ({
-            ...counts,
-            [binding]: (counts[binding] ?? 0) + 1,
-        }),
-        {},
+    genericTypeConstructorNodeId: string,
+) => {
+    const duplicates = execPipe(
+        ast.graph.filterOutEdges(
+            genericTypeConstructorNodeId,
+            (_, edge) =>
+                (edge as StrongEdge_EdgeKindT_<"genericTypeConstructor">)
+                    .kind === "domainTypeBindings",
+        ),
+        map((domainTypeBindingEdgeId) =>
+            ast.graph.getEdgeAttribute(domainTypeBindingEdgeId, "targetId"),
+        ),
+        map((typeBindingNodeId) => ast.node<"typeBinding">(typeBindingNodeId)),
+        splitGroups((typeBindingNode) => typeBindingNode.data.value),
+        map(([key, group]) => [key, arrayFrom(group)] as const),
+        filter(([_, group]) => getSize(group) > 1),
+        apply(objectFrom<StrongNormalizedNode<"typeBinding">>),
     );
-    const duplicates = Object.entries(counts)
-        .filter(([_, count]) => count > 1)
-        .map(([binding]) => binding);
 
-    return {
-        genericTypeConstructorId: genericTypeConstructorNode.id,
-        duplicateDomainBindings: duplicates,
-    };
+    const genericTypeConstructorNode = ast.node(genericTypeConstructorNodeId);
+
+    return { duplicates, genericTypeConstructorNode };
 };
-
-const formatByGenericTypeConstructor = (
-    issue: genericTypeConstructorDuplicateBindings,
-): string =>
-    `(${issue.genericTypeConstructorId}: ${issue.duplicateDomainBindings.join(", ")})`;
-
-const format = (issue: genericTypeConstructorDuplicateBindings[]): string =>
-    `Duplicate domain bindings in generic type constructors: ${issue.map(formatByGenericTypeConstructor)}`;
 
 export const uniqueGenericTypeConstructorDomainBindings = (
     ast: NormalizedAst<"library">,
 ): void => {
-    const duplicates = ast.nodes
-        .filter(isGenericTypeConstructor)
-        .map((node) => genericTypeConstructorDuplicateBindings(ast, node))
-        .filter((issue) => issue.duplicateDomainBindings.length > 0);
+    const duplicates = execPipe(
+        ast.graph.filterNodes(
+            (_, node) => node.kind === "genericTypeConstructor",
+        ),
+        map((genericTypeConstructorNodeId) =>
+            duplicatesByNode(ast, genericTypeConstructorNodeId),
+        ),
+        filter(({ duplicates }) => size(objectKeys(duplicates)) > 1),
+        apply(arrayFrom),
+    );
 
-    if (duplicates.length > 0) {
-        throw new Error(format(duplicates));
+    if (getSize(duplicates) > 0) {
+        throw new ErrorWithContext(
+            { duplicates },
+            "Duplicate generic type constructor domain type bindings",
+        );
     }
 };

@@ -1,26 +1,41 @@
-import { NormalizedAst, isTermDefinition } from "@flock/ast";
+import {
+    apply,
+    arrayFrom,
+    execPipe,
+    filter,
+    flatMap,
+    getSize,
+    map,
+    objectFrom,
+    objectKeys,
+    size,
+    splitGroups,
+} from "iter-tools";
+
+import { NormalizedAst, StrongNormalizedNode } from "../ast";
+import { ErrorWithContext } from "../lib/errorsWithContext";
 
 export const uniqueTermDefinitionBindings = (
     ast: NormalizedAst<"library">,
 ): void => {
-    const bindings = ast.nodes
-        .filter(isTermDefinition)
-        .map((node) => node.data.binding)
-        .map(ast.deref)
-        .map((node) => node.data);
-    const counts = bindings.reduce(
-        (counts: Record<string, number>, binding) => ({
-            ...counts,
-            [binding]: (counts[binding] ?? 0) + 1,
-        }),
-        {},
+    const duplicates = execPipe(
+        ast.graph.filterNodes((_, node) => node.kind === "termDefinition"),
+        // We skip over loading the edges, since the only term binding neighbors are the
+        // ones connected by `binding` edges
+        flatMap((termDefinitionNodeId) =>
+            ast.graph.filterOutNeighbors(
+                termDefinitionNodeId,
+                (_, node) => node.kind === "termBinding",
+            ),
+        ),
+        map((termBindingNodeId) => ast.node<"termBinding">(termBindingNodeId)),
+        splitGroups((termBindingNode) => termBindingNode.data.value),
+        map(([key, group]) => [key, arrayFrom(group)] as const),
+        filter(([_, group]) => getSize(group) > 1),
+        apply(objectFrom<StrongNormalizedNode<"termBinding">>),
     );
-    const duplicateBindings = Object.entries(counts)
-        .filter(([, count]) => count > 1)
-        .map(([identifier]) => identifier);
-    if (duplicateBindings.length > 0) {
-        throw new Error(
-            `Duplicate term definitions found: ${duplicateBindings.join(", ")}`,
-        );
+
+    if (size(objectKeys(duplicates)) > 1) {
+        throw new ErrorWithContext({ duplicates }, "Duplicate term bindings");
     }
 };

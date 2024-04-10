@@ -14,7 +14,6 @@ import {
 import { StrongNodeKind } from "../common";
 import {
     NormalizedAst,
-    StrongEdge_,
     StrongNormalizedData_,
     StrongNormalizedNode_,
 } from "../normalized";
@@ -50,15 +49,19 @@ const anonymizeNode = (node: WeakDenormalizedNode_): unknown => {
     return anonymize({ ...node, data: anonymizedData });
 };
 
-export class DenormalizedAst<Kind extends StrongNodeKind> {
-    #root: StrongDenormalizedNode<Kind>;
+export class DenormalizedAst<RootKind extends StrongNodeKind> {
+    #root: StrongDenormalizedNode<RootKind>;
 
-    constructor(root: StrongDenormalizedNode<Kind>) {
+    constructor(root: StrongDenormalizedNode<RootKind>) {
         this.#root = root;
     }
 
     root() {
         return this.#root;
+    }
+
+    rootKind() {
+        return this.#root.kind as RootKind;
     }
 
     // Anonymize
@@ -165,7 +168,7 @@ export class DenormalizedAst<Kind extends StrongNodeKind> {
         const root = this.root();
         this.#normalizeNode(nodesAccumulator, edgesAccumulator, root);
 
-        const ast = new NormalizedAst(root.kind);
+        const ast = new NormalizedAst(this.rootKind());
         nodesAccumulator.forEach((node) => ast.addNode(node));
         edgesAccumulator.forEach((edge) => ast.addEdge(edge));
         return ast;

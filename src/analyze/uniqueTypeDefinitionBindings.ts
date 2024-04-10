@@ -1,26 +1,41 @@
-import { NormalizedAst, isTypeDefinition } from "@flock/ast";
+import {
+    apply,
+    arrayFrom,
+    execPipe,
+    filter,
+    flatMap,
+    getSize,
+    map,
+    objectFrom,
+    objectKeys,
+    size,
+    splitGroups,
+} from "iter-tools";
+
+import { NormalizedAst, StrongNormalizedNode } from "../ast";
+import { ErrorWithContext } from "../lib/errorsWithContext";
 
 export const uniqueTypeDefinitionBindings = (
     ast: NormalizedAst<"library">,
 ): void => {
-    const bindings = ast.nodes
-        .filter(isTypeDefinition)
-        .map((node) => node.data.binding)
-        .map(ast.deref)
-        .map((node) => node.data);
-    const counts = bindings.reduce(
-        (counts: Record<string, number>, binding) => ({
-            ...counts,
-            [binding]: (counts[binding] ?? 0) + 1,
-        }),
-        {},
+    const duplicates = execPipe(
+        ast.graph.filterNodes((_, node) => node.kind === "typeDefinition"),
+        // We skip over loading the edges, since the only term binding neighbors are the
+        // ones connected by `binding` edges
+        flatMap((typeDefinitionNodeId) =>
+            ast.graph.filterOutNeighbors(
+                typeDefinitionNodeId,
+                (_, node) => node.kind === "typeBinding",
+            ),
+        ),
+        map((typeBindingNodeId) => ast.node<"typeBinding">(typeBindingNodeId)),
+        splitGroups((typeBindingNode) => typeBindingNode.data.value),
+        map(([key, group]) => [key, arrayFrom(group)] as const),
+        filter(([key, group]) => getSize(group) > 1),
+        apply(objectFrom<StrongNormalizedNode<"typeBinding">>),
     );
-    const duplicateBindings = Object.entries(counts)
-        .filter(([, count]) => count > 1)
-        .map(([identifier]) => identifier);
-    if (duplicateBindings.length > 0) {
-        throw new Error(
-            `Duplicate type definitions found: ${duplicateBindings.join(", ")}`,
-        );
+
+    if (size(objectKeys(duplicates)) > 0) {
+        throw new ErrorWithContext({ duplicates }, "Duplicate type bindings");
     }
 };

@@ -13,22 +13,25 @@ import {
 const sourcePath = "./grammar/library.pegjs";
 export const source = readFileSync(sourcePath, "utf8");
 
-export class Parser<Kind extends StrongNodeKind = "library"> {
-    #kind: Kind;
+export class Parser<RootKind extends StrongNodeKind = "library"> {
+    #rootKind: RootKind;
     #parser: peggy.Parser;
 
-    constructor(rule?: Kind) {
-        const kind = rule ?? ("library" as Kind);
-        this.#kind = kind;
+    constructor(rule?: RootKind) {
+        const rootKind = rule ?? ("library" as RootKind);
+        this.#rootKind = rootKind;
         this.#parser = peggy.generate(source, {
-            allowedStartRules: [kind],
+            allowedStartRules: [rootKind],
         });
     }
 
     parse(input: string) {
-        const root: StrongDenormalizedNode<Kind> = this.#parser.parse(input, {
-            flockAst,
-        });
+        const root: StrongDenormalizedNode<RootKind> = this.#parser.parse(
+            input,
+            {
+                flockAst,
+            },
+        );
         return new DenormalizedAst(root).normalize();
     }
 }

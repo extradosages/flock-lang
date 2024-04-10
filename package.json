@@ -6,6 +6,7 @@
   "dependencies": {
     "@flock/ast": "link:../ast",
     "graphology": "^0.25.4",
+    "iter-tools": "^7.5.3",
     "lodash": "^4.17.21",
     "peggy": "^4.0.2",
     "safe-stable-stringify": "^2.4.3",
