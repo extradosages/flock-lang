@@ -1,4 +1,11 @@
-import * as _ from "lodash";
+import {
+    apply,
+    execPipe,
+    isArray,
+    map,
+    objectEntries,
+    objectFrom,
+} from "iter-tools";
 
 import { ErrorWithContext } from "../../../lib/errorsWithContext";
 import { recordValueOrValueArrayMap } from "../../../lib/recordMaps";
@@ -76,7 +83,7 @@ export class DenormalizedAst<RootKind extends StrongNodeKind> {
         edgesAccumulator: WeakEdge_[],
         node: StrongDenormalizedNode_,
     ) {
-        const value = node.data.value as Record<
+        const record = node.data.value as Record<
             string,
             StrongDenormalizedNode_ | StrongDenormalizedNode_[]
         >;
@@ -104,12 +111,16 @@ export class DenormalizedAst<RootKind extends StrongNodeKind> {
             this.#normalizeNode(nodesAccumulator, edgesAccumulator, targetNode);
 
             return {};
-        }, value);
+        }, record);
 
         // Infer type
-        const type = _.mapValues(value, (value) => ({
-            manyToOne: Array.isArray(value),
-        })) as Record<string, { manyToOne: boolean }>;
+        const type = execPipe(
+            objectEntries(record),
+            map(
+                ([key, value]) => [key, { manyToOne: isArray(value) }] as const,
+            ),
+            apply(objectFrom<{ manyToOne: boolean }>),
+        );
 
         return weakNormalizedRelationalData(type);
     }
