@@ -1,5 +1,5 @@
 import { DirectedGraph } from "graphology";
-import * as _ from "lodash";
+import _ from "lodash";
 
 import { ErrorWithContext } from "../../../lib/errorsWithContext";
 import { anonymize } from "../../common";

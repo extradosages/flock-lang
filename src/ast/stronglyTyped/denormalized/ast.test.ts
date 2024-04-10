@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import _ from "lodash";
 import { stringify } from "safe-stable-stringify";
 
 import { StrongNodeKind } from "../common";
