@@ -26,8 +26,8 @@ import {
 const isRoot = (graph: DirectedGraph) => (node: string) =>
     graph.inDegree(node) === 0;
 
-export class NormalizedAst<RootKind extends StrongNodeKind> {
-    #rootIdCache?: string;
+export class NormalizedAst<RootKind extends StrongNodeKind = "library"> {
+    #rootId?: RootKind;
     rootKind: RootKind;
     graph: DirectedGraph<StrongNormalizedNode_, WeakEdge_>;
 
@@ -36,16 +36,16 @@ export class NormalizedAst<RootKind extends StrongNodeKind> {
         this.graph = new DirectedGraph();
     }
 
-    #setRootIdCache(rootId: string) {
-        this.#rootIdCache = rootId;
+    #setRootId(rootId: RootKind) {
+        this.#rootId = rootId;
     }
 
-    #clearRootIdCache() {
-        this.#rootIdCache = undefined;
+    #resetRootId() {
+        this.#rootId = undefined;
     }
 
-    #rootId() {
-        if (this.#rootIdCache === undefined) {
+    rootId() {
+        if (this.#rootId === undefined) {
             if (this.graph.nodes().length === 0) {
                 throw new Error("No nodes in the graph!");
             }
@@ -59,15 +59,15 @@ export class NormalizedAst<RootKind extends StrongNodeKind> {
                 throw new Error("Graph has more than one root!");
             }
 
-            const rootId = nodeIds[0];
-            this.#setRootIdCache(rootId);
+            const rootId = nodeIds[0] as RootKind;
+            this.#setRootId(rootId);
             return rootId;
         }
-        return this.#rootIdCache;
+        return this.#rootId;
     }
 
     root() {
-        const node = this.node<RootKind>(this.#rootId());
+        const node = this.node<RootKind>(this.rootId());
         if (node.kind !== this.rootKind) {
             throw new ErrorWithContext(
                 { rootKind: node.kind, astKind: this.rootKind },
@@ -91,42 +91,16 @@ export class NormalizedAst<RootKind extends StrongNodeKind> {
         return this.graph.getEdgeAttributes(id);
     }
 
-    oneToOne<SourceKind extends StrongNodeKind>(
-        id: string,
-        edgeKind: StrongEdgeKind<SourceKind>,
-    ) {
-        const edgeId = this.graph.findOutEdge(
-            id,
-            (_, { kind }) => kind === edgeKind,
-        );
-        if (edgeId === undefined) {
-            throw new ErrorWithContext(
-                { id, edgeKind },
-                "One-to-one edge not found",
-            );
-        }
-
-        const targetId = this.graph.getEdgeAttribute(edgeId, "targetId");
-
-        const node = this.graph.getNodeAttributes(targetId);
-        if (node === undefined) {
-            throw new ErrorWithContext(
-                { id, edgeId, edgeKind, targetId },
-                "One-to-one node not found",
-            );
-        }
-
-        return node;
-    }
-
     addNode(node: StrongNormalizedNode_) {
         this.graph.addNode(node.id, node);
-        this.#clearRootIdCache();
+        // This might be the new root, so invalidate the root id cache
+        this.#resetRootId();
     }
 
     addEdge(edge: WeakEdge_) {
         this.graph.addEdge(edge.sourceId, edge.targetId, edge);
-        this.#clearRootIdCache();
+        // This might change the root, so invalidate the root id cache
+        this.#resetRootId();
     }
 
     // Anonymize

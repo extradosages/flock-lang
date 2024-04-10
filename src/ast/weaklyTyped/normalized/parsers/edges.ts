@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { idParser } from "../../../id";
+import { nodeIdParser } from "../../../id";
 import {
     WeakEdgeKind,
     WeakNodeKind,
@@ -38,12 +38,12 @@ export const weakEdgeParser = <
 }) =>
     z
         .object({
-            id: idParser,
+            id: nodeIdParser,
             index: indexParser(manyToOne),
             kind,
-            sourceId: idParser,
+            sourceId: nodeIdParser,
             sourceKind,
-            targetId: idParser,
+            targetId: nodeIdParser,
             targetKind,
         })
         .strict();
