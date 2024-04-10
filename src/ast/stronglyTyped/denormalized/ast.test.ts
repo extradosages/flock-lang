@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import { apply, execPipe, map, objectEntries, objectFrom } from "iter-tools";
 import { stringify } from "safe-stable-stringify";
 
 import { StrongNodeKind } from "../common";
@@ -11,11 +11,15 @@ import {
     nFunctionType,
 } from "../normalized";
 
-const sort = (record: Record<string, unknown[]>) =>
-    _.mapValues(record, (value) => _.orderBy(value, stringify));
+const sort = (arr: NonNullable<unknown>[]) =>
+    arr.sort((left, right) => (stringify(left) > stringify(right) ? -1 : 1));
 
 const standardize = (normalizedAst: NormalizedAst<StrongNodeKind>) =>
-    sort(normalizedAst.anonymize());
+    execPipe(
+        objectEntries(normalizedAst.anonymize()),
+        map(([key, value]) => [key, sort(value)] as const),
+        apply(objectFrom),
+    );
 
 describe("DenormalizedAst", () => {
     describe("`.normalize`", () => {
