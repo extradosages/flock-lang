@@ -1,10 +1,10 @@
-import { dfsFromNode } from "graphology-traversal";
 import { includes } from "lodash";
 
+import { bfsFromNode } from "graphology-traversal";
 import { NormalizedAst, StrongNodeKind } from "../ast";
 
 export class Scopes {
-    #lookup: Record<string, string>;
+    _lookup: Record<string, string>;
     all: Set<string>;
 
     constructor(scopeBoundaries: Array<StrongNodeKind>, ast: NormalizedAst) {
@@ -14,7 +14,7 @@ export class Scopes {
         const lookup: Record<string, string> = {};
 
         let currScope: string;
-        dfsFromNode(ast.graph, ast.rootId(), (_, node) => {
+        bfsFromNode(ast.graph, ast.rootId(), (_, node) => {
             lookup[node.id] = currScope ?? ast.rootId();
             if (includes(scopeBoundaries, node.kind)) {
                 currScope = node.id;
@@ -22,11 +22,11 @@ export class Scopes {
             }
         });
 
-        this.#lookup = lookup;
+        this._lookup = lookup;
         this.all = scopes;
     }
 
     lookup(nodeId: string) {
-        return this.#lookup[nodeId] as string;
+        return this._lookup[nodeId] as string;
     }
 }
