@@ -4,7 +4,7 @@ import { NormalizedAst } from "../ast";
 import { ErrorWithContext } from "../util/errorsWithContext";
 import { Scopes } from "./scopes";
 
-const resolveReference = (
+const kernel = (
     ast: NormalizedAst,
     scopes: Scopes,
     scopeTermBindings: Record<string, string[]>,
@@ -30,7 +30,7 @@ const resolveReference = (
 
         if (scopeKind === "lambdaConstructor") {
             const nextScopeId = scopes.lookup(scopeId);
-            return resolveReference(
+            return kernel(
                 ast,
                 scopes,
                 scopeTermBindings,
@@ -55,12 +55,19 @@ const resolveReference = (
 export const resolveTermReferences = (ast: NormalizedAst) => {
     const scopes = new Scopes(["lambdaConstructor"], ast);
 
+    const scopesVerbose = Object.entries(scopes._lookup).map(([k, v]) => [
+        ast.node(k),
+        ast.node(v),
+    ]);
+
     // Associate to each scope a set of term bindings.
     const termBindingNodeIds = ast.graph.filterNodes(
         (_, node) => node.kind === "termBinding",
     );
 
-    const scopeTermBindings = groupBy(termBindingNodeIds, scopes.lookup);
+    const scopeTermBindings = groupBy(termBindingNodeIds, (nodeId) =>
+        scopes.lookup(nodeId),
+    );
 
     const termReferenceNodeIds = ast.graph.filterNodes(
         (_, node) => node.kind === "termReference",
@@ -71,7 +78,7 @@ export const resolveTermReferences = (ast: NormalizedAst) => {
         const scopeId = scopes.lookup(nodeId);
         const identifier = ast.node<"termReference">(nodeId).data.value;
 
-        const resolution = resolveReference(
+        const resolution = kernel(
             ast,
             scopes,
             scopeTermBindings,
