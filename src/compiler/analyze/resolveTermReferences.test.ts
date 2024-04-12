@@ -116,7 +116,7 @@ describe("resolveTermReferences", () => {
         expect(actual).toBe(expected);
     });
 
-    it("resolves a reference in a scope when the resolved binding shadows one in a lower scope", () => {
+    it("resolves a reference in a scope when the resolved binding shadows one in a broader scope", () => {
         const ast = new Parser().parse(
             "defterm foo:Boolean client\ndefterm bar:[^ Boolean -> [^ Boolean -> Boolean ^] ^] [^ foo -> [^ baz -> foo ^] ^]",
         );
