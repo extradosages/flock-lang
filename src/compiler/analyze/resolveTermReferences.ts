@@ -55,11 +55,6 @@ const kernel = (
 export const resolveTermReferences = (ast: NormalizedAst) => {
     const scopes = new Scopes(["lambdaConstructor"], ast);
 
-    const scopesVerbose = Object.entries(scopes._lookup).map(([k, v]) => [
-        ast.node(k),
-        ast.node(v),
-    ]);
-
     // Associate to each scope a set of term bindings.
     const termBindingNodeIds = ast.graph.filterNodes(
         (_, node) => node.kind === "termBinding",
