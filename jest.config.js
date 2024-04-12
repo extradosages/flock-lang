@@ -2,6 +2,6 @@
 module.exports = {
   moduleFileExtensions: ['ts', 'pegjs', 'js'],
   preset: 'ts-jest',
-  roots: ['<rootDir>/src', '<rootDir>/grammar'],
+  roots: ['<rootDir>/src'],
   testEnvironment: 'node',
 };
