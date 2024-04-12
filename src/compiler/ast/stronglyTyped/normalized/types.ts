@@ -100,5 +100,3 @@ export type StrongEdgeTargetKind<
     SourceKind extends StrongEdgeSourceKind,
     EdgeKind extends StrongEdgeKind<SourceKind>,
 > = StrongEdge<SourceKind, EdgeKind>["targetKind"];
-
-type Test = StrongEdgeTargetKind<"library", "termDefinitions">;
