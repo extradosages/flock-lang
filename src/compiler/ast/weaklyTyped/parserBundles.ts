@@ -1,34 +1,37 @@
 import { z } from "zod";
 
+import { WeakEdgeKind, WeakNodeKind } from "./common";
+import {
+    WeakDenormalizedData,
+    weakDenormalizedNodeParser,
+} from "./denormalized";
 import {
     WeakEdgeMap_SourceKindT_EdgeKindT_,
     WeakNormalizedData,
     weakNormalizedNodeParser,
 } from "./normalized";
-import {
-    WeakDenormalizedData,
-    weakDenormalizedNodeParser,
-} from "./denormalized";
-import { WeakNodeKind } from "./common";
 
 /**
  *
  */
 export const parserBundle = <
-    Kind extends WeakNodeKind,
     DData extends WeakDenormalizedData,
+    EdgeKind extends WeakEdgeKind,
+    Kind extends WeakNodeKind,
     NData extends WeakNormalizedData,
     NEdges extends WeakEdgeMap_SourceKindT_EdgeKindT_,
 >({
     denormalizedData,
+    edgeKind,
     kind,
     normalizedData,
-    normalizedEdges,
+    edges,
 }: {
     denormalizedData: z.ZodType<DData>;
+    edgeKind: z.ZodType<EdgeKind>;
     kind: z.ZodType<Kind>;
     normalizedData: z.ZodType<NData>;
-    normalizedEdges: NEdges;
+    edges: NEdges;
 }) => {
     const denormalizedNode = weakDenormalizedNodeParser<Kind, DData>(
         kind,
@@ -43,9 +46,10 @@ export const parserBundle = <
     return {
         denormalizedData,
         denormalizedNode,
+        edgeKind,
+        edges,
         kind,
         normalizedData,
-        normalizedEdges,
         normalizedNode,
     } as const;
 };
