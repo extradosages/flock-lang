@@ -4,7 +4,7 @@ import { bfsFromNode } from "graphology-traversal";
 import { NormalizedAst, StrongNodeKind } from "../ast";
 
 export class Scopes {
-    _lookup: Record<string, string>;
+    #lookup: Record<string, string>;
     all: Set<string>;
 
     constructor(scopeBoundaries: Array<StrongNodeKind>, ast: NormalizedAst) {
@@ -22,11 +22,11 @@ export class Scopes {
             }
         });
 
-        this._lookup = lookup;
+        this.#lookup = lookup;
         this.all = scopes;
     }
 
     lookup(nodeId: string) {
-        return this._lookup[nodeId] as string;
+        return this.#lookup[nodeId] as string;
     }
 }
