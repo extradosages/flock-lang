@@ -26,7 +26,7 @@ export type StrongSmallTypeNodeKind = z.infer<
 export type StrongSmallTypeNodeKindOptions =
     typeof strongSmallTypeNodeKindParser.options;
 
-export type StrongLargeTypeNodeKindParser = z.infer<
+export type StrongLargeTypeNodeKind = z.infer<
     typeof strongLargeTypeNodeKindParser
 >;
 

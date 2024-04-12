@@ -29,37 +29,6 @@ import {
     typeReference,
 } from "../../defs";
 
-export const strongNodeKinds = [
-    "booleanTerm",
-    "booleanType",
-    "clientImplementation",
-    "floatTerm",
-    "floatType",
-    "functionTermEliminator",
-    "functionType",
-    "genericTypeConstructor",
-    "genericTypeEliminator",
-    "integerTerm",
-    "integerType",
-    "lambdaConstructor",
-    "largeTypeType",
-    "library",
-    "productTermConstructor",
-    "productTermEliminator",
-    "productType",
-    "stringTerm",
-    "stringType",
-    "sumTermConstructor",
-    "sumTermEliminator",
-    "sumType",
-    "termBinding",
-    "termDefinition",
-    "termReference",
-    "typeBinding",
-    "typeDefinition",
-    "typeReference",
-] as const;
-
 export const strongNodes = {
     booleanTerm,
     booleanType,
@@ -89,7 +58,7 @@ export const strongNodes = {
     typeBinding,
     typeDefinition,
     typeReference,
-} as const satisfies Record<(typeof strongNodeKinds)[number], unknown>;
+} as const;
 
 export const strongEdges = {
     booleanTerm: booleanTerm.edges,

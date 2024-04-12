@@ -1,15 +1,14 @@
-import z from "zod";
 import {
-    largeTypeKindParser,
-    smallTypeKindParser,
-    termKindParser,
+    largeTypeNodeKindParser,
+    nodeKindParser,
+    smallTypeNodeKindParser,
+    termNodeKindParser,
 } from "../../../defs";
-import { strongNodeKinds } from "../enumeration";
 
-export const strongNodeKindParser = z.enum(strongNodeKinds);
+export const strongNodeKindParser = nodeKindParser;
 
-export const strongTermNodeKindParser = termKindParser;
+export const strongTermNodeKindParser = termNodeKindParser;
 
-export const strongSmallTypeNodeKindParser = smallTypeKindParser;
+export const strongSmallTypeNodeKindParser = smallTypeNodeKindParser;
 
-export const strongLargeTypeNodeKindParser = largeTypeKindParser;
+export const strongLargeTypeNodeKindParser = largeTypeNodeKindParser;

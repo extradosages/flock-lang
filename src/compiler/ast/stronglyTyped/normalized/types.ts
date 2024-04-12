@@ -10,8 +10,11 @@ import {
 import {
     strongNormalizedDataParser,
     strongNormalizedData_KindT_Parser,
+    strongNormalizedLargeTypeNodeParser,
     strongNormalizedNodeParser,
     strongNormalizedNode_KindT_Parser,
+    strongNormalizedSmallTypeNodeParser,
+    strongNormalizedTermNodeParser,
 } from "./parsers";
 
 /**
@@ -55,6 +58,27 @@ export type StrongNormalizedNode_KindT_ = z.infer<
  * @alias StrongNormalizedNode_KindT_
  */
 export type StrongNormalizedNode_ = StrongNormalizedNode_KindT_;
+
+/**
+ * Strongly typed term nodes in normalized AST.
+ */
+export type StrongNormalizedTermNode = z.infer<
+    typeof strongNormalizedTermNodeParser
+>;
+
+/**
+ * Strongly typed small type nodes in normalized AST.
+ */
+export type StrongNormalizedSmallTypeNode = z.infer<
+    typeof strongNormalizedSmallTypeNodeParser
+>;
+
+/**
+ * Strongly typed large type nodes in normalized AST.
+ */
+export type StrongNormalizedLargeTypeNode = z.infer<
+    typeof strongNormalizedLargeTypeNodeParser
+>;
 
 type StrongEdgeParser<
     SourceKind extends StrongEdgeSourceKind,
