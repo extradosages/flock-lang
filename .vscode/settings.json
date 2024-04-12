@@ -10,6 +10,7 @@
         "denormalizes",
         "Edgeǁ",
         "EdgeǁEdge",
+        "extradosages",
         "Kindǁ",
         "Nodeǁ",
         "NodeǁData",
@@ -20,6 +21,8 @@
         "RelationalǁValue",
         "Scalarǁ",
         "ScalarǁParser",
+        "Scoper",
+        "tsanki",
         "typedash",
         "unenumerated"
     ],

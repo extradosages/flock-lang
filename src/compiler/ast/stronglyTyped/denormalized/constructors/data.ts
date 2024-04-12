@@ -1,4 +1,4 @@
-import { ErrorWithContext } from "../../../../lib/errorsWithContext";
+import { ErrorWithContext } from "../../../../util/errorsWithContext";
 import { emptyData, scalarData } from "../../../common";
 import { StrongNodeKind } from "../../common";
 import { strongNodes } from "../../common/enumeration";

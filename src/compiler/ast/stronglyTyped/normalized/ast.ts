@@ -1,7 +1,7 @@
 import { DirectedGraph } from "graphology";
 import _ from "lodash";
 
-import { ErrorWithContext } from "../../../lib/errorsWithContext";
+import { ErrorWithContext } from "../../../util/errorsWithContext";
 import { anonymize } from "../../common";
 import {
     WeakDenormalizedData,
@@ -27,7 +27,7 @@ const isRoot = (graph: DirectedGraph) => (node: string) =>
     graph.inDegree(node) === 0;
 
 export class NormalizedAst<RootKind extends StrongNodeKind = "library"> {
-    #rootId?: RootKind;
+    #rootId?: string;
     rootKind: RootKind;
     graph: DirectedGraph<StrongNormalizedNode_, WeakEdge_>;
 
@@ -36,7 +36,7 @@ export class NormalizedAst<RootKind extends StrongNodeKind = "library"> {
         this.graph = new DirectedGraph();
     }
 
-    #setRootId(rootId: RootKind) {
+    #setRootId(rootId: string) {
         this.#rootId = rootId;
     }
 
@@ -59,7 +59,7 @@ export class NormalizedAst<RootKind extends StrongNodeKind = "library"> {
                 throw new Error("Graph has more than one root!");
             }
 
-            const rootId = nodeIds[0] as RootKind;
+            const rootId = nodeIds[0];
             this.#setRootId(rootId);
             return rootId;
         }

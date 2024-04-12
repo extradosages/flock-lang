@@ -13,7 +13,7 @@ import {
 } from "iter-tools";
 
 import { NormalizedAst, StrongNormalizedNode } from "../ast";
-import { ErrorWithContext } from "../lib/errorsWithContext";
+import { ErrorWithContext } from "../util/errorsWithContext";
 
 export const uniqueTermDefinitionBindings = (
     ast: NormalizedAst<"library">,

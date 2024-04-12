@@ -16,7 +16,7 @@ import {
     StrongEdge_EdgeKindT_,
     StrongNormalizedNode,
 } from "../ast";
-import { ErrorWithContext } from "../lib/errorsWithContext";
+import { ErrorWithContext } from "../util/errorsWithContext";
 
 const duplicatesByNode = (
     ast: NormalizedAst<"library">,

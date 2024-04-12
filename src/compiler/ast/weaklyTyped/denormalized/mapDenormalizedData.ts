@@ -1,4 +1,4 @@
-import { ErrorWithContext } from "../../../lib/errorsWithContext";
+import { ErrorWithContext } from "../../../util/errorsWithContext";
 import { EmptyData, emptyData } from "../../common";
 import { WeakScalarData_ } from "../common";
 

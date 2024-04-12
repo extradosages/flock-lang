@@ -5,7 +5,6 @@ import * as peggy from "peggy";
 import * as flockAst from "../ast";
 import {
     DenormalizedAst,
-    NormalizedAst,
     StrongDenormalizedNode,
     StrongNodeKind,
 } from "../ast";

@@ -1,7 +1,7 @@
 import _ from "lodash";
 
-import { ErrorWithContext } from "../../../lib/errorsWithContext";
-import { recordValueOrValueArrayMap } from "../../../lib/recordMaps";
+import { ErrorWithContext } from "../../../util/errorsWithContext";
+import { recordValueOrValueArrayMap } from "../../../util/recordMaps";
 import { anonymize, emptyData, scalarData } from "../../common";
 import { id } from "../../id";
 import {

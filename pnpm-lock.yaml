@@ -11,6 +11,9 @@ dependencies:
   graphology:
     specifier: ^0.25.4
     version: 0.25.4(graphology-types@0.24.7)
+  graphology-shortest-path:
+    specifier: ^2.1.0
+    version: 2.1.0(graphology-types@0.24.7)
   graphology-traversal:
     specifier: ^0.3.1
     version: 0.3.1(graphology-types@0.24.7)
@@ -58,6 +61,9 @@ devDependencies:
   ts-node:
     specifier: ^10.9.2
     version: 10.9.2(@types/node@20.11.30)(typescript@5.4.3)
+  tsanki:
+    specifier: ^1.0.1
+    version: 1.0.1
   typescript:
     specifier: ^5.4.3
     version: 5.4.3
@@ -808,6 +814,10 @@ packages:
       '@types/yargs-parser': 21.0.3
     dev: true
 
+  /@yomguithereal/helpers@1.1.1:
+    resolution: {integrity: sha512-UYvAq/XCA7xoh1juWDYsq3W0WywOB+pz8cgVnE1b45ZfdMhBvHDrgmSFG3jXeZSr2tMTYLGHFHON+ekG05Jebg==}
+    dev: false
+
   /acorn-walk@8.3.2:
     resolution: {integrity: sha512-cjkyv4OtNCIeqhHrfS81QWXoCBPExR/J62oyEqepVw8WaQeSqpW2uhuLPh1m9eWhDuOo/jUXVTlifvesOWp/4A==}
     engines: {node: '>=0.4.0'}
@@ -1323,6 +1333,18 @@ packages:
     peerDependencies:
       graphology-types: '>=0.20.0'
     dependencies:
+      graphology-types: 0.24.7
+      graphology-utils: 2.5.2(graphology-types@0.24.7)
+      mnemonist: 0.39.8
+    dev: false
+
+  /graphology-shortest-path@2.1.0(graphology-types@0.24.7):
+    resolution: {integrity: sha512-KbT9CTkP/u72vGEJzyRr24xFC7usI9Es3LMmCPHGwQ1KTsoZjxwA9lMKxfU0syvT/w+7fZUdB/Hu2wWYcJBm6Q==}
+    peerDependencies:
+      graphology-types: '>=0.20.0'
+    dependencies:
+      '@yomguithereal/helpers': 1.1.1
+      graphology-indices: 0.17.0(graphology-types@0.24.7)
       graphology-types: 0.24.7
       graphology-utils: 2.5.2(graphology-types@0.24.7)
       mnemonist: 0.39.8
@@ -2456,6 +2478,10 @@ packages:
       typescript: 5.4.3
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
+    dev: true
+
+  /tsanki@1.0.1:
+    resolution: {integrity: sha512-wQQYHA7CcJEjpvB9bVy1BGo/WJcUsIqjzwrybzkSlsmTAPXaVw0/+4XLqYeHHipWKI36VqEprfwKD4r6qTut4A==}
     dev: true
 
   /type-detect@4.0.8:

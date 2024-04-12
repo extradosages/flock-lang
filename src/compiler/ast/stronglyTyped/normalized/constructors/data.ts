@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-import { ErrorWithContext } from "../../../../lib/errorsWithContext";
+import { ErrorWithContext } from "../../../../util/errorsWithContext";
 import { emptyData, scalarData } from "../../../common";
 import {
     WeakNormalizedRelationSpec,
