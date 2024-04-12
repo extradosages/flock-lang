@@ -9,7 +9,7 @@ import {
     StrongNodeKind,
 } from "../ast";
 
-const sourcePath = "./grammar/library.pegjs";
+const sourcePath = "./src/grammar/library.pegjs";
 export const source = readFileSync(sourcePath, "utf8");
 
 export class Parser<RootKind extends StrongNodeKind = "library"> {
