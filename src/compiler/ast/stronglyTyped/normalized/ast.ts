@@ -18,6 +18,7 @@ import { DenormalizedAst, StrongDenormalizedNode } from "../denormalized";
 
 import {
     StrongEdge,
+    StrongEdgeTargetKind,
     StrongNormalizedData_,
     StrongNormalizedNode,
     StrongNormalizedNode_,
@@ -89,6 +90,43 @@ export class NormalizedAst<RootKind extends StrongNodeKind = "library"> {
             StrongEdgeKind<SourceKind> = StrongEdgeKind<SourceKind>,
     >(id: string): StrongEdge<SourceKind, EdgeKind> {
         return this.graph.getEdgeAttributes(id);
+    }
+
+    oneToOneChild<
+        SourceKind extends StrongEdgeSourceKind,
+        EdgeKind extends StrongEdgeKind<SourceKind>,
+    >(sourceId: string, edgeKind: EdgeKind) {
+        const edgeIds = this.graph.filterOutEdges(
+            sourceId,
+            (_, edge) => edge.kind === edgeKind,
+        );
+        if (edgeIds.length < 1) {
+            throw new ErrorWithContext(
+                { sourceId, edgeKind },
+                "No one-to-one edge found",
+            );
+        }
+        if (edgeIds.length > 1) {
+            throw new ErrorWithContext(
+                { sourceId, edgeKind },
+                "Multiple one-to-one edges found",
+            );
+        }
+
+        const targetId = this.graph.target(edgeIds[0]);
+        return this.node<StrongEdgeTargetKind<SourceKind, EdgeKind>>(targetId);
+    }
+
+    manyToOneChildren<
+        SourceKind extends StrongEdgeSourceKind,
+        EdgeKind extends StrongEdgeKind<SourceKind>,
+    >(sourceId: string, edgeKind: EdgeKind) {
+        const edgeIds = this.graph.filterOutEdges(
+            sourceId,
+            (_, edge) => edge.kind === edgeKind,
+        );
+
+        return edgeIds;
     }
 
     addNode(node: StrongNormalizedNode_) {

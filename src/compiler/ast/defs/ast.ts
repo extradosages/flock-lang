@@ -303,7 +303,7 @@ const functionTermEliminatorEdgeParsers = {
         kind: z.literal("function"),
         manyToOne: false,
         sourceKind: functionTermEliminatorNodeKindParser,
-        targetKind: z.lazy(() => functionTermConstructorKindParser),
+        targetKind: z.lazy(() => functionTermConstructorNodeKindParser),
     }),
     arguments: weakEdgeParser({
         kind: z.literal("arguments"),
@@ -594,7 +594,9 @@ const genericTypeEliminatorEdgeParsers = {
         kind: z.literal("genericType"),
         manyToOne: false,
         sourceKind: genericTypeEliminatorNodeKindParser,
-        targetKind: z.lazy(() => largeTypeNodeKindParser),
+        targetKind: z.lazy(
+            () => genericTypeEliminatorGenericTypeNodeKindParser,
+        ),
     }),
 } as const;
 
@@ -606,7 +608,7 @@ type DenormalizedGenericTypeEliminatorData = {
     dimensionality: "relational";
     value: {
         arguments: DenormalizedSmallTypeNode[];
-        genericType: DenormalizedLargeTypeNode;
+        genericType: DenormalizedGenericTypeEliminatorGenericTypeNode;
     };
 };
 
@@ -614,7 +616,9 @@ const denormalizedGenericTypeEliminatorDataParser: z.ZodType<DenormalizedGeneric
     weakDenormalizedRelationalDataParser(
         z.object({
             arguments: z.array(z.lazy(() => denormalizedSmallTypeNodeParser)),
-            genericType: z.lazy(() => denormalizedLargeTypeNodeParser),
+            genericType: z.lazy(
+                () => denormalizedGenericTypeEliminatorGenericTypeNodeParser,
+            ),
         }),
     );
 
@@ -1274,7 +1278,7 @@ const sumTermEliminatorEdgeParsers = {
         kind: z.literal("components"),
         manyToOne: true,
         sourceKind: sumTermEliminatorNodeKindParser,
-        targetKind: z.lazy(() => functionTermConstructorKindParser),
+        targetKind: z.lazy(() => functionTermConstructorNodeKindParser),
     }),
 } as const;
 
@@ -1574,9 +1578,7 @@ const termDefinitionEdgeParsers = {
         kind: z.literal("term"),
         manyToOne: false,
         sourceKind: termDefinitionNodeKindParser,
-        targetKind: z.lazy(() =>
-            z.union([termNodeKindParser, clientImplementationNodeKindParser]),
-        ),
+        targetKind: z.lazy(() => termDefinitionTermNodeKindParser),
     }),
     type: weakEdgeParser({
         kind: z.literal("type"),
@@ -1594,12 +1596,7 @@ const denormalizedTermDefinitionDataParser =
     weakDenormalizedRelationalDataParser(
         z.object({
             binding: denormalizedTermBindingNodeParser,
-            term: z.lazy(() =>
-                z.union([
-                    denormalizedTermNodeParser,
-                    denormalizedClientImplementationNodeParser,
-                ]),
-            ),
+            term: z.lazy(() => termDefinitionTermNodeKindParser),
             type: z.lazy(() => denormalizedLargeTypeNodeParser),
         }),
     );
@@ -2000,12 +1997,12 @@ const functionTermConstructorNodeKinds = [
     termReferenceNodeKind,
 ] as const;
 
-const functionTermConstructorKindParser = z.enum(
+export const functionTermConstructorNodeKindParser = z.enum(
     functionTermConstructorNodeKinds,
 );
 
 type FunctionTermConstructorNodeKind = z.infer<
-    typeof functionTermConstructorKindParser
+    typeof functionTermConstructorNodeKindParser
 >;
 
 const normalizedFunctionTermConstructorNodeParser = z.union([
@@ -2038,6 +2035,39 @@ const denormalizedFunctionTermConstructorNodeParser = z.union([
 
 type DenormalizedFunctionTermConstructorNode = z.infer<
     typeof denormalizedFunctionTermConstructorNodeParser
+>;
+
+// Generic type eliminator generic type
+
+const genericTypeEliminatorGenericTypeNodeKinds = [
+    genericTypeConstructorNodeKind,
+    typeReferenceNodeKind,
+] as const;
+
+export const genericTypeEliminatorGenericTypeNodeKindParser = z.enum(
+    genericTypeEliminatorGenericTypeNodeKinds,
+);
+
+type GenericTypeEliminatorGenericTypeNodeKind = z.infer<
+    typeof genericTypeEliminatorGenericTypeNodeKindParser
+>;
+
+const normalizedGenericTypeEliminatorGenericTypeNodeParser = z.union([
+    normalizedGenericTypeConstructorNodeParser,
+    normalizedTypeReferenceNodeParser,
+]);
+
+type NormalizedGenericTypeEliminatorGenericTypeNode = z.infer<
+    typeof normalizedGenericTypeEliminatorGenericTypeNodeParser
+>;
+
+const denormalizedGenericTypeEliminatorGenericTypeNodeParser = z.union([
+    denormalizedGenericTypeConstructorNodeParser,
+    denormalizedTypeReferenceNodeParser,
+]);
+
+type DenormalizedGenericTypeEliminatorGenericTypeNode = z.infer<
+    typeof denormalizedGenericTypeEliminatorGenericTypeNodeParser
 >;
 
 // Term
@@ -2196,4 +2226,37 @@ const denormalizedLargeTypeNodeParser = z.union([
 
 type DenormalizedLargeTypeNode = z.infer<
     typeof denormalizedLargeTypeNodeParser
+>;
+
+// Term definition term node
+
+const termDefinitionTermNodeKinds = [
+    ...termNodeKinds,
+    clientImplementationNodeKind,
+] as const;
+
+export const termDefinitionTermNodeKindParser = z.enum(
+    termDefinitionTermNodeKinds,
+);
+
+type TermDefinitionTermNodeKind = z.infer<
+    typeof termDefinitionTermNodeKindParser
+>;
+
+const normalizedTermDefinitionTermNodeParser = z.union([
+    normalizedTermNodeParser,
+    normalizedClientImplementationNodeParser,
+]);
+
+type NormalizedTermDefinitionTermNode = z.infer<
+    typeof normalizedTermDefinitionTermNodeParser
+>;
+
+const denormalizedTermDefinitionTermNodeParser = z.union([
+    denormalizedTermNodeParser,
+    denormalizedClientImplementationNodeParser,
+]);
+
+type DenormalizedTermDefinitionTermNode = z.infer<
+    typeof denormalizedTermDefinitionTermNodeParser
 >;
