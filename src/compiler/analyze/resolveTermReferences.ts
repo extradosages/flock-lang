@@ -4,6 +4,8 @@ import { NormalizedAst } from "../ast";
 import { ErrorWithContext } from "../util/errorsWithContext";
 import { Scopes } from "./scopes";
 
+export type TermResolution = Record<string, string>;
+
 const kernel = (
     ast: NormalizedAst,
     scopes: Scopes,
@@ -52,7 +54,7 @@ const kernel = (
     return resolution;
 };
 
-export const resolveTermReferences = (ast: NormalizedAst) => {
+export const resolveTermReferences = (ast: NormalizedAst): TermResolution => {
     const scopes = new Scopes(["lambdaConstructor"], ast);
 
     // Associate to each scope a set of term bindings.

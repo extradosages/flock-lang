@@ -4,6 +4,8 @@ import { NormalizedAst } from "../ast";
 import { ErrorWithContext } from "../util/errorsWithContext";
 import { Scopes } from "./scopes";
 
+type TypeResolution = Record<string, string>;
+
 const kernel = (
     ast: NormalizedAst,
     scopes: Scopes,
@@ -52,7 +54,7 @@ const kernel = (
     return resolution;
 };
 
-export const resolveTypeReferences = (ast: NormalizedAst) => {
+export const resolveTypeReferences = (ast: NormalizedAst): TypeResolution => {
     const scopes = new Scopes(["genericTypeConstructor"], ast);
 
     // Associate to each scope a set of term bindings.
