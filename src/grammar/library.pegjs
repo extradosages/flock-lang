@@ -196,11 +196,14 @@ productTermConstructor
     }
 
 // ##### Eliminator
-// (>0 [* "abc" foo *])
+// (>0,0 [* "abc" foo *])
 productTermEliminator
-    = ">" value:[0-9]+
+    = ">" arity:[0-9]+ "," index:[0-9]+
     {
-        const data = parseInt(value, 10);
+        const data = {
+            arity: parseInt(arity, 10),
+            index: parseInt(index, 10),
+        };
         return options.flockAst.dProductTermEliminator(data);
     }
 

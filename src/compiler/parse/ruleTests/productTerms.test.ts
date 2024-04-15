@@ -147,37 +147,66 @@ describe("productTermConstructor", () => {
 describe("productTermEliminator", () => {
     const parser = new Parser("productTermEliminator");
 
-    it("parses a product term eliminator with an index of <0`", () => {
-        const actual = parser.parse(">0").denormalize().anonymize();
+    it("parses a product term eliminator with an arity of 0 and an index of 0", () => {
+        const actual = parser.parse(">0,0").denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            dProductTermEliminator(0),
+            dProductTermEliminator({ arity: 0, index: 0 }),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
-    it("parses a product term eliminator with an index of <1`", () => {
-        const actual = parser.parse(">1").denormalize().anonymize();
+    it("parses a product term eliminator with an arity of 1 and an index of 0`", () => {
+        const actual = parser.parse(">1,0").denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            dProductTermEliminator(1),
+            dProductTermEliminator({ arity: 1, index: 0 }),
+        ).anonymize();
+        expect(actual).toStrictEqual(expected);
+    });
+
+    it("parses a product term eliminator with an arity of 1 and an index of 1", () => {
+        const actual = parser.parse(">1,1").denormalize().anonymize();
+
+        const expected = new DenormalizedAst(
+            dProductTermEliminator({ arity: 1, index: 1 }),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("does not parse a product term eliminator without an index", () => {
-        expect(() => parser.parse(",")).toThrow();
+        expect(() => parser.parse(">0,")).toThrow();
     });
 
-    it("does not parse a product term eliminator with a float index", () => {
-        expect(() => parser.parse(">1.5")).toThrow();
+    it("does not parse a product term eliminator without an arity", () => {
+        expect(() => parser.parse(">,0")).toThrow();
+    });
+
+    it("does not parse a product term eliminator without a comma", () => {
+        expect(() => parser.parse(">0")).toThrow();
+    });
+
+    it("does not parse a product term eliminator with only a bracket", () => {
+        expect(() => parser.parse(">")).toThrow();
+    });
+
+    it("does not parse a product term eliminator with a non-integral index", () => {
+        expect(() => parser.parse(">2,1.5")).toThrow();
+    });
+
+    it("does not parse a product term eliminator with a non-integral arity", () => {
+        expect(() => parser.parse(">1.5,1")).toThrow();
     });
 
     it("does not parse a product term eliminator with a negative index", () => {
-        expect(() => parser.parse(",-1")).toThrow();
+        expect(() => parser.parse(">0,-1")).toThrow();
+    });
+
+    it("does not parse a product term eliminator with a negative arity", () => {
+        expect(() => parser.parse(">-1,0")).toThrow();
     });
 
     it("does not parse a product term eliminator with whitespace", () => {
-        expect(() => parser.parse(", 1")).toThrow();
+        expect(() => parser.parse("0, 1")).toThrow();
     });
 });

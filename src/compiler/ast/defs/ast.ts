@@ -1058,7 +1058,10 @@ type ProductTermEliminatorNodeKind = z.infer<
 >;
 
 const normalizedProductTermEliminatorDataParser = scalarDataParser(
-    z.number().int(),
+    z.object({
+        arity: z.number().int().nonnegative(),
+        index: z.number().int().nonnegative(),
+    }),
 );
 
 type NormalizedProductTermEliminatorData = z.infer<
@@ -1081,7 +1084,10 @@ type ProductTermEliminatorEdge = z.infer<
 >;
 
 const denormalizedProductTermEliminatorDataParser = scalarDataParser(
-    z.number().int(),
+    z.object({
+        arity: z.number().int().nonnegative(),
+        index: z.number().int().nonnegative(),
+    }),
 );
 
 type DenormalizedProductTermEliminatorData = z.infer<

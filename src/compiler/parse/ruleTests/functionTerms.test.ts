@@ -213,7 +213,7 @@ describe("functionTermEliminator", () => {
 
     it("parses a function term eliminator with a product eliminator head and an argument", () => {
         const actual = parser
-            .parse("(>0 [* true false *])")
+            .parse("(>0,0 [* true false *])")
             .denormalize()
             .anonymize();
 
@@ -224,7 +224,7 @@ describe("functionTermEliminator", () => {
                         components: [dBooleanTerm(true), dBooleanTerm(false)],
                     }),
                 ],
-                function: dProductTermEliminator(0),
+                function: dProductTermEliminator({ arity: 0, index: 0 }),
             }),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
