@@ -1,7 +1,7 @@
 import { Parser } from "../parse";
 import { ErrorWithContext } from "../util/errorsWithContext";
 
-import { resolveTermReferences } from "./resolveTermReferences";
+import { TermResolution } from "./resolveTermReferences";
 
 describe("resolveTermReferences", () => {
     it("resolves an un-nested reference to a binding in the library scope ", () => {
@@ -24,9 +24,9 @@ describe("resolveTermReferences", () => {
             throw new ErrorWithContext({ ast }, "No foo reference node found");
         }
 
-        const resolution = resolveTermReferences(ast);
+        const resolution = new TermResolution(ast);
 
-        const actual = resolution[fooReferenceNodeId];
+        const actual = resolution.lookup(fooReferenceNodeId);
         const expected = fooBindingNodeId;
 
         expect(actual).toBe(expected);
@@ -52,9 +52,9 @@ describe("resolveTermReferences", () => {
             throw new ErrorWithContext({ ast }, "No foo reference node found");
         }
 
-        const resolution = resolveTermReferences(ast);
+        const resolution = new TermResolution(ast);
 
-        const actual = resolution[fooReferenceNodeId];
+        const actual = resolution.lookup(fooReferenceNodeId);
         const expected = fooBindingNodeId;
 
         expect(actual).toBe(expected);
@@ -80,9 +80,9 @@ describe("resolveTermReferences", () => {
             throw new ErrorWithContext({ ast }, "No bar reference node found");
         }
 
-        const resolution = resolveTermReferences(ast);
+        const resolution = new TermResolution(ast);
 
-        const actual = resolution[barReferenceNodeId];
+        const actual = resolution.lookup(barReferenceNodeId);
         const expected = barBindingNodeId;
 
         expect(actual).toBe(expected);
@@ -108,9 +108,9 @@ describe("resolveTermReferences", () => {
             throw new ErrorWithContext({ ast }, "No bar reference node found");
         }
 
-        const resolution = resolveTermReferences(ast);
+        const resolution = new TermResolution(ast);
 
-        const actual = resolution[barReferenceNodeId];
+        const actual = resolution.lookup(barReferenceNodeId);
         const expected = barBindingNodeId;
 
         expect(actual).toBe(expected);
@@ -142,9 +142,9 @@ describe("resolveTermReferences", () => {
             throw new ErrorWithContext({ ast }, "No foo reference node found");
         }
 
-        const resolution = resolveTermReferences(ast);
+        const resolution = new TermResolution(ast);
 
-        const actual = resolution[fooReferenceNodeId];
+        const actual = resolution.lookup(fooReferenceNodeId);
         const expected = fooBindingNodeId;
 
         expect(actual).toBe(expected);
@@ -153,6 +153,6 @@ describe("resolveTermReferences", () => {
     it("throws an error if a reference is unresolvable", () => {
         const ast = new Parser().parse("defterm foo:Boolean bar");
 
-        expect(() => resolveTermReferences(ast)).toThrow();
+        expect(() => new TermResolution(ast)).toThrow();
     });
 });
