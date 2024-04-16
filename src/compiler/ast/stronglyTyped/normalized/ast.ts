@@ -126,7 +126,11 @@ export class NormalizedAst<RootKind extends StrongNodeKind = "library"> {
             (_, edge) => edge.kind === edgeKind,
         );
 
-        return edgeIds;
+        const targetIds = edgeIds.map((edgeId) => this.graph.target(edgeId));
+
+        return targetIds.map((targetId) =>
+            this.node<StrongEdgeTargetKind<SourceKind, EdgeKind>>(targetId),
+        );
     }
 
     addNode(node: StrongNormalizedNode_) {
