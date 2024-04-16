@@ -1198,7 +1198,10 @@ type SumTermConstructorNodeKind = z.infer<
 >;
 
 const normalizedSumTermConstructorDataParser = scalarDataParser(
-    z.number().int(),
+    z.object({
+        arity: z.number().int().nonnegative(),
+        index: z.number().int().nonnegative(),
+    }),
 );
 
 type NormalizedSumTermConstructorData = z.infer<
@@ -1221,7 +1224,10 @@ type SumTermConstructorEdge = z.infer<
 >;
 
 const denormalizedSumTermConstructorDataParser = scalarDataParser(
-    z.number().int(),
+    z.object({
+        arity: z.number().int().nonnegative(),
+        index: z.number().int().nonnegative(),
+    }),
 );
 
 type DenormalizedSumTermConstructorData = z.infer<

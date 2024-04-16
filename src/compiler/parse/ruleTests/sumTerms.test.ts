@@ -1,13 +1,12 @@
 import {
     DenormalizedAst,
-    dSumTermEliminator,
-    dTermReference,
     dLambdaConstructor,
-    dTermBinding,
     dStringTerm,
     dSumTermConstructor,
+    dSumTermEliminator,
+    dTermBinding,
+    dTermReference,
 } from "../../ast";
-import { sumTermConstructor } from "../../ast/defs";
 import { Parser } from "../parser";
 
 describe("sumTermEliminator", () => {
@@ -96,37 +95,71 @@ describe("sumTermEliminator", () => {
 describe("sumTermConstructor", () => {
     const parser = new Parser("sumTermConstructor");
 
-    it("parses a sum term constructor with an index of <0`", () => {
-        const actual = parser.parse("<0").denormalize().anonymize();
+    it("parses a sum term constructor with an arity of 0 and index of 0", () => {
+        const actual = parser.parse("<0,0").denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            dSumTermConstructor(0),
+            dSumTermConstructor({ arity: 0, index: 0 }),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
-    it("parses a sum term constructor with an index of <1`", () => {
-        const actual = parser.parse("<1").denormalize().anonymize();
+    it("parses a sum term constructor with an arity of 1 and an index 0", () => {
+        const actual = parser.parse("<1,0").denormalize().anonymize();
 
         const expected = new DenormalizedAst(
-            dSumTermConstructor(1),
+            dSumTermConstructor({ arity: 1, index: 0 }),
+        ).anonymize();
+        expect(actual).toStrictEqual(expected);
+    });
+
+    it("parses a sum term constructor with an arity of 0 and an index of 1", () => {
+        const actual = parser.parse("<0,1").denormalize().anonymize();
+
+        const expected = new DenormalizedAst(
+            dSumTermConstructor({ arity: 0, index: 1 }),
+        ).anonymize();
+        expect(actual).toStrictEqual(expected);
+    });
+
+    it("parses a sum term constructor with an arity of 1 and an index of 1", () => {
+        const actual = parser.parse("<1,1").denormalize().anonymize();
+
+        const expected = new DenormalizedAst(
+            dSumTermConstructor({ arity: 1, index: 1 }),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
     });
 
     it("does not parse a sum term constructor without an index", () => {
-        expect(() => parser.parse("`")).toThrow();
+        expect(() => parser.parse("<0,")).toThrow();
+    });
+
+    it("does not parse a sum term constructor without a comma", () => {
+        expect(() => parser.parse("<0")).toThrow();
+    });
+
+    it("does not parse a sum term constructor without an arity", () => {
+        expect(() => parser.parse("<,0")).toThrow();
     });
 
     it("does not parse a sum term constructor with a float index", () => {
-        expect(() => parser.parse("<1.5")).toThrow();
+        expect(() => parser.parse("<0,1.5")).toThrow();
+    });
+
+    it("does not parse a sum term constructor with a float arity", () => {
+        expect(() => parser.parse("<1.5,0")).toThrow();
     });
 
     it("does not parse a sum term constructor with a negative index", () => {
-        expect(() => parser.parse("`-1")).toThrow();
+        expect(() => parser.parse("<0,-1")).toThrow();
+    });
+
+    it("does not parse a sum term constructor with a negative arity", () => {
+        expect(() => parser.parse("<-1,0")).toThrow();
     });
 
     it("does not parse a sum term constructor with whitespace", () => {
-        expect(() => parser.parse("` 1")).toThrow();
+        expect(() => parser.parse("<0, 1")).toThrow();
     });
 });

@@ -231,12 +231,12 @@ describe("functionTermEliminator", () => {
     });
 
     it("parses a function term eliminator with a sum type constructor head and an argument", () => {
-        const actual = parser.parse("(<0 true)").denormalize().anonymize();
+        const actual = parser.parse("(<0,0 true)").denormalize().anonymize();
 
         const expected = new DenormalizedAst(
             dFunctionTermEliminator({
                 arguments: [dBooleanTerm(true)],
-                function: dSumTermConstructor(0),
+                function: dSumTermConstructor({ arity: 0, index: 0 }),
             }),
         ).anonymize();
         expect(actual).toStrictEqual(expected);
@@ -244,7 +244,7 @@ describe("functionTermEliminator", () => {
 
     it("parses a function term eliminator with a sum type eliminator head and an argument", () => {
         const actual = parser
-            .parse("([+ [^ foo -> foo ^] [^ bar -> true ^] +] (<1 true))")
+            .parse("([+ [^ foo -> foo ^] [^ bar -> true ^] +] (<1,0 true))")
             .denormalize()
             .anonymize();
 
@@ -253,7 +253,7 @@ describe("functionTermEliminator", () => {
                 arguments: [
                     dFunctionTermEliminator({
                         arguments: [dBooleanTerm(true)],
-                        function: dSumTermConstructor(1),
+                        function: dSumTermConstructor({ arity: 1, index: 0 }),
                     }),
                 ],
                 function: dSumTermEliminator({
