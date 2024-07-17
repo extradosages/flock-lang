@@ -92,10 +92,23 @@ export class NormalizedAst<RootKind extends StrongNodeKind = "library"> {
         return this.graph.getEdgeAttributes(id);
     }
 
+    parent(targetId: string) {
+        const sourceIds = this.graph.inNeighbors(targetId);
+
+        if (sourceIds.length < 1) {
+            throw new ErrorWithContext({ targetId }, "No parent found");
+        }
+        if (sourceIds.length > 1) {
+            throw new ErrorWithContext({ targetId }, "Multiple parents found");
+        }
+
+        return this.node(sourceIds[0]);
+    }
+
     oneToOneChild<
         SourceKind extends StrongEdgeSourceKind,
         EdgeKind extends StrongEdgeKind<SourceKind>,
-    >(sourceId: string, edgeKind: EdgeKind) {
+    >(sourceId: string, edgeKind: NoInfer<EdgeKind>) {
         const edgeIds = this.graph.filterOutEdges(
             sourceId,
             (_, edge) => edge.kind === edgeKind,
